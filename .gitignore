@@ -1,0 +1,5 @@
+.env
+media
+static
+env
+db.sqlite3
