@@ -15,6 +15,7 @@ from datetime import timedelta
 import os
 from decouple import config
 
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -110,13 +111,13 @@ SIMPLE_JWT = {
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
-DATABASES = {
+"""DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
             'NAME': BASE_DIR / 'db.sqlite3',
         }}
-
-"""        
+"""
+      
 if 'RDS_DB_NAME' in os.environ:
     DATABASES = {
         'default': {
@@ -136,7 +137,7 @@ else:
         }
     }
 
-"""
+
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
