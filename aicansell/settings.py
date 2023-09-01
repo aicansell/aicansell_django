@@ -36,12 +36,12 @@ def get_env_variable(var_name):
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = config('SECRET_KEY')
+SECRET_KEY = get_env_variable('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = config('DEBUG', default=True, cast=bool)
+DEBUG = get_env_variable('DEBUG')
 
-ALLOWED_HOSTS = ['django-aicansell-env.eba-2a8k8khv.us-west-2.elasticbeanstalk.com']
+ALLOWED_HOSTS = ['django-aicansell-env.eba-2a8k8khv.us-west-2.elasticbeanstalk.com', '*']
 
 
 # Application definition
@@ -61,6 +61,7 @@ INSTALLED_APPS = [
     'organisation',
     'role',
     'quiz',
+    'storages',
 ]
 
 MIDDLEWARE = [
@@ -77,8 +78,8 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 #EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_HOST_USER = config('EMAIL_HOST_USER')
-EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
+EMAIL_HOST_USER = get_env_variable('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = get_env_variable('EMAIL_HOST_PASSWORD')
 EMAIL_HOST_PORT = 587
 EMAIL_USE_TLS = True
 #EMAIL_USE_SSL = False
@@ -194,17 +195,39 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+STATIC_URL = 'static/'
 
-
+"""
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR/'static'
 STATICFILES_DIRS = [
     'aicansell/static',
 ]
+"""
+DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 
-MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR/'media'
+AWS_STORAGE_BUCKET_NAME= get_env_variable("AWS_STORAGE_BUCKET_NAME")
+AWS_ACCESS_KEY_ID = get_env_variable("AWS_ACCESS_KEY_ID")
+AWS_SECRET_ACCESS_KEY = get_env_variable("AWS_SECRET_ACCESS_KEY")
 
+AWS_S3_CUSTOM_DOMAIN = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
+AWS_S3_OBJECT_PARAMETERS = {
+    'CacheControl': 'max-age=86400',
+}
+AWS_S3_FILE_OVERWRITE = False
+AWS_DEFAULT_ACL = 'public-read'
+AWS_LOCATION = 'static'
+
+STATICFILES_DIRS = [
+    'aicansell/static',
+]
+STATIC_URL = 'https://%s/%s/' % (AWS_S3_CUSTOM_DOMAIN, AWS_LOCATION)
+
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = 'media/'
+
+DEFAULT_FILE_STORAGE = 'aicansell.media_storages.MediaStorage'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
