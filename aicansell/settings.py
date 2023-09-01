@@ -26,11 +26,11 @@ environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 #environ.Env.read_env()
 
 def get_env_variable(var_name):
-try:
-    return os.environ[var_name]
-except KeyError:
-    error_msg = "set the %s environment variable" % var_name
-    raise ImproperlyConfigured(error_msg)
+    try:
+        return os.environ[var_name]
+    except KeyError:
+        error_msg = "set the %s environment variable" % var_name
+        raise ImproperlyConfigured(error_msg)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
@@ -39,7 +39,7 @@ except KeyError:
 SECRET_KEY = get_env_variable('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = get_env_variable('DEBUG', default=False, cast=bool)
+DEBUG = get_env_variable('DEBUG')
 
 ALLOWED_HOSTS = ['django-aicansell-env.eba-2a8k8khv.us-west-2.elasticbeanstalk.com']
 
