@@ -14,6 +14,7 @@ from pathlib import Path
 from datetime import timedelta
 import os
 from decouple import config
+from django.core.exceptions import ImproperlyConfigured
 
 import environ
 
@@ -22,14 +23,23 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 env = environ.Env()
 environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
+#environ.Env.read_env()
+
+def get_env_variable(var_name):
+try:
+    return os.environ[var_name]
+except KeyError:
+    error_msg = "set the %s environment variable" % var_name
+    raise ImproperlyConfigured(error_msg)
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = config('SECRET_KEY')
+SECRET_KEY = get_env_variable('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = config('DEBUG', default=False, cast=bool)
+DEBUG = get_env_variable('DEBUG', default=False, cast=bool)
 
 ALLOWED_HOSTS = ['django-aicansell-env.eba-2a8k8khv.us-west-2.elasticbeanstalk.com']
 
@@ -66,11 +76,11 @@ MIDDLEWARE = [
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 #EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
-EMAIL_HOST = config('SECRET_KEY')
-EMAIL_HOST_USER = config('EMAIL_HOST_USER')
-EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
-EMAIL_HOST_PORT = config('EMAIL_HOST_PORT', cast=int)
-EMAIL_USE_TLS = config('EMAIL_USE_TLS', default=False, cast=bool)
+EMAIL_HOST = get_env_variable('SECRET_KEY')
+EMAIL_HOST_USER = get_env_variable('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = get_env_variable('EMAIL_HOST_PASSWORD')
+EMAIL_HOST_PORT = get_env_variable('EMAIL_HOST_PORT', cast=int)
+EMAIL_USE_TLS = get_env_variable('EMAIL_USE_TLS', default=False, cast=bool)
 #EMAIL_USE_SSL = False
 
 
@@ -142,11 +152,11 @@ else:
 DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
-            'NAME': env("DB_NAME"),
-            'USER': env("DB_User"),
-            'PASSWORD': env("DB_PASSWORD"),
-            'HOST': env("DB_HOST"),
-            'PORT': env("DB_PORT"),
+            'NAME': get_env_variable("DB_NAME"),
+            'USER': get_env_variable("DB_User"),
+            'PASSWORD': get_env_variable("DB_PASSWORD"),
+            'HOST': get_env_variable("DB_HOST"),
+            'PORT': get_env_variable("DB_PORT"),
         }
     }
 
