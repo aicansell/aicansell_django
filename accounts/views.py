@@ -75,9 +75,9 @@ def forgot_password(request):
     user.profile.reset_password_expire = expire_date
 
     user.profile.save()
-    host = get_current_host(request)
+    #host = get_current_host(request)
 
-    link = "{host}accounts/reset_password/{token}".format(host=host, token=token)
+    link = "https://aicansellapp.com/accounts/reset_password/{token}".format(token=token)
     body =  "Click on the following link to reset your password {link}".format(link=link)
 
     send_mail(
