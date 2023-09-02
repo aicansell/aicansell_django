@@ -32,6 +32,8 @@ def get_env_variable(var_name):
         error_msg = "set the %s environment variable" % var_name
         raise ImproperlyConfigured(error_msg)
 
+        
+        
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
@@ -222,7 +224,7 @@ AWS_LOCATION = 'static'
 STATICFILES_DIRS = [
     'aicansell/static',
 ]
-# STATIC_URL = 'https://%s/%s/' % (AWS_S3_CUSTOM_DOMAIN, AWS_LOCATION)
+
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = 'media/'
