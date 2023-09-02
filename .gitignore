@@ -1,8 +1,36 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Local development settings
 .env
-media
-static
 env
-db.sqlite3
+/.venv
+/.vscode
+/.idea
+
+# Media files
+/media/
+
+# Static files
+/static/
+/staticfiles/
+
+# Database
+/db.sqlite3
+
+# Log files
+/logs/
+
+# Other
+*.log
+*.swp
+.DS_Store
+
+
+# eb virtual env
+eb-virt/ 
 # Elastic Beanstalk Files
 .elasticbeanstalk/*
 !.elasticbeanstalk/*.cfg.yml
