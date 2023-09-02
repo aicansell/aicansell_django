@@ -14,6 +14,7 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+from django.http import HttpResponse
 from django.contrib import admin
 from django.urls import path, include
 from django.conf.urls.static import static
@@ -23,6 +24,8 @@ from rest_framework_simplejwt.views import (
     TokenRefreshView,
 )
 
+def health_check(request):
+    return HttpResponse('HEALTHY')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -30,6 +33,6 @@ urlpatterns = [
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('chatbot/', include('chatbot.urls')),
     path('quiz/', include('quiz.urls')),
-
+    path('', health_check)
 
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
