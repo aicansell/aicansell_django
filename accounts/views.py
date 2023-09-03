@@ -84,12 +84,19 @@ def forgot_password(request):
     link = "https://aicansellapp.com/accounts/reset_password/{token}".format(token=token)
     body =  "Click on the following link to reset your password {link}".format(link=link)
 
-    send_mail(
+    """send_mail(
         "Password reset link for Aicansell",
         body,
         "noreply@aicansell.com",
         [data['email']]
     )
+"""
+    send_email(
+            template_name="confirmation_email.txt",
+            data=data,
+            subject="Welcome to Eikomp",
+            to=[data['email']]
+        )
 
     return Response({'details': 'Password reset email sent to {email}'. format(email=data['email'])})
 
