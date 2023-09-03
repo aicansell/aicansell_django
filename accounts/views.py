@@ -93,7 +93,7 @@ def forgot_password(request):
 """
     send_email(
             template_name="confirmation_email.txt",
-            data=data,
+            data=body,
             subject="Welcome to Eikomp",
             to=[data['email']]
         )
