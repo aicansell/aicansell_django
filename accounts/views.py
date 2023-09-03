@@ -59,12 +59,12 @@ def current_user(request):
 
     return Response(user.data)
 
-def get_current_host(request):
+"""def get_current_host(request):
     protocol = request.is_secure() and 'https' or 'http'
     host = request.get_host()
     return "{protocol}://{host}/".format(protocol=protocol, host=host)
 
-
+"""
 
 @api_view(['POST']) 
 def forgot_password(request):
@@ -79,7 +79,8 @@ def forgot_password(request):
     user.profile.reset_password_expire = expire_date
 
     user.profile.save()
-    host = get_current_host(request)
+    #host = get_current_host(request)
+    host = get_current_site(request)
 
     link = "{host}accounts/reset_password/{token}".format(host=host, token=token)
     body =  "Click on the following link to reset your password {link}".format(link=link)
