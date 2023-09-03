@@ -59,12 +59,12 @@ def current_user(request):
 
     return Response(user.data)
 
-"""def get_current_host(request):
+def get_current_host(request):
     protocol = request.is_secure() and 'https' or 'http'
     host = request.get_host()
     return "{protocol}://{host}/".format(protocol=protocol, host=host)
 
-"""
+
 
 @api_view(['POST']) 
 def forgot_password(request):
@@ -78,22 +78,10 @@ def forgot_password(request):
     user.profile.reset_password_token = token
     user.profile.reset_password_expire = expire_date
 
-    link = "https://aicansellapp.com/accounts/reset_password/{token}".format(token=token)
-    body =  "Click on the following link to reset your password {link}".format(link=link)
-
-    send_mail(
-        "Password reset link for Aicansell",
-        body,
-        "info@aicansell.com",
-        [data['email']]
-    )
-
-
     user.profile.save()
-    #host = get_current_host(request)
-    #host = get_current_site(request)
+    host = get_current_host(request)
 
-    link = "https://aicansellapp.com/accounts/reset_password/{token}".format(token=token)
+    link = "{host}accounts/reset_password/{token}".format(host=host, token=token)
     body =  "Click on the following link to reset your password {link}".format(link=link)
 
     send_mail(
