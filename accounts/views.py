@@ -87,7 +87,7 @@ def forgot_password(request):
     send_mail(
         "Password reset link for Aicansell",
         body,
-        "noreply@aicansell.com",
+        "info@aicansell.com",
         [data['email']]
     )
     return Response({'details': 'Password reset email sent to {email}'. format(email=data['email'])})
