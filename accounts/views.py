@@ -18,6 +18,9 @@ from accounts.utils import send_confirmation_email
 from django.contrib.sites.shortcuts import get_current_site
 
 
+# accounts/views.py
+
+
 
 
 @api_view(['POST'])
@@ -60,6 +63,7 @@ def get_current_host(request):
     protocol = request.is_secure() and 'https' or 'http'
     host = request.get_host()
     return "{protocol}://{host}/".format(protocol=protocol, host=host)
+
 
 
 @api_view(['POST']) 

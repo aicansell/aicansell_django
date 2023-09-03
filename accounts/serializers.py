@@ -16,5 +16,10 @@ class UserSerializer(serializers.ModelSerializer):
         model = Account
         fields = ['email', 'first_name', 'last_name', 'username', 'password','user_org','user_role', 'user_subrole']
 
+class ChangePasswordSerializer(serializers.Serializer):
+    old_password = serializers.CharField(required=True)
+    new_password = serializers.CharField(required=True)
 
+class ResetPasswordEmailSerializer(serializers.Serializer):
+    email = serializers.EmailField(required=True)
 

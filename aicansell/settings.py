@@ -64,6 +64,8 @@ INSTALLED_APPS = [
     'role',
     'quiz',
     'storages',
+    'django_rest_passwordreset',
+    
 ]
 
 MIDDLEWARE = [
