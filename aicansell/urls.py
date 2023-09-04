@@ -33,6 +33,7 @@ urlpatterns = [
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('chatbot/', include('chatbot.urls')),
     path('quiz/', include('quiz.urls')),
+    path('sean/', include('sean.urls')),
     path('', health_check),
     
 
