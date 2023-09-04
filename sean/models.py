@@ -16,6 +16,7 @@ class Item(models.Model):
     #item_role = models.ForeignKey(Roles, on_delete = models.CASCADE, default=1, related_name = 'itemrole')
     #item_subrole = models.ForeignKey(Sub_Role, on_delete = models.CASCADE, default=1, related_name = 'itemsubrole')
     item_answer = models.TextField(max_length=700, default="Your answer")
+    item_emotion = models.TextField(default= "emotions")
     item_answercount = models.IntegerField(default=1)
     category = models.CharField(max_length=256, blank=True, default="English")
     thumbnail = models.ImageField(upload_to='media', default = "c.png")  
