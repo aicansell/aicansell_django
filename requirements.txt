@@ -20,6 +20,7 @@ jmespath==1.0.1
 multidict==6.0.4
 openai==0.27.10
 packaging==23.1
+Pillow==10.0.0
 psycopg2-binary==2.9.7
 PyJWT==2.8.0
 python-dateutil==2.8.2
