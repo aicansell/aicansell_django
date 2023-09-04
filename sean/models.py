@@ -27,9 +27,9 @@ class Item(models.Model):
     tip = models.CharField(max_length=300, default="Tip")
     appearance = models.CharField(max_length=300, default='appear')
     Gender_CHOICES = [
-        (Gender1, "Gender 1"),
-        (Gender2, "Gender 2"),
-        (Gender3, "Gender 3"),
+        (Gender1, "Female"),
+        (Gender2, "Male"),
+        (Gender3, "All"),
     ]
     item_gender = models.CharField(max_length=7, choices = Gender_CHOICES, default=Gender1)
 
