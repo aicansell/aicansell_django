@@ -65,6 +65,8 @@ INSTALLED_APPS = [
     'quiz',
     'storages',
     'django_rest_passwordreset',
+    'sean',
+    'competency',
     
 ]
 
