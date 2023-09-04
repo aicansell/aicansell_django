@@ -22,6 +22,7 @@ class Item(models.Model):
     thumbnail = models.ImageField(upload_to='media', default = "c.png")  
     tip = models.CharField(max_length=300, default="Tip")
     appearance = models.CharField(max_length=300, default='appear')
+    item_gender = models.CharField(max_length=25, default="Female")
 
 
 class Suggestion(models.Model):
