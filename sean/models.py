@@ -18,7 +18,7 @@ class Item(models.Model):
     item_answer = models.TextField(max_length=700, default="Your answer")
     item_answercount = models.IntegerField(default=1)
     category = models.CharField(max_length=256, blank=True, default="English")
-    thumbnail = models.ImageField(upload_to='media', default="c.png")  
+    thumbnail = models.ImageField(upload_to='media')  
     tip = models.CharField(max_length=300, default="Tip")
     appearance = models.CharField(max_length=300, default='appear')
 

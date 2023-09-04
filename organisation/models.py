@@ -36,7 +36,7 @@ class Role_Scenario(models.Model):
 
     role_scenario_name = models.CharField(max_length=250, blank=True, null=True)
     role_scenario = models.ForeignKey(Org_Roles, on_delete=models.CASCADE, default=1, related_name= 'rolescenario')
-
+    rolescenario_item = models.ForeignKey(Item, on_delete=models.CASCADE, default=1, related_name= 'rolescenario_item')
 
 
 
