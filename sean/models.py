@@ -9,6 +9,10 @@ class Item(models.Model):
     def __str__(self):
         return self.item_name
 
+    Gender1 = "Female"
+    Gender2 = "Male"   
+    Gender3 = "All" 
+
     item_name = models.CharField(max_length=256)
     item_description = models.CharField(max_length=300)
    
@@ -22,7 +26,12 @@ class Item(models.Model):
     thumbnail = models.ImageField(upload_to='media', default = "c.png")  
     tip = models.CharField(max_length=300, default="Tip")
     appearance = models.CharField(max_length=300, default='appear')
-    item_gender = models.CharField(max_length=25, default="Female")
+    Gender_CHOICES = [
+        (Gender1, "Gender 1"),
+        (Gender2, "Gender 2"),
+        (Gender3, "Gender 3"),
+    ]
+    item_gender = models.CharField(max_length=7, choices = Gender_CHOICES, default=Gender1)
 
 
 class Suggestion(models.Model):
