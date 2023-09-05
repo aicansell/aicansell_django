@@ -9,12 +9,11 @@ class SignUpSerializer(serializers.ModelSerializer):
         fields = ['email', 'first_name', 'last_name', 'password']
 
 class UserSerializer(serializers.ModelSerializer):
-    user_role = serializers.StringRelatedField()
-    user_subrole = serializers.StringRelatedField()
-    user_org = serializers.StringRelatedField()
+    userorg_roles = serializers.StringRelatedField()
+    
     class Meta:
         model = Account
-        fields = ['email', 'first_name', 'last_name', 'username', 'password','user_org','user_role', 'user_subrole']
+        fields = ['email', 'first_name', 'last_name', 'username', 'password','userorg_roles']
 
 class ChangePasswordSerializer(serializers.Serializer):
     old_password = serializers.CharField(required=True)
