@@ -34,25 +34,6 @@ def item_list(request):
     else:
         return Response(status=status.HTTP_404_NOT_FOUND)
 
-"""
-@api_view(['GET']) 
-@permission_classes([IsAuthenticated])
-def itemlist(request):
-    user = UserSerializer(request.user)
-
-    if (user.userorg_roles == Role_Scenario.role_scenario):
-        item_list = Item.objects.all().order_by('-id')
-        serializer = ItemListSerializer(item_list, many=True)
-
-    # if there is something in items else raise error
-        if item_list:
-            return Response(serializer.data)
-        else:
-            return Response(status=status.HTTP_404_NOT_FOUND)
-
-    else:
-        return Response("No records")        
-"""
 
 
 @api_view(['GET', 'PUT'])
