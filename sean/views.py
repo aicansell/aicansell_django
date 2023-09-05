@@ -17,6 +17,7 @@ import string
 from collections import Counter
 
 
+
 # Create your views here.
 
 #listing scenarios
@@ -115,12 +116,13 @@ def item_result(request, pk):
                     emotion_c1.append(emotion)
 
 
-        w = Counter(emotion_c1)
-        emotions = str(w)[9: -2]
+        emotion_count = Counter(emotion_c1)
+        emotions = str(emotion_count)[9: -2]
 
         print(emotions)
 
-        
+        #const myJSON =  JSON.stringify(emotions);
+
         with open('sean/dump.txt', 'a') as f:
             item1_list = str(item_data)
             f.write(item1_list)
