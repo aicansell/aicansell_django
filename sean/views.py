@@ -56,6 +56,7 @@ def itemlist(request):
 
 
 @api_view(['GET', 'PUT'])
+@permission_classes([IsAuthenticated])
 def item_result(request, pk):
     try: 
         item_result = Item.objects.get(pk=pk) 
