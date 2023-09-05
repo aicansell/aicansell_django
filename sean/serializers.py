@@ -12,4 +12,4 @@ class ItemEmotionSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Item
-        fields = [ 'item_answer', 'item_emotion']
+        fields = [ 'item_answer', 'item_emotion', 'suggestions']
