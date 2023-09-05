@@ -120,7 +120,8 @@ def item_result(request, pk):
             item_result.item_answercount = F('item_answercount') + 1
             serializer.save()
             return JsonResponse({'emotions': emotions, 'data': serializer.data}, safe=False, status=status.HTTP_200_OK)
-            return Response(serializer.data)
+            
+            #return Response(serializer.data)
             
             
             
