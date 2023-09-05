@@ -15,6 +15,8 @@ from accounts.serializers import UserSerializer
 
 import string
 from collections import Counter
+from django.http import JsonResponse
+
 
 
 
@@ -102,6 +104,9 @@ def item_result(request, pk):
         emotions = str(emotion_count)[9: -2]
 
         print(emotions)
+        #print(emo)
+        #return JsonResponse(emotions, safe=False, status=status.HTTP_200_OK)
+        
 
         #const myJSON =  JSON.stringify(emotions);
 
@@ -113,7 +118,11 @@ def item_result(request, pk):
         if serializer.is_valid(): 
             
             item_result.item_answercount = F('item_answercount') + 1
-            serializer.save() 
-            return Response(serializer.data) 
+            serializer.save()
+            return JsonResponse({'emotions': emotions, 'data': serializer.data}, safe=False, status=status.HTTP_200_OK)
+            return Response(serializer.data)
+            
+            
+            
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST) 
  
