@@ -119,7 +119,11 @@ def item_result(request, pk):
         emotions = str(w)[9: -2]
 
         print(emotions)
-        
+
+        """registration_key_object = Item.objects.get(key=key_input)
+        user.key = registration_key_object
+        user.save()
+        """
 
         
 
