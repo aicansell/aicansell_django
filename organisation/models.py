@@ -3,7 +3,7 @@ from industry.models import Industry
 
 from role.models import Roles, Sub_Role
 from competency.models import Competency, Sub_Competency
-from sean.models import Item
+#from sean.models import Item
 
 #from quiz.models import Quiz
 
@@ -29,7 +29,7 @@ class Org_Roles(models.Model):
     competency_weight = models.IntegerField(default = 1)
     role_subcompetency = models.ForeignKey(Sub_Competency, on_delete=models.CASCADE, default=1, related_name = 'rolesubcompetency')
     subcompetency_weight = models.IntegerField(default=1)
-
+"""
 class Role_Scenario(models.Model):
     def __str__(self):
         return self.role_scenario_name
@@ -38,6 +38,6 @@ class Role_Scenario(models.Model):
     role_scenario = models.ForeignKey(Org_Roles, on_delete=models.CASCADE, default=1, related_name= 'rolescenario')
     rolescenario_item = models.ForeignKey(Item, on_delete=models.CASCADE, default=1, related_name= 'rolescenario_item')
 
-
+"""
 
  

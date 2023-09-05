@@ -5,7 +5,7 @@ from rest_framework.response import Response
 from .serializers import ItemListSerializer 
 from .models import Item
 from accounts.models import Account
-from organisation.models import Role_Scenario
+#from organisation.models import Role_Scenario
 
 from rest_framework import status,viewsets
 from django.db.models import F

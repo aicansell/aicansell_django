@@ -1,6 +1,6 @@
 from django.db import models
 from role.models import Roles, Sub_Role
-#from organisation.models import Org
+from organisation.models import Org_Roles
 
 
 # Create your models here.
@@ -32,6 +32,7 @@ class Item(models.Model):
         (Gender3, "All"),
     ]
     item_gender = models.CharField(max_length=7, choices = Gender_CHOICES, default=Gender1)
+    item_role = models.ForeignKey(Org_Roles, on_delete=models.CASCADE, default=1)
 
 
 class Suggestion(models.Model):
