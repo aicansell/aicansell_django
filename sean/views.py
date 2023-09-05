@@ -120,13 +120,7 @@ def item_result(request, pk):
 
         print(emotions)
 
-        """registration_key_object = Item.objects.get(key=key_input)
-        user.key = registration_key_object
-        user.save()
-        """
-
         
-
         with open('sean/dump.txt', 'a') as f:
             item1_list = str(item_data)
             f.write(item1_list)
