@@ -3,6 +3,7 @@ from role.models import Roles, Sub_Role
 from organisation.models import Org_Roles
 
 
+
 # Create your models here.
 
 class Item(models.Model):
@@ -32,8 +33,9 @@ class Item(models.Model):
         (Gender3, "All"),
     ]
     item_gender = models.CharField(max_length=7, choices = Gender_CHOICES, default=Gender1)
-    item_role = models.ForeignKey(Org_Roles, on_delete=models.CASCADE, default=1)
+    role = models.ForeignKey(Org_Roles, on_delete=models.CASCADE, default=1)
     suggestions = models.CharField(max_length=250, default="sugestions")
+    
 
 
 class Suggestion(models.Model):
