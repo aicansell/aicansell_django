@@ -3,10 +3,12 @@ from .models import Item
 
 
 class ItemListSerializer(serializers.ModelSerializer):
-    item_role = serializers.StringRelatedField()
+    role = serializers.StringRelatedField()
     class Meta:
         model = Item
         fields = ['id','item_name', 'item_description', 'thumbnail', 'category','tip', 'role']
+        #fields = "__all__"
+        #fields = ['id', 'item_name', 'item_description', 'thumbnail', 'category', 'tip', 'role']
 
 class ItemEmotionSerializer(serializers.ModelSerializer):
 
