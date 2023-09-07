@@ -9,7 +9,7 @@ class SignUpSerializer(serializers.ModelSerializer):
         fields = ['email', 'first_name', 'last_name', 'password']
 
 class UserSerializer(serializers.ModelSerializer):
-    userorg_roles = serializers.StringRelatedField()
+    role = serializers.StringRelatedField()
     
     class Meta:
         model = Account

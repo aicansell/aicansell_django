@@ -17,7 +17,7 @@ import string
 from collections import Counter
 from django.http import JsonResponse
 
-
+from rest_framework import viewsets
 
 
 # Create your views here.
@@ -35,26 +35,22 @@ def item_list(request):
         return Response(serializer.data)
     else:
         return Response(status=status.HTTP_404_NOT_FOUND)
-"""
+
 @api_view(['GET']) 
 @permission_classes([IsAuthenticated])
 def itemlist(request):
-    #user = Account.objects.all().get('userorg_roles')
-    #print(user)
-    if(Account.userorg_roles == Item.item_role):
-        return Response(Item.item_role)
-    else:
-        return Response("wtf") 
- 
+    user = UserSerializer(request.user)
+    i = Item.objects.values_list('role')
     item_list = Item.objects.all().order_by('-id')
-    serializer = ItemListSerializer(item_list, many=True)
+    item = ItemListSerializer(item_list, many=True)
+    #i1 = item.data['role']
+    u = Account.objects.values_list('role')
+    u1 = user.data['role']
+      
+    print (item, u1)
+    #return Response(i)
+    return Response(u1)
 
-    # if there is something in items else raise error
-    if item_list:
-        return Response(serializer.data)
-    else:
-        return Response(status=status.HTTP_404_NOT_FOUND)
-"""
 
 @api_view(['GET', 'PUT'])
 @permission_classes([IsAuthenticated])
