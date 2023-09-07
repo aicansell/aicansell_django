@@ -18,7 +18,7 @@ from collections import Counter
 from django.http import JsonResponse
 
 from rest_framework import viewsets, generics
-
+#from django_filters.rest_framework import DjangoFilterBackend
 
 # Create your views here.
 
@@ -35,7 +35,7 @@ def item_list(request):
         return Response(serializer.data)
     else:
         return Response(status=status.HTTP_404_NOT_FOUND)
-
+"""
 @api_view(['GET']) 
 @permission_classes([IsAuthenticated])
 def itemlist(request):
@@ -51,22 +51,29 @@ def itemlist(request):
             print("cool")
 
 
-    return Response(u1)
+    return Response(u1)"""
 
 class ItemList(generics.ListAPIView):
     
     queryset = Item.objects.all()
     serializer_class = ItemListSerializer
     permission_classes = [IsAuthenticated]
+   
 
     def list(self,request):
         user = UserSerializer(request.user)
         u1 = user.data['role']
-
         
-        return Response(u1)
+        #u2 = Account.objects.filter(user=u3).values_list('role')
+        #print(u2)
 
-
+        items = Item.objects.filter(role = 2)
+        serializer = ItemListSerializer(items, many=True)
+        
+        if items:
+            return Response(serializer.data)
+        else:
+            return Response(status=status.HTTP_404_NOT_FOUND)
 
 
 
