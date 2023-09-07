@@ -17,7 +17,7 @@ import string
 from collections import Counter
 from django.http import JsonResponse
 
-from rest_framework import viewsets
+from rest_framework import viewsets, generics
 
 
 # Create your views here.
@@ -40,16 +40,34 @@ def item_list(request):
 @permission_classes([IsAuthenticated])
 def itemlist(request):
     user = UserSerializer(request.user)
-    i = Item.objects.values_list('role')
-    item_list = Item.objects.all().order_by('-id')
-    item = ItemListSerializer(item_list, many=True)
-    #i1 = item.data['role']
-    u = Account.objects.values_list('role')
     u1 = user.data['role']
-      
-    print (item, u1)
-    #return Response(i)
+    
+    item_list = Item.objects.all().order_by('-id')
+    serializer = ItemListSerializer(item_list, many=True)
+    print(serializer)
+    
+    for i in item_list:
+        if item_list == u1:
+            print("cool")
+
+
     return Response(u1)
+
+class ItemList(generics.ListAPIView):
+    
+    queryset = Item.objects.all()
+    serializer_class = ItemListSerializer
+    permission_classes = [IsAuthenticated]
+
+    def list(self,request):
+        user = UserSerializer(request.user)
+        u1 = user.data['role']
+
+        
+        return Response(u1)
+
+
+
 
 
 @api_view(['GET', 'PUT'])

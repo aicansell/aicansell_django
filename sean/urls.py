@@ -1,6 +1,6 @@
 from django.urls import path, include, re_path
 from . import views
-
+from sean.views import ItemList
 
 
 urlpatterns = [
@@ -10,5 +10,6 @@ urlpatterns = [
     re_path(r'^api/item_results/(?P<pk>[0-9]+)$', views.item_result),
 
     path('itemlist/', views.itemlist, name='itemlist'),
+    path('itemli/', ItemList.as_view(), name="Item_List")
     
 ]
