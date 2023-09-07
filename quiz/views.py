@@ -29,16 +29,6 @@ def quiz_list(request):
 
 
 
-
-
-    # if there is something in items else raise error
-    if quiz_result:
-        return Response(serializer.data)
-    else:
-        return Response(status=status.HTTP_404_NOT_FOUND)  
-
-
-
 @api_view(['GET', 'PUT'])
 def tutorial_detail(request, pk):
     try: 

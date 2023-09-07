@@ -18,6 +18,9 @@ from accounts.utils import send_confirmation_email
 from django.contrib.sites.shortcuts import get_current_site
 
 
+# accounts/views.py
+
+
 
 
 @api_view(['POST'])
@@ -62,6 +65,7 @@ def get_current_host(request):
     return "{protocol}://{host}/".format(protocol=protocol, host=host)
 
 
+
 @api_view(['POST']) 
 def forgot_password(request):
 
@@ -83,11 +87,12 @@ def forgot_password(request):
     send_mail(
         "Password reset link for Aicansell",
         body,
-        "noreply@aicansell.com",
+        "info@aicansell.com",
         [data['email']]
     )
-
     return Response({'details': 'Password reset email sent to {email}'. format(email=data['email'])})
+
+
 
 @api_view(['POST']) 
 def reset_password(request,token):

@@ -13,7 +13,7 @@ urlpatterns = [
     path('api/send-confirmation-email/', SendEmailConfirmationTokenAPIView.as_view(), name='send_email_confirmation_api_view'),
 
     path('confirm-email/', confirm_email_view, name='confirm_email_view'),
-
+   
 
 
 ] 

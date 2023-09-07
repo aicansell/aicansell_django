@@ -32,6 +32,8 @@ def get_env_variable(var_name):
         error_msg = "set the %s environment variable" % var_name
         raise ImproperlyConfigured(error_msg)
 
+        
+        
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
@@ -62,6 +64,10 @@ INSTALLED_APPS = [
     'role',
     'quiz',
     'storages',
+    'django_rest_passwordreset',
+    'sean',
+    'competency',
+    
 ]
 
 MIDDLEWARE = [
@@ -76,12 +82,12 @@ MIDDLEWARE = [
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 #EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-
 EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_USE_TLS = True
+EMAIL_PORT = 587
 EMAIL_HOST_USER = get_env_variable('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = get_env_variable('EMAIL_HOST_PASSWORD')
-EMAIL_HOST_PORT = 587
-EMAIL_USE_TLS = True
+
 #EMAIL_USE_SSL = False
 
 
