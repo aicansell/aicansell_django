@@ -26,7 +26,7 @@ class Item(models.Model):
     category = models.CharField(max_length=256, blank=True, default="Personal")
     thumbnail = models.ImageField(upload_to='media', default = "c.png")  
     tip = models.CharField(max_length=300, default="Tip")
-    appearance = models.CharField(max_length=300, default='appear')
+    negative_words = models.CharField(max_length=300, default='appear')
     Gender_CHOICES = [
         (Gender1, "Female"),
         (Gender2, "Male"),

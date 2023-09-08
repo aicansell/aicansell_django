@@ -47,6 +47,8 @@ class ItemList(generics.ListAPIView):
     def list(self,request):
         
         user = request.user
+        
+        #getting user's role id
         u2 = user.role_id
         
         """
