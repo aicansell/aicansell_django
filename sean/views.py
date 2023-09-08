@@ -35,23 +35,7 @@ def item_list(request):
         return Response(serializer.data)
     else:
         return Response(status=status.HTTP_404_NOT_FOUND)
-"""
-@api_view(['GET']) 
-@permission_classes([IsAuthenticated])
-def itemlist(request):
-    user = UserSerializer(request.user)
-    u1 = user.data['role']
-    
-    item_list = Item.objects.all().order_by('-id')
-    serializer = ItemListSerializer(item_list, many=True)
-    print(serializer)
-    
-    for i in item_list:
-        if item_list == u1:
-            print("cool")
 
-
-    return Response(u1)"""
 
 class ItemList(generics.ListAPIView):
     
@@ -61,20 +45,22 @@ class ItemList(generics.ListAPIView):
    
 
     def list(self,request):
-        user = UserSerializer(request.user)
-        u1 = user.data['role']
         
-        #u2 = Account.objects.filter(user=u3).values_list('role')
-        #print(u2)
+        user = request.user
+        u2 = user.role_id
+        
+        """
+        u2 = Account.objects.values_list('role')
+        print(u2)
+        """
 
-        items = Item.objects.filter(role = 2)
+        items = Item.objects.filter(role = u2)
         serializer = ItemListSerializer(items, many=True)
         
         if items:
             return Response(serializer.data)
         else:
             return Response(status=status.HTTP_404_NOT_FOUND)
-
 
 
 @api_view(['GET', 'PUT'])
