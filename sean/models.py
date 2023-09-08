@@ -38,6 +38,7 @@ class Item(models.Model):
     suggestions = models.CharField(max_length=250, default="sugestions")
     competency = models.ForeignKey(Competency, on_delete=models.CASCADE, default=1)
     sub_competency = models.ForeignKey(Sub_Competency, on_delete = models.CASCADE, default= 1)
+    improvement = models.CharField(max_length=300, default= "improve on")
     
 
 
