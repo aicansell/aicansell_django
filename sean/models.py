@@ -1,6 +1,7 @@
 from django.db import models
 from role.models import Roles, Sub_Role
 from organisation.models import Org_Roles
+from competency.models import Competency, Sub_Competency
 
 
 
@@ -35,6 +36,8 @@ class Item(models.Model):
     item_gender = models.CharField(max_length=7, choices = Gender_CHOICES, default=Gender1)
     role = models.ForeignKey(Org_Roles, on_delete=models.CASCADE, default=1)
     suggestions = models.CharField(max_length=250, default="sugestions")
+    competency = models.ForeignKey(Competency, on_delete=models.CASCADE, default=1)
+    sub_competency = models.ForeignKey(Sub_Competency, on_delete = models.CASCADE, default= 1)
     
 
 

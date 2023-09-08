@@ -7,7 +7,7 @@ from .models import Item
 from accounts.models import Account
 #from organisation.models import Role_Scenario
 
-from rest_framework import status,viewsets
+from rest_framework import status,viewsets, generics, filters
 from django.db.models import F
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.parsers import JSONParser 
@@ -17,8 +17,8 @@ import string
 from collections import Counter
 from django.http import JsonResponse
 
-from rest_framework import viewsets, generics
-#from django_filters.rest_framework import DjangoFilterBackend
+#from rest_framework import viewsets, generics
+
 
 # Create your views here.
 
