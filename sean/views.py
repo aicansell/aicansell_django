@@ -54,7 +54,7 @@ class ItemList(generics.ListAPIView):
         print(u2)
         """
 
-        items = Item.objects.filter(role = u2)
+        items = Item.objects.filter(role = u2).order_by('-id')
         serializer = ItemListSerializer(items, many=True)
         
         if items:
