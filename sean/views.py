@@ -18,10 +18,11 @@ from collections import Counter
 from django.http import JsonResponse
 
 import speech_recognition as sr
-import pyttsx3
+#import pyttsx3
 import openai
 from decouple import config
-
+import speech_recognition as sr
+import pyttsx3
 
 #from rest_framework import viewsets, generics
 
@@ -80,6 +81,7 @@ def SpeakText(command):
     engine.say(command)
     engine.runAndWait()
      
+
 while(1):   
      
     # Exception handling to handle
