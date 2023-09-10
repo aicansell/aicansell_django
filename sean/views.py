@@ -17,6 +17,9 @@ import string
 from collections import Counter
 from django.http import JsonResponse
 
+import speech_recognition as sr
+import pyttsx3
+
 #from rest_framework import viewsets, generics
 
 
@@ -63,7 +66,48 @@ class ItemList(generics.ListAPIView):
             return Response(serializer.data, status=status.HTTP_200_OK)
         else:
             return Response(status=status.HTTP_404_NOT_FOUND)
+"""
+# Initialize the recognizer
+r = sr.Recognizer()
 
+def SpeakText(command):
+     
+    # Initialize the engine
+    engine = pyttsx3.init()
+    engine.say(command)
+    engine.runAndWait()
+     
+while(1):   
+     
+    # Exception handling to handle
+    # exceptions at the runtime
+    try:
+         
+        # use the microphone as source for input.
+        with sr.Microphone() as source2:
+             
+            # wait for a second to let the recognizer
+            # adjust the energy threshold based on
+            # the surrounding noise level
+            r.adjust_for_ambient_noise(source2, duration=2)
+             
+            #listens for the user's input
+            audio2 = r.listen(source2)
+             
+            # Using google to recognize audio
+            MyText = r.recognize_google(audio2)
+            MyText = MyText.lower()
+ 
+            print("Did you say ",MyText)
+            SpeakText(MyText)
+             
+    except sr.RequestError as e:
+        print("Could not request results; {0}".format(e))
+         
+    except sr.UnknownValueError:
+        print("unknown error occurred")
+
+"""
 
 @api_view(['GET', 'PUT'])
 @permission_classes([IsAuthenticated])
@@ -153,4 +197,7 @@ def item_result(request, pk):
             
             
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST) 
- 
+
+
+
+
