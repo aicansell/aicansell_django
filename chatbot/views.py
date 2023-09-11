@@ -3,6 +3,11 @@ from openai import ChatCompletion
 import openai
 from decouple import config
 
+from rest_framework.decorators import api_view
+
+from django.http import JsonResponse
+
+
 
 def chatbot_view(request):
     conversation = request.session.get('conversation', [])
@@ -43,3 +48,33 @@ def chatbot_view(request):
     else:
         request.session.clear()
         return render(request, 'chat.html', {'conversation': conversation})
+
+
+"""
+openai.api_key = config('api_key')
+
+@api_view(['GET'])
+def get_completion(prompt):
+	print(prompt)
+	query = openai.Completion.create(
+		engine="text-davinci-003",
+		prompt=prompt,
+		max_tokens=1024,
+		n=1,
+		stop=None,
+		temperature=0.5,
+	)
+
+	response = query.choices[0].text
+	print(response)
+	return response
+
+@api_view(['POST'])
+def query_view(request):
+	if request.method == 'POST':
+		prompt = request.POST.get('prompt')
+		response = get_completion(prompt)
+		return JsonResponse({'response': response})
+	return response
+"""    
+      

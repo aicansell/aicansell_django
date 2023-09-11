@@ -26,8 +26,8 @@ class Item(models.Model):
     item_answercount = models.IntegerField(default=1)
     category = models.CharField(max_length=256, blank=True, default="Personal")
     thumbnail = models.ImageField(upload_to='media', default = "c.png")  
-    tip = models.CharField(max_length=300, default="Tip")
-    negative_words = models.CharField(max_length=300, default='appear')
+    power_words = models.CharField(max_length=300, default="Tip")
+    weak_words = models.CharField(max_length=300, default='appear')
     Gender_CHOICES = [
         (Gender1, "Female"),
         (Gender2, "Male"),
@@ -35,10 +35,10 @@ class Item(models.Model):
     ]
     item_gender = models.CharField(max_length=7, choices = Gender_CHOICES, default=Gender1)
     role = models.ForeignKey(Org_Roles, on_delete=models.CASCADE, default=1)
-    suggestions = models.CharField(max_length=250, default="sugestions")
+    coming_across_as = models.CharField(max_length=250, default="sugestions")
     competency = models.ForeignKey(Competency, on_delete=models.CASCADE, default=1)
     sub_competency = models.ForeignKey(Sub_Competency, on_delete = models.CASCADE, default= 1)
-    improvement = models.CharField(max_length=300, default= "improve on")
+    #seans_recommendation = models.CharField(max_length=300, default= "improve on")
     
 
 
