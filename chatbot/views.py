@@ -11,8 +11,6 @@ from django.http import JsonResponse
 
 openai.api_key = config('api_key')
 
-
-   
 @api_view(['GET', 'POST'])
 def chatresponse(request):
     keep_prompting = True 
