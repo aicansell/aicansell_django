@@ -23,7 +23,6 @@ openai==0.27.10
 packaging==23.1
 Pillow==10.0.0
 psycopg2-binary==2.9.7
-PyAudio==0.2.13
 PyJWT==2.8.0
 python-dateutil==2.8.2
 python-decouple==3.8
