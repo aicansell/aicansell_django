@@ -21,8 +21,8 @@ def chatresponse(request):
     """if request.method == 'GET': 
         item_data = JSONParser().parse(request)
         print(item_data)
-        
-    """
+    """    
+    
     if request.method == 'POST': 
         item_data = JSONParser().parse(request)
 
