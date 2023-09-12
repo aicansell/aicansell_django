@@ -48,3 +48,27 @@ class Suggestion(models.Model):
 
     name = models.CharField(max_length=256)
     suggestion_text = models.TextField()
+
+class PowerWords(models.Model):
+    def __str__(self):
+        return self.power_word_name
+
+    power_word_name = models.CharField(max_length=250)
+    competency = models.ForeignKey(Competency, on_delete=models.CASCADE, default=1)
+    sub_competency = models.ForeignKey(Sub_Competency, on_delete = models.CASCADE, default= 1)
+
+class NegativeWords(models.Model):
+    def __str__(self):
+        return self.negative_word_name
+
+    negative_word_name = models.CharField(max_length=250)
+    competency = models.ForeignKey(Competency, on_delete=models.CASCADE, default=1)
+    sub_competency = models.ForeignKey(Sub_Competency, on_delete = models.CASCADE, default= 1)
+
+class EmotionWords(models.Model):
+    def __str__(self):
+        return self.emotion_word_name
+
+    emotion_word_name = models.CharField(max_length=250)
+    competency = models.ForeignKey(Competency, on_delete=models.CASCADE, default=1)
+    sub_competency = models.ForeignKey(Sub_Competency, on_delete = models.CASCADE, default= 1)    
