@@ -70,6 +70,7 @@ class Item(models.Model):
     competency_power_word = models.ForeignKey(PowerWords, on_delete = models.CASCADE, default= 1)
     competency_weak_word = models.ForeignKey(NegativeWords, on_delete = models.CASCADE, default= 1)
     competency_emotion_word = models.ForeignKey(EmotionWords, on_delete = models.CASCADE, default= 1)
+    level = models.IntegerField(default=1)
     
 
 
