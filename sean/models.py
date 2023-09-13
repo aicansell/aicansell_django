@@ -15,6 +15,7 @@ class PowerWords(models.Model):
     competency = models.ForeignKey(Competency, on_delete=models.CASCADE, default=1)
     sub_competency = models.ForeignKey(Sub_Competency, on_delete = models.CASCADE, default= 1)
     org_role = models.ForeignKey(Org_Roles, on_delete=models.CASCADE, default=1)
+    weight = models.IntegerField(default=1)
 
 class NegativeWords(models.Model):
     def __str__(self):
@@ -24,6 +25,7 @@ class NegativeWords(models.Model):
     competency = models.ForeignKey(Competency, on_delete=models.CASCADE, default=1)
     sub_competency = models.ForeignKey(Sub_Competency, on_delete = models.CASCADE, default= 1)
     org_role = models.ForeignKey(Org_Roles, on_delete=models.CASCADE, default=1)
+    weight = models.IntegerField(default= -7)
 
 class EmotionWords(models.Model):
     def __str__(self):
@@ -32,7 +34,8 @@ class EmotionWords(models.Model):
     emotion_word_name = models.CharField(max_length=250)
     competency = models.ForeignKey(Competency, on_delete=models.CASCADE, default=1)
     sub_competency = models.ForeignKey(Sub_Competency, on_delete = models.CASCADE, default= 1)
-    org_role = models.ForeignKey(Org_Roles, on_delete=models.CASCADE, default=1)   
+    org_role = models.ForeignKey(Org_Roles, on_delete=models.CASCADE, default=1)
+    
 
 
 class Item(models.Model):
