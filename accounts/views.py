@@ -66,6 +66,7 @@ def get_current_host(request):
 
 
 
+
 @api_view(['POST']) 
 def forgot_password(request):
 
@@ -115,7 +116,6 @@ def reset_password(request,token):
 
     return Response({'details': 'Password has been reset'})
 
-
 class UserInformationAPIVIew(APIView):
 
     permission_classes = [IsAuthenticated,]
@@ -155,6 +155,3 @@ def confirm_email_view(request):
         data = {'is_email_confirmed': False}
         return Response({'details': 'Email has not been confirmed'} )
         #return render(request, template_name='users/confirm_email_view.html', context=data)
-
-
-
