@@ -18,7 +18,7 @@ from collections import Counter
 from django.http import JsonResponse
 
 import speech_recognition as sr
-#import pyttsx3
+
 import openai
 from decouple import config
 import speech_recognition as sr
@@ -113,7 +113,47 @@ while(1):
         print("unknown error occurred")
 
 """
+#whisper
+"""
+import openai
+import wave
+import pyaudio
 
+openai.api_key =
+
+audio = pyaudio.PyAudio()
+stream = audio.open(format=pyaudio.paInt16, channels=1, rate=44100, input=True, frames_per_buffer=1024)
+frames = []
+
+
+try:
+   while True:
+       data = stream.read(1024)
+       frames.append(data)
+except KeyboardInterrupt:
+   pass
+
+
+stream.stop_stream()
+stream.close()
+audio.terminate()
+
+
+sound_file = wave.open("myrecording.wav", "wb")
+sound_file.setnchannels(1)
+sound_file.setsampwidth(audio.get_sample_size(pyaudio.paInt16))
+sound_file.setframerate(44100)
+sound_file.writeframes(b"".join(frames))
+sound_file.close()
+
+
+audio_file = open("myrecording.wav", "rb")
+transcript = openai.Audio.transcribe("whisper-1", audio_file)
+
+
+print(transcript['text'])
+
+"""
 
 @api_view(['PUT'])
 @permission_classes([IsAuthenticated])
