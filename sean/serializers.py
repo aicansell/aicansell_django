@@ -13,4 +13,4 @@ class ItemEmotionSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Item
-        fields = [ 'item_answer', 'power_words', 'weak_words', 'coming_across_as']
+        fields = [ 'item_answer', 'competency_power_word', 'competency_weak_word', 'coming_across_as']
