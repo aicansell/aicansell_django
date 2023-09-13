@@ -79,10 +79,10 @@ class Item(models.Model):
     competency_weak_word = models.ForeignKey(NegativeWords, on_delete = models.CASCADE, default= 1)
     competency_emotion_word = models.ForeignKey(EmotionWords, on_delete = models.CASCADE, default= 1)
     level = models.IntegerField(default=1)
-    positive_traits = models.CharField(max_length=300, default=" ")
-    negative_traits = models.CharField(max_length=300, default=" ")
-    user_powerwords = models.CharField(max_length=300, default=" ")
-    user_weakwords = models.CharField(max_length=300, default=" ")
+    positive_traits = models.CharField(max_length=300, default=" ", blank=True)
+    negative_traits = models.CharField(max_length=300, default=" ", blank = True)
+    user_powerwords = models.CharField(max_length=300, default="up")
+    user_weakwords = models.CharField(max_length=300, default="unp")
     
 
 
