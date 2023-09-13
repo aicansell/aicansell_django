@@ -10,6 +10,8 @@ class ItemListSerializer(serializers.ModelSerializer):
         
 
 class ItemEmotionSerializer(serializers.ModelSerializer):
+    competency_power_word = serializers.StringRelatedField()
+    competency_weak_word = serializers.StringRelatedField()
 
     class Meta:
         model = Item
