@@ -13,4 +13,4 @@ def send_confirmation_email(email, token_id, user_id):
               message=message,
               from_email='noreply@aicansell.com',
               recipient_list=[email],
-              fail_silently=True)
+              fail_silently=False)
