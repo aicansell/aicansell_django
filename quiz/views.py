@@ -29,13 +29,13 @@ def quiz_list(request):
 
 
 
-@api_view(['GET', 'PUT'])
+@api_view(['PUT'])
 def tutorial_detail(request, pk):
     try: 
         quiz_result = Quiz.objects.get(pk=pk) 
     except Quiz.DoesNotExist: 
         return Response({'message': 'The quiz does not exist'}, status=status.HTTP_404_NOT_FOUND) 
- 
+    """
     if request.method == 'GET': 
        
         #quiz_result = Quiz.objects.all().order_by('-id')
@@ -46,7 +46,7 @@ def tutorial_detail(request, pk):
             return Response(serializer.data)
         else:
             return Response(status=status.HTTP_404_NOT_FOUND)
-   
+    """
     if request.method == 'PUT': 
         quiz_data = JSONParser().parse(request) 
         
