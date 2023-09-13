@@ -6,7 +6,7 @@ class ItemListSerializer(serializers.ModelSerializer):
     role = serializers.StringRelatedField()
     class Meta:
         model = Item
-        fields = ['id','item_name', 'item_description', 'thumbnail', 'category', 'role']
+        fields = ['id','item_name', 'item_description', 'thumbnail', 'category', 'role', 'item_type']
         
 
 class ItemEmotionSerializer(serializers.ModelSerializer):
@@ -15,4 +15,4 @@ class ItemEmotionSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Item
-        fields = [ 'item_answer', 'competency_power_word', 'competency_weak_word', 'coming_across_as']
+        fields = [ 'item_answer', 'competency_power_word', 'competency_weak_word', 'coming_across_as', 'positive_traits', 'negative_traits']

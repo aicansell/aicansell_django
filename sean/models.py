@@ -43,6 +43,9 @@ class Item(models.Model):
     Gender2 = "Male"   
     Gender3 = "All" 
 
+    Type1 = "Simulation"
+    Type2 = "Email"
+
     item_name = models.CharField(max_length=256)
     item_description = models.CharField(max_length=300)
    
@@ -62,6 +65,11 @@ class Item(models.Model):
         (Gender3, "All"),
     ]
     item_gender = models.CharField(max_length=7, choices = Gender_CHOICES, default=Gender1)
+    Type_CHOICES = [
+        (Type1, "Simulation"),
+        (Type2, "Email")
+    ]
+    item_type = models.CharField(max_length=16, choices = Type_CHOICES, default=Type1)
     role = models.ForeignKey(Org_Roles, on_delete=models.CASCADE, default=1)
     coming_across_as = models.CharField(max_length=250, default="sugestions")
     competency = models.ForeignKey(Competency, on_delete=models.CASCADE, default=1)
@@ -71,6 +79,10 @@ class Item(models.Model):
     competency_weak_word = models.ForeignKey(NegativeWords, on_delete = models.CASCADE, default= 1)
     competency_emotion_word = models.ForeignKey(EmotionWords, on_delete = models.CASCADE, default= 1)
     level = models.IntegerField(default=1)
+    positive_traits = models.CharField(max_length=300, default="pt")
+    negative_traits = models.CharField(max_length=300, default="nt")
+    user_powerwords = models.CharField(max_length=300, default="up")
+    user_weakwords = models.CharField(max_length=300, default="unp")
     
 
 
