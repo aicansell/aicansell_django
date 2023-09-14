@@ -67,7 +67,7 @@ class Item(models.Model):
         (Gender2, "Male"),
         (Gender3, "All"),
     ]
-    item_gender = models.CharField(max_length=7, choices = Gender_CHOICES, default=Gender1)
+    item_gender = models.CharField(max_length=7, choices = Gender_CHOICES, default=Gender3)
     Type_CHOICES = [
         (Type1, "Simulation"),
         (Type2, "Email")
