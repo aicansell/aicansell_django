@@ -105,7 +105,11 @@ class UserProfile(models.Model):
     jadu_asked = models.IntegerField(default=1)
     bookmarks = models.CharField(blank=True,null=True, max_length=300)
     gender = models.CharField(blank=True, null=True, max_length=10)
-    user_scenario = models.CharField(max_length= 250, default= "")
+    user_scenario_submitted = models.CharField(max_length= 250, default= "")
+    user_scenario_saved = models.CharField(max_length= 250, default= "")
+    user_scenario_bookmarked = models.CharField(max_length= 250, default= "")
+    level = models.IntegerField(default=1)
+    city = models.CharField(max_length= 250, default= "")
 
 
 @receiver(post_save,sender=Account)
