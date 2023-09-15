@@ -2,6 +2,7 @@ from django.db import models
 from role.models import Roles, Sub_Role
 from organisation.models import Org_Roles
 from competency.models import Competency, Sub_Competency
+from words.models import Words
 
 
 
@@ -12,6 +13,7 @@ class PowerWords(models.Model):
         return self.power_word_name
 
     power_word_name = models.CharField(max_length=250)
+    word = models.ForeignKey(Words, on_delete=models.CASCADE, default=1)
     competency = models.ForeignKey(Competency, on_delete=models.CASCADE, default=1)
     sub_competency = models.ForeignKey(Sub_Competency, on_delete = models.CASCADE, default= 1)
     org_role = models.ForeignKey(Org_Roles, on_delete=models.CASCADE, default=1)
@@ -22,6 +24,7 @@ class NegativeWords(models.Model):
         return self.negative_word_name
 
     negative_word_name = models.CharField(max_length=250)
+    word = models.ForeignKey(Words, on_delete=models.CASCADE, default=1)
     competency = models.ForeignKey(Competency, on_delete=models.CASCADE, default=1)
     sub_competency = models.ForeignKey(Sub_Competency, on_delete = models.CASCADE, default= 1)
     org_role = models.ForeignKey(Org_Roles, on_delete=models.CASCADE, default=1)
