@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.shortcuts import render, get_object_or_404
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
-from .serializers import ItemListSerializer, ItemEmotionSerializer
+from .serializers import ItemListSerializer, ItemEmotionSerializer, SeanSerializer
 from .models import Item
 from accounts.models import Account
 #from organisation.models import Role_Scenario
@@ -18,7 +18,7 @@ from collections import Counter
 from django.http import JsonResponse
 
 import speech_recognition as sr
-
+import json
 import openai
 from decouple import config
 import speech_recognition as sr
@@ -36,6 +36,18 @@ def item_list(request):
     
     item_list = Item.objects.all().order_by('-id')
     serializer = ItemListSerializer(item_list, many=True)
+
+    # if there is something in items else raise error
+    if item_list:
+        return Response(serializer.data)
+    else:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+@api_view(['GET']) 
+def item_list(request):
+    
+    item_list = Item.objects.all().order_by('-id')
+    serializer = SeanSerializer(item_list, many=True)
 
     # if there is something in items else raise error
     if item_list:
@@ -177,6 +189,7 @@ def item_result(request, pk):
     """
     if request.method == 'PUT': 
         item_data = JSONParser().parse(request) 
+        
         #itemli = Item.objects.get(id=pk)
         item = Item.objects.values_list('item_answer').get(id=pk)
         
@@ -219,9 +232,15 @@ def item_result(request, pk):
 
         emotion_count = Counter(emotion_c1)
         emotions = str(emotion_count)[9: -2]
+        try: 
+            item = Item.objects.get(pk=pk) 
+        except Item.DoesNotExist: 
+            return Response({'message': 'The scenario does not exist'}, status=status.HTTP_404_NOT_FOUND) 
+        
+        item.item_emotion = emotions
+        item.save()
 
-        print(emotions)
-        #print(emo)
+        #print(emotions)
         #return JsonResponse(emotions, safe=False, status=status.HTTP_200_OK)
         
 
@@ -230,8 +249,10 @@ def item_result(request, pk):
         with open('sean/dump.txt', 'a') as f:
             item1_list = str(item_data)
             f.write(item1_list)
-    
-        serializer = ItemEmotionSerializer(item_result, data=item_data)
+
+       
+        serializer = ItemEmotionSerializer(data=item_data)
+        
         if serializer.is_valid(): 
             
             item_result.item_answercount = F('item_answercount') + 1

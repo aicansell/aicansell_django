@@ -1,1 +1,1 @@
-{'input_answer': 'At the level of international relations, geopolitics is a method of studying foreign policy to understand, explain, and predict international political behavior through geographical variables. These include area studies, climate, topography, demography, natural resources, and applied science of the region being evaluated'}
+{'item_answer': 'Future Growth and Investment Potential: a. Is the area expected to appreciate in value over time? b. Are there any upcoming infrastructure projects or developments that could affect property value?'}
