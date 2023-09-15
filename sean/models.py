@@ -9,8 +9,8 @@ from words.models import Words
 # Create your models here.
 
 class PowerWords(models.Model):
-    def __str__(self):
-        return f"{self.word}"
+    def powerword(self):
+        return self.word
 
     
     word = models.ForeignKey(Words, on_delete=models.CASCADE, default=1)
@@ -21,8 +21,8 @@ class PowerWords(models.Model):
     power_word_name = models.CharField(max_length=250)
 
 class NegativeWords(models.Model):
-    def __str__(self):
-        return f"{self.word}"
+    def weakword(self):
+        return self.word
 
     
     word = models.ForeignKey(Words, on_delete=models.CASCADE, default=1)
