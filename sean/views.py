@@ -232,15 +232,16 @@ def item_result(request, pk):
 
         emotion_count = Counter(emotion_c1)
         emotions = str(emotion_count)[9: -2]
+        """
         try: 
             item = Item.objects.get(pk=pk) 
         except Item.DoesNotExist: 
             return Response({'message': 'The scenario does not exist'}, status=status.HTTP_404_NOT_FOUND) 
         
         item.item_emotion = emotions
-        #item.save()
+        #item.save()"""
 
-        #print(emotions)
+        print(emotions)
         #return JsonResponse(emotions, safe=False, status=status.HTTP_200_OK)
         
 
@@ -251,7 +252,7 @@ def item_result(request, pk):
             f.write(item1_list)
 
        
-        serializer = ItemEmotionSerializer(data=item_data)
+        serializer = ItemEmotionSerializer(item_result, data=item_data)
         
         if serializer.is_valid(): 
             
