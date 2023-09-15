@@ -1,1 +1,1 @@
-{'item_answer': 'Property Price and Payment Terms: a. What is the total cost of the property, including registration fees and other expenses? b. Are there any hidden costs or additional charges? c. What is the payment schedule, and are there any financing options available? d.'}
+{'item_answer': 'What are the maintenance and common area charges for the property, if applicable, and what services are included in these charges?Have you calculated the overall cost of owning the property, including monthly expenses and long-term costs like property taxes and insurance?'}

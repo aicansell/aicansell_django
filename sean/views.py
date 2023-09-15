@@ -232,14 +232,12 @@ def item_result(request, pk):
 
         emotion_count = Counter(emotion_c1)
         emotions = str(emotion_count)[9: -2]
-        """
-        try: 
-            item = Item.objects.get(pk=pk) 
-        except Item.DoesNotExist: 
-            return Response({'message': 'The scenario does not exist'}, status=status.HTTP_404_NOT_FOUND) 
         
+        item = Item.objects.get(pk=pk) 
         item.item_emotion = emotions
-        item.save()"""
+        v=item.item_emotion
+        print(v)
+        item.save()
 
         print(emotions)
         #return JsonResponse(emotions, safe=False, status=status.HTTP_200_OK)
