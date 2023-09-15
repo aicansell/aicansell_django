@@ -67,6 +67,7 @@ INSTALLED_APPS = [
     'django_rest_passwordreset',
     'sean',
     'competency',
+    'words',
     
     
 ]
