@@ -238,7 +238,7 @@ def item_result(request, pk):
             return Response({'message': 'The scenario does not exist'}, status=status.HTTP_404_NOT_FOUND) 
         
         item.item_emotion = emotions
-        item.save()
+        #item.save()
 
         #print(emotions)
         #return JsonResponse(emotions, safe=False, status=status.HTTP_200_OK)
