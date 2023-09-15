@@ -22,7 +22,7 @@ class PowerWords(models.Model):
 
 class NegativeWords(models.Model):
     def __str__(self):
-        return self.word
+        return f"{self.word}"
 
     
     word = models.ForeignKey(Words, on_delete=models.CASCADE, default=1)
