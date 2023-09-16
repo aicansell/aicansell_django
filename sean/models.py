@@ -22,7 +22,7 @@ class PowerWords(models.Model):
 
 class NegativeWords(models.Model):
     def __str__(self):
-        return self.negative_word_name
+         return f'{self.word}'
 
     
     word = models.ForeignKey(Words, on_delete=models.CASCADE, default=1)
@@ -34,8 +34,9 @@ class NegativeWords(models.Model):
 
 class EmotionWords(models.Model):
     def __str__(self):
-        return self.emotion_word_name
+        return f'{self.word}'
 
+    word = models.ForeignKey(Words, on_delete=models.CASCADE, default=1)
     emotion_word_name = models.CharField(max_length=250)
     competency = models.ForeignKey(Competency, on_delete=models.CASCADE, default=1)
     sub_competency = models.ForeignKey(Sub_Competency, on_delete = models.CASCADE, default= 1)
