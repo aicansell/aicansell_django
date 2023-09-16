@@ -10,7 +10,7 @@ from words.models import Words
 
 class PowerWords(models.Model):
     def __str__(self):
-        return self.power_word_name
+        return f'{self.word}'
 
     
     word = models.ForeignKey(Words, on_delete=models.CASCADE, default=1)
