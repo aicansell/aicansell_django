@@ -43,17 +43,6 @@ def item_list(request):
     else:
         return Response(status=status.HTTP_404_NOT_FOUND)
 
-@api_view(['GET']) 
-def item_list(request):
-    
-    item_list = Item.objects.all().order_by('-id')
-    serializer = SeanSerializer(item_list, many=True)
-
-    # if there is something in items else raise error
-    if item_list:
-        return Response(serializer.data)
-    else:
-        return Response(status=status.HTTP_404_NOT_FOUND)
 
 
 class ItemList(generics.ListAPIView):
@@ -63,7 +52,7 @@ class ItemList(generics.ListAPIView):
     permission_classes = [IsAuthenticated]
    
 
-    def list(self,request):
+    def list(self, request):
         
         user = request.user
         
