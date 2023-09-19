@@ -39,7 +39,7 @@ class ItemRecommendSerializer(serializers.ModelSerializer):
 class ItemEmotionSerializer(serializers.ModelSerializer):
     
     #competency_weak_words = serializers.StringRelatedField(many=True)
-    competency_power_words = serializers.StringRelatedField(many=True)
+    #competency_power_words = serializers.StringRelatedField(many=True)
     
 
     class Meta:

@@ -240,6 +240,8 @@ def item_result(request, pk):
         item.save()
 
         print(emotions)
+
+        
         #return JsonResponse(emotions, safe=False, status=status.HTTP_200_OK)
         
 
