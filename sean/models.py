@@ -59,7 +59,7 @@ class Item(models.Model):
     Type2 = "Email"
 
     item_name = models.CharField(max_length=256)
-    item_description = models.CharField(max_length=300)
+    item_description = models.CharField(max_length=300, blank=True, null = True)
    
     
     #item_role = models.ForeignKey(Roles, on_delete = models.CASCADE, default=1, related_name = 'itemrole')
