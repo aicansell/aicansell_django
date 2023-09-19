@@ -4543,13 +4543,3 @@
  'fine-tune': 'attention to detail',
  'pitch': 'clarity of thought',
  'funnel': 'attention to detail',
- 
- 
- 	
-
-
-
-
-
-
-
