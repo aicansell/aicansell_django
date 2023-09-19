@@ -93,7 +93,7 @@ def forgot_password(request):
         "info@aicansell.com",
         [data['email']]
     )
-    return Response({'details': 'Password reset email sent to {email}'. format(email=data['email'])})
+    return Response({'details': 'Password reset email sent to {email}'. format(email=data['email']), "profile":serializer.data })
 
 
 
