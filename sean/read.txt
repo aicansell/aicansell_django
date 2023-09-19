@@ -1,1 +1,1 @@
-{'item_answer': 'otsdam is a city on the border of Berlin, Germany. Sanssouci Palace was once the summer home of Frederick the Great, former King of Prussia. On the grounds of the complex, the Renaissance Orangery Palace overlooks Italian-style gardens with fountains. '}
+{'item_answer': "Additionally, ensure that your Django model's fields match the structure of the JSON response. If there are nested objects or arrays within the JSON response, you will need to navigate and extract the data accordingly."}
