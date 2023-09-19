@@ -80,6 +80,8 @@ def forgot_password(request):
     user.profile.reset_password_expire = expire_date
 
     user.profile.save()
+    serializer=profileSerializer(user.profile)
+    
     host = get_current_host(request)
 
     link = "{host}accounts/reset_password/{token}".format(host=host, token=token)
