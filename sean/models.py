@@ -28,7 +28,7 @@ class NegativeWords(models.Model):
 
     
     word = models.ForeignKey(Words, on_delete=models.CASCADE, default=1)
-    competency = models.ForeignKey(Competency, on_delete=models.CASCADE, default=1)
+    competencys = models.ForeignKey(Competency, on_delete=models.CASCADE, default=1)
     sub_competency = models.ForeignKey(Sub_Competency, on_delete = models.CASCADE, default= 1)
     org_role = models.ForeignKey(Org_Roles, on_delete=models.CASCADE, default=1)
     weight = models.IntegerField(default= -7)
@@ -84,11 +84,11 @@ class Item(models.Model):
     item_type = models.CharField(max_length=16, choices = Type_CHOICES, default=Type1)
     role = models.ForeignKey(Org_Roles, on_delete=models.CASCADE, default=1)
     coming_across_as = models.CharField(max_length=250, default="sugestions")
-    competency = models.ForeignKey(Competency, on_delete=models.CASCADE, default=1)
-    sub_competency = models.ForeignKey(Sub_Competency, on_delete = models.CASCADE, default= 1)
+    competency = models.ForeignKey(Competency, on_delete=models.CASCADE, default=1, blank=True)
+    sub_competency = models.ForeignKey(Sub_Competency, on_delete = models.CASCADE, default= 1, blank=True)
     #seans_recommendation = models.CharField(max_length=300, default= "improve on")
     competency_power_words = models.ManyToManyField(PowerWords, blank=True, limit_choices_to={'competency':True})
-    competency_weak_words = models.ManyToManyField(NegativeWords)
+    competency_weak_words = models.ManyToManyField(NegativeWords, blank=True, related_name='competency')
     competency_emotion_word = models.ForeignKey(EmotionWords, on_delete = models.CASCADE, default= 1)
     level = models.IntegerField(default=1)
     positive_traits = models.CharField(max_length=300, default=" ", blank=True)

@@ -27,12 +27,12 @@ class PowerWordsSerializer(serializers.ModelSerializer):
 class ItemEmotionSerializer(serializers.ModelSerializer):
     competency_power_words = serializers.StringRelatedField()
     
-    #competency_weak_word = serializers.StringRelatedField()
-    #competency_power_words = PowerWordsSerializer(many=True)
+    competency_weak_word = serializers.StringRelatedField()
+    
     
 
     class Meta:
         model = Item
-        fields = [ 'item_answer','coming_across_as', 'positive_traits', 'negative_traits', 'competency_power_words']
+        fields = [ 'item_answer','coming_across_as', 'positive_traits', 'negative_traits', 'competency_power_words', 'competency_weak_words']
         
     
