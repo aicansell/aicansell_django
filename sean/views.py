@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.shortcuts import render, get_object_or_404
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
-from .serializers import ItemListSerializer, ItemEmotionSerializer, SeanSerializer
+from .serializers import ItemListSerializer, ItemEmotionSerializer, SeanSerializer, ItemRecommendSerializer
 from .models import Item
 from accounts.models import Account
 #from organisation.models import Role_Scenario
@@ -167,26 +167,26 @@ print(transcript['text'])
 
 """
 
-@api_view(['PUT'])
+@api_view(['GET', 'PUT'])
 @permission_classes([IsAuthenticated])
 def item_result(request, pk):
     try: 
         item_result = Item.objects.get(pk=pk) 
     except Item.DoesNotExist: 
         return Response({'message': 'The scenario does not exist'}, status=status.HTTP_404_NOT_FOUND) 
-    """
+    
     if request.method == 'GET': 
         item_data = JSONParser().parse(request) 
         
         
-        serializer = ItemEmotionSerializer(item_result)
+        serializer = ItemRecommendSerializer(item_result)
         return Response(serializer.data)
        
         if item_result:
             return Response(serializer.data)
         else:
             return Response(status=status.HTTP_404_NOT_FOUND)
-    """
+   
     if request.method == 'PUT': 
         item_data = JSONParser().parse(request) 
         

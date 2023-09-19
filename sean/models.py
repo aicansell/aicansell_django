@@ -19,7 +19,7 @@ class PowerWords(models.Model):
     org_role = models.ForeignKey(Org_Roles, on_delete=models.CASCADE, default=1)
     weight = models.IntegerField(default=1)
     sentence = models.CharField(max_length=250, default= "sentence")
-    power_word_name = models.CharField(max_length=250)
+    power_word_name = models.CharField(max_length=250, default="pw")
     
 
 class NegativeWords(models.Model):
@@ -33,7 +33,7 @@ class NegativeWords(models.Model):
     org_role = models.ForeignKey(Org_Roles, on_delete=models.CASCADE, default=1)
     weight = models.IntegerField(default= -7)
     sentence = models.CharField(max_length=250, default= "sentence")
-    negative_word_name = models.CharField(max_length=250)
+    negative_word_name = models.CharField(max_length=250, default="ww")
 
 class EmotionWords(models.Model):
     def __str__(self):
