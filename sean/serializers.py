@@ -27,7 +27,7 @@ class PowerWordsSerializer(serializers.ModelSerializer):
 class ItemEmotionSerializer(serializers.ModelSerializer):
     competency_power_words = serializers.StringRelatedField()
     
-    competency_weak_word = serializers.StringRelatedField()
+    competency_weak_words = serializers.StringRelatedField()
     
     
 
