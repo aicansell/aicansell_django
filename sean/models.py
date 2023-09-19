@@ -18,7 +18,9 @@ class PowerWords(models.Model):
     sub_competency = models.ForeignKey(Sub_Competency, on_delete = models.CASCADE, default= 1)
     org_role = models.ForeignKey(Org_Roles, on_delete=models.CASCADE, default=1)
     weight = models.IntegerField(default=1)
+    sentence = models.CharField(max_length=250, default= "sentence")
     power_word_name = models.CharField(max_length=250)
+    
 
 class NegativeWords(models.Model):
     def __str__(self):
@@ -30,6 +32,7 @@ class NegativeWords(models.Model):
     sub_competency = models.ForeignKey(Sub_Competency, on_delete = models.CASCADE, default= 1)
     org_role = models.ForeignKey(Org_Roles, on_delete=models.CASCADE, default=1)
     weight = models.IntegerField(default= -7)
+    sentence = models.CharField(max_length=250, default= "sentence")
     negative_word_name = models.CharField(max_length=250)
 
 class EmotionWords(models.Model):
@@ -92,6 +95,7 @@ class Item(models.Model):
     negative_traits = models.CharField(max_length=300, default=" ", blank = True)
     user_powerwords = models.CharField(max_length=300, default="up")
     user_weakwords = models.CharField(max_length=300, default="unp")
+    expert = models.FileField(upload_to='media', blank = True, null=True)
     
 
 
