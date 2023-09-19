@@ -4543,3 +4543,24 @@
  'fine-tune': 'attention to detail',
  'pitch': 'clarity of thought',
  'funnel': 'attention to detail',
+ 'Its OK': 'lack of sincere apology', 
+ 'Missed': 'lack of sincere apology',
+ 'Not my fault': 'lack of sincere apology',
+ 'please overlook': 'lack of sincere apology',
+ 'Can't Help it': 'lack of sincere apology',
+ 'Oversight': 'showing sincere apology',
+ 'Sincere Apologies': 'showing sincere apology',
+ 'My Apologies': 'showing sincere apology',
+ 'My mistake': 'showing sincere apology',
+ 'I couldn't': 'lack of authencity in apology',
+ 'I didn't': 'lack of authencity in apology',
+ 'My bad': 'authencity in apology',
+ 'Sincere': 'authencity in apology',
+ 'Truly': 'authencity in apology',
+ 'Deeply feel': 'authencity in apology',
+ 'Awful': 'authencity in apology',
+ 'Assure you': 'authencity in apology',
+ 
+
+
+
