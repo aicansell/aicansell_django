@@ -87,7 +87,7 @@ class Item(models.Model):
     competency = models.ForeignKey(Competency, on_delete=models.CASCADE, default=1)
     sub_competency = models.ForeignKey(Sub_Competency, on_delete = models.CASCADE, default= 1)
     #seans_recommendation = models.CharField(max_length=300, default= "improve on")
-    competency_power_words = models.ManyToManyField(PowerWords)
+    competency_power_words = models.ManyToManyField(PowerWords, limit_choices_to={'competency'})
     competency_weak_words = models.ManyToManyField(NegativeWords)
     competency_emotion_word = models.ForeignKey(EmotionWords, on_delete = models.CASCADE, default= 1)
     level = models.IntegerField(default=1)
