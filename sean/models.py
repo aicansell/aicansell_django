@@ -86,7 +86,7 @@ class Item(models.Model):
     coming_across_as = models.CharField(max_length=250, default="sugestions")
     #competency = models.ForeignKey(Competency, on_delete=models.CASCADE, default=1, blank=True)
     #sub_competency = models.ForeignKey(Sub_Competency, on_delete = models.CASCADE, default= 1, blank=True)
-    competency = models.ManyToManyField(Competency, blank=True)
+    competencys = models.ManyToManyField(Competency, blank=True)
     sub_competency = models.ManyToManyField(Sub_Competency, blank=True)
     #seans_recommendation = models.CharField(max_length=300, default= "improve on")
     competency_power_words = models.ManyToManyField(PowerWords, blank=True, limit_choices_to={'competency':True})
