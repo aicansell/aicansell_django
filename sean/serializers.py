@@ -17,12 +17,12 @@ class SeanSerializer(serializers.ModelSerializer):
         fields = ('competency_power_word', 'positive_traits') 
 
 class ItemEmotionSerializer(serializers.ModelSerializer):
-    #competency_power_word = serializers.StringRelatedField()
+    competency_power_words = serializers.StringRelatedField()
     competency_weak_word = serializers.StringRelatedField()
     
 
     class Meta:
         model = Item
-        fields = [ 'item_answer' , 'competency_weak_word', 'coming_across_as', 'positive_traits', 'negative_traits']
+        fields = [ 'item_answer' , 'competency_power_words', 'competency_weak_word', 'coming_across_as', 'positive_traits', 'negative_traits']
         
     
