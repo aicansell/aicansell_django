@@ -14,5 +14,5 @@ class Competency(models.Model):
         return self.competency_name
 
     competency_name = models.CharField(max_length = 250)
-    sub_competency = models.ManyToManyField(Sub_Competency, blank=True, limit_choices_to={'subcompetency_name':True})
+    sub_competency = models.ManyToManyField(Sub_Competency, blank=True)
 
