@@ -8,8 +8,8 @@ class ItemListSerializer(serializers.ModelSerializer):
     #competencys = serializers.StringRelatedField(many=True)
     class Meta:
         model = Item
-        #fields = ['id','item_name', 'item_description', 'thumbnail', 'category', 'role', 'item_type', 'level']
-        fields = ['id','item_name', 'competencys', 'thumbnail', 'category', 'role', 'item_type', 'competency_power_words']
+        fields = ['id','item_name', 'item_description', 'thumbnail', 'category', 'role', 'item_type', 'level']
+        #fields = ['id','item_name', 'competencys', 'thumbnail', 'category', 'role', 'item_type', 'competency_power_words']
 
         
 
