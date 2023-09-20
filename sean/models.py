@@ -15,11 +15,10 @@ class Traits(models.Model):
 
 class PowerWords(models.Model):
     def __str__(self):
-        return self.trait_name
+        return f'{self.word}'
 
-    trait_name = models.CharField(max_length=250,default="trait")
-    trwords_name = models.ManyToManyField(Words)
-    #word = models.ForeignKey(Words, on_delete=models.CASCADE, default=1)
+    
+    word = models.ForeignKey(Words, on_delete=models.CASCADE, default=1)
     competencys = models.ForeignKey(Competency, on_delete=models.CASCADE, default=1)
     sub_competency = models.ForeignKey(Sub_Competency, on_delete = models.CASCADE, default= 1)
     org_role = models.ForeignKey(Org_Roles, on_delete=models.CASCADE, default=1)
