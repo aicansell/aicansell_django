@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.shortcuts import render, get_object_or_404
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
-from .serializers import ItemListSerializer, ItemEmotionSerializer, SeanSerializer
+from .serializers import ItemListSerializer, ItemEmotionSerializer, SeanSerializer, ItemRecommendSerializer
 from .models import Item
 from accounts.models import Account
 #from organisation.models import Role_Scenario
@@ -156,26 +156,26 @@ print(transcript['text'])
 
 """
 
-@api_view(['PUT'])
+@api_view(['GET', 'PUT'])
 @permission_classes([IsAuthenticated])
 def item_result(request, pk):
     try: 
         item_result = Item.objects.get(pk=pk) 
     except Item.DoesNotExist: 
         return Response({'message': 'The scenario does not exist'}, status=status.HTTP_404_NOT_FOUND) 
-    """
+    
     if request.method == 'GET': 
         item_data = JSONParser().parse(request) 
         
         
-        serializer = ItemEmotionSerializer(item_result)
+        serializer = ItemRecommendSerializer(item_result)
         return Response(serializer.data)
        
         if item_result:
             return Response(serializer.data)
         else:
             return Response(status=status.HTTP_404_NOT_FOUND)
-    """
+   
     if request.method == 'PUT': 
         item_data = JSONParser().parse(request) 
         
@@ -221,14 +221,13 @@ def item_result(request, pk):
 
         emotion_count = Counter(emotion_c1)
         emotions = str(emotion_count)[9: -2]
+        unique_list = list(set(emotion_c1))
+        my_string = ", ".join(unique_list)
         
-        item = Item.objects.get(pk=pk) 
-        item.item_emotion = emotions
-        v=item.item_emotion
-        print(v)
-        item.save()
 
         print(emotions)
+
+        
         #return JsonResponse(emotions, safe=False, status=status.HTTP_200_OK)
         
 
@@ -244,8 +243,9 @@ def item_result(request, pk):
         if serializer.is_valid(): 
             
             item_result.item_answercount = F('item_answercount') + 1
+            item_result.coming_across_as = my_string
             serializer.save()
-            return JsonResponse({'data': serializer.data, 'emotions': emotions}, safe=False, status=status.HTTP_200_OK)
+            return JsonResponse({'data': serializer.data, 'coming across as': emotions}, safe=False, status=status.HTTP_200_OK)
             
             #return Response(serializer.data)
             

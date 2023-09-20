@@ -1,7 +1,7 @@
 from django.shortcuts import render, get_object_or_404
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
-from .serializers import SignUpSerializer, UserSerializer
+from .serializers import SignUpSerializer, UserSerializer, profileSerializer
 from .models import Account, Profile, EmailConfirmationToken
 from django.contrib.auth.hashers import make_password
 from rest_framework import status
@@ -80,6 +80,8 @@ def forgot_password(request):
     user.profile.reset_password_expire = expire_date
 
     user.profile.save()
+    serializer=profileSerializer(user.profile)
+
     host = get_current_host(request)
 
     link = "{host}accounts/reset_password/{token}".format(host=host, token=token)
@@ -91,7 +93,7 @@ def forgot_password(request):
         "info@aicansell.com",
         [data['email']]
     )
-    return Response({'details': 'Password reset email sent to {email}'. format(email=data['email'])})
+    return Response({'details': 'Password reset email sent to {email}'. format(email=data['email']), "profile":serializer.data })
 
 
 

@@ -7,6 +7,11 @@ from words.models import Words
 
 
 # Create your models here.
+class Traits(models.Model):
+    def __str__(self):
+        return self.trait_name
+
+    trait_name = models.CharField(max_length=250, default= "trait")
 
 class PowerWords(models.Model):
     def __str__(self):
@@ -14,11 +19,13 @@ class PowerWords(models.Model):
 
     
     word = models.ForeignKey(Words, on_delete=models.CASCADE, default=1)
-    competency = models.ForeignKey(Competency, on_delete=models.CASCADE, default=1)
+    competencys = models.ForeignKey(Competency, on_delete=models.CASCADE, default=1)
     sub_competency = models.ForeignKey(Sub_Competency, on_delete = models.CASCADE, default= 1)
     org_role = models.ForeignKey(Org_Roles, on_delete=models.CASCADE, default=1)
     weight = models.IntegerField(default=1)
-    power_word_name = models.CharField(max_length=250)
+    sentence = models.CharField(max_length=250, default= "sentence")
+    power_word_name = models.CharField(max_length=250, default="pw")
+    
 
 class NegativeWords(models.Model):
     def __str__(self):
@@ -26,11 +33,13 @@ class NegativeWords(models.Model):
 
     
     word = models.ForeignKey(Words, on_delete=models.CASCADE, default=1)
-    competency = models.ForeignKey(Competency, on_delete=models.CASCADE, default=1)
+    competencys = models.ForeignKey(Competency, on_delete=models.CASCADE, default=1)
     sub_competency = models.ForeignKey(Sub_Competency, on_delete = models.CASCADE, default= 1)
     org_role = models.ForeignKey(Org_Roles, on_delete=models.CASCADE, default=1)
     weight = models.IntegerField(default= -7)
-    negative_word_name = models.CharField(max_length=250)
+    sentence = models.CharField(max_length=250, default= "sentence")
+    negative_word_name = models.CharField(max_length=250, default="ww")
+
 
 class EmotionWords(models.Model):
     def __str__(self):
@@ -38,7 +47,7 @@ class EmotionWords(models.Model):
 
     word = models.ForeignKey(Words, on_delete=models.CASCADE, default=1)
     emotion_word_name = models.CharField(max_length=250)
-    competency = models.ForeignKey(Competency, on_delete=models.CASCADE, default=1)
+    competencys = models.ForeignKey(Competency, on_delete=models.CASCADE, default=1)
     sub_competency = models.ForeignKey(Sub_Competency, on_delete = models.CASCADE, default= 1)
     org_role = models.ForeignKey(Org_Roles, on_delete=models.CASCADE, default=1)
     
@@ -56,7 +65,7 @@ class Item(models.Model):
     Type2 = "Email"
 
     item_name = models.CharField(max_length=256)
-    item_description = models.CharField(max_length=300)
+    item_description = models.CharField(max_length=300, blank=True, null = True)
    
     
     #item_role = models.ForeignKey(Roles, on_delete = models.CASCADE, default=1, related_name = 'itemrole')
@@ -81,17 +90,20 @@ class Item(models.Model):
     item_type = models.CharField(max_length=16, choices = Type_CHOICES, default=Type1)
     role = models.ForeignKey(Org_Roles, on_delete=models.CASCADE, default=1)
     coming_across_as = models.CharField(max_length=250, default="sugestions")
-    competency = models.ForeignKey(Competency, on_delete=models.CASCADE, default=1)
-    sub_competency = models.ForeignKey(Sub_Competency, on_delete = models.CASCADE, default= 1)
+    #competency = models.ForeignKey(Competency, on_delete=models.CASCADE, default=1, blank=True)
+    #sub_competency = models.ForeignKey(Sub_Competency, on_delete = models.CASCADE, default= 1, blank=True)
+    competencys = models.ManyToManyField(Competency, blank=True)
+    sub_competency = models.ManyToManyField(Sub_Competency, blank=True)
     #seans_recommendation = models.CharField(max_length=300, default= "improve on")
-    competency_power_word = models.ForeignKey(PowerWords, on_delete = models.CASCADE, default= 1)
-    competency_weak_word = models.ForeignKey(NegativeWords, on_delete = models.CASCADE, default= 1)
+    competency_power_words = models.ManyToManyField(PowerWords, blank=True)
+    competency_weak_words = models.ManyToManyField(NegativeWords, blank=True)
     competency_emotion_word = models.ForeignKey(EmotionWords, on_delete = models.CASCADE, default= 1)
     level = models.IntegerField(default=1)
     positive_traits = models.CharField(max_length=300, default=" ", blank=True)
     negative_traits = models.CharField(max_length=300, default=" ", blank = True)
     user_powerwords = models.CharField(max_length=300, default="up")
     user_weakwords = models.CharField(max_length=300, default="unp")
+    expert = models.FileField(upload_to='media', blank = True, null=True)
     
 
 
