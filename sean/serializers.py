@@ -4,7 +4,7 @@ from .models import Item,PowerWords
 
 class ItemListSerializer(serializers.ModelSerializer):
     role = serializers.StringRelatedField()
-    competency_power_words = serializers.StringRelatedField(many=True)
+    #competency_power_words = serializers.StringRelatedField(many=True)
     #competencys = serializers.StringRelatedField(many=True)
     class Meta:
         model = Item
