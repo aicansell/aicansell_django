@@ -232,12 +232,16 @@ def item_result(request, pk):
 
         emotion_count = Counter(emotion_c1)
         emotions = str(emotion_count)[9: -2]
+        unique_list = list(set(emotion_c1))
+        my_string = ", ".join(unique_list)
         
-        item = Item.objects.get(pk=pk) 
-        item.coming_across_as = emotions
-        v=item.coming_across_as
-        print(v)
-        item.save()
+        
+        item1 = Item.objects.get(pk=pk) 
+        item1.coming_across_as = my_string
+        item1.save()
+        #v=item1.coming_across_as
+        #print(v)
+        
 
         print(emotions)
 

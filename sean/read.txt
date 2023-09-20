@@ -1,1 +1,1 @@
-{'item_answer': 'With this setup, when you access the RandomizedItemListAPIView, it will return a list of items from YourModel in random order. Keep in mind that the randomness will change every time you make a request to this API endpoint, as the queryset is randomized each time.'}
+{'item_answer': 'Early in his career, Sigmund Freud confronted a strange problem: manyof his female patients were falling in love with him. He thought he knewwhat was happening: encouraged by Freud, the patient would delve intoher childhood'}
