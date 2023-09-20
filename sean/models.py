@@ -37,9 +37,9 @@ class NegativeWords(models.Model):
 
 class Traits(models.Model):
     def __str__(self):
-        return self.name
+        return self.trait_name
 
-        name = models.CharField(max_length=250)
+        trait_name = models.CharField(max_length=250)
 
 
 class EmotionWords(models.Model):
