@@ -239,8 +239,8 @@ def item_result(request, pk):
         item1 = Item.objects.get(pk=pk) 
         item1.coming_across_as = my_string
         item1.save()
-        #v=item1.coming_across_as
-        #print(v)
+        v=item1.coming_across_as
+        print(v)
         
 
         print(emotions)

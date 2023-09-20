@@ -44,6 +44,6 @@ class ItemEmotionSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Item
-        fields = [ 'item_answer', 'coming_across_as', 'positive_traits', 'negative_traits']
+        fields = [ 'item_answer', 'positive_traits', 'negative_traits']
         
     

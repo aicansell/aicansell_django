@@ -1,1 +1,1 @@
-{'item_answer': 'Early in his career, Sigmund Freud confronted a strange problem: manyof his female patients were falling in love with him. He thought he knewwhat was happening: encouraged by Freud, the patient would delve intoher childhood'}
+{'item_answer': 'Field Options are the arguments given to each field for applying some constraint or imparting a particular characteristic to a particular Field. For example, adding an argument null = True to CharField will enable it to store empty values for that table in a relational database. '}
