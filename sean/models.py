@@ -35,6 +35,13 @@ class NegativeWords(models.Model):
     sentence = models.CharField(max_length=250, default= "sentence")
     negative_word_name = models.CharField(max_length=250, default="ww")
 
+class Traits(models.Model):
+    def __str__(self):
+        return self.name
+
+        name = models.CharField(max_length=250)
+
+
 class EmotionWords(models.Model):
     def __str__(self):
         return f'{self.word}'
