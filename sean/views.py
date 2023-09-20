@@ -235,13 +235,6 @@ def item_result(request, pk):
         unique_list = list(set(emotion_c1))
         my_string = ", ".join(unique_list)
         
-        
-        item1 = Item.objects.get(pk=pk) 
-        item1.coming_across_as = my_string
-        item1.save()
-        v=item1.coming_across_as
-        print(v)
-        
 
         print(emotions)
 
@@ -261,6 +254,7 @@ def item_result(request, pk):
         if serializer.is_valid(): 
             
             item_result.item_answercount = F('item_answercount') + 1
+            item_result.coming_across_as = my_string
             serializer.save()
             return JsonResponse({'data': serializer.data, 'coming across as': emotions}, safe=False, status=status.HTTP_200_OK)
             
