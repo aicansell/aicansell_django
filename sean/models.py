@@ -15,10 +15,7 @@ class Traits(models.Model):
 
 class PowerWords(models.Model):
     def __str__(self):
-        return f'{self.word}'
-
-    def __str__(self):
-        return f'{self.competencys}'    
+        return f'{self.word} by {self.competencys}'
 
     
     word = models.ForeignKey(Words, on_delete=models.CASCADE, default=1)
