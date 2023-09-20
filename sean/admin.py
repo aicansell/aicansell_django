@@ -3,6 +3,7 @@ from .models import Item, Suggestion, PowerWords, NegativeWords, EmotionWords, T
 
 # Register your models here.
 
+
 admin.site.register(Item)
 admin.site.register(Suggestion)
 admin.site.register(PowerWords)

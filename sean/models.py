@@ -11,11 +11,11 @@ class Traits(models.Model):
     def __str__(self):
         return self.trait_name
 
-    trait_name = models.CharField(max_length=250, blank=True)
+    trait_name = models.CharField(max_length=250, default= "trait")
 
 class PowerWords(models.Model):
     def __str__(self):
-        return f'{self.word} by {self.competencys}'
+        return f'{self.word}   ----- {self.competencys}'
 
     
     word = models.ForeignKey(Words, on_delete=models.CASCADE, default=1)
@@ -29,10 +29,7 @@ class PowerWords(models.Model):
 
 class NegativeWords(models.Model):
     def __str__(self):
-         return f'{self.word}'
-
-    def __str__(self):
-        return f'{self.competencys}'      
+         return f'{self.word}   ----- {self.competencys}'
 
     
     word = models.ForeignKey(Words, on_delete=models.CASCADE, default=1)
