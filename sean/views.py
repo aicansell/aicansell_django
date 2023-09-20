@@ -234,8 +234,8 @@ def item_result(request, pk):
         emotions = str(emotion_count)[9: -2]
         
         item = Item.objects.get(pk=pk) 
-        item.item_emotion = emotions
-        v=item.item_emotion
+        item.coming_across_as = emotions
+        v=item.coming_across_as
         print(v)
         item.save()
 

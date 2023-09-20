@@ -1,1 +1,1 @@
-{'item_answer': "To save a JSON response to a Django model field, you can use a JSONField if you are using a database that supports JSON storage (e.g., PostgreSQL) or a TextField if you want to store the JSON as a string. Here's how you can do it"}
+{'item_answer': 'With this setup, when you access the RandomizedItemListAPIView, it will return a list of items from YourModel in random order. Keep in mind that the randomness will change every time you make a request to this API endpoint, as the queryset is randomized each time.'}
