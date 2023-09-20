@@ -15,7 +15,7 @@ class Traits(models.Model):
 
 class PowerWords(models.Model):
     def __str__(self):
-        return f'{self.word}   ----- {self.competencys}'
+        return f'{self.word}'
 
     
     word = models.ForeignKey(Words, on_delete=models.CASCADE, default=1)
@@ -29,7 +29,7 @@ class PowerWords(models.Model):
 
 class NegativeWords(models.Model):
     def __str__(self):
-         return f'{self.word}   ----- {self.competencys}'
+         return f'{self.word}'
 
     
     word = models.ForeignKey(Words, on_delete=models.CASCADE, default=1)
