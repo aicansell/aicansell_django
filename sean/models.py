@@ -7,6 +7,11 @@ from words.models import Words
 
 
 # Create your models here.
+class Traits(models.Model):
+    def __str__(self):
+        return self.trait_name
+
+    trait_name = models.CharField(max_length=250, blank=True)
 
 class PowerWords(models.Model):
     def __str__(self):
@@ -34,12 +39,6 @@ class NegativeWords(models.Model):
     weight = models.IntegerField(default= -7)
     sentence = models.CharField(max_length=250, default= "sentence")
     negative_word_name = models.CharField(max_length=250, default="ww")
-
-class Traits(models.Model):
-    def __str__(self):
-        return self.trait_name
-
-        trait_name = models.CharField(max_length=250)
 
 
 class EmotionWords(models.Model):

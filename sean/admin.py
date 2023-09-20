@@ -10,3 +10,4 @@ admin.site.register(NegativeWords)
 admin.site.register(EmotionWords)
 admin.site.register(Traits)
 
+
