@@ -13,6 +13,12 @@ class Traits(models.Model):
 
     trait_name = models.CharField(max_length=250, default= "trait")
 
+class Collection(models.Model):
+    def __str__(self):
+        return self.trait_name
+
+    collection_name = models.CharField(max_length=250, default= "collection")    
+
 class PowerWords(models.Model):
     def __str__(self):
         return f'{self.word}'
