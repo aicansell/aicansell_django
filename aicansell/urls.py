@@ -36,6 +36,8 @@ urlpatterns = [
     path('sean/', include('sean.urls')),
     #path('org/', include('organisation.urls')),
     path('', health_check),
+    path('', include('competency.urls')),
+    path('', include('words.urls')),
     
 
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
