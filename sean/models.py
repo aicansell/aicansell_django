@@ -25,9 +25,9 @@ class PowerWords(models.Model):
 
     
     word = models.ForeignKey(Words, on_delete=models.CASCADE, default=1)
-    competencys = models.ForeignKey(Competency, on_delete=models.CASCADE, default=1)
+    #competencys = models.ForeignKey(Competency, on_delete=models.CASCADE, default=1)
     sub_competency = models.ForeignKey(Sub_Competency, on_delete = models.CASCADE, default= 1)
-    org_role = models.ForeignKey(Org_Roles, on_delete=models.CASCADE, default=1)
+    #org_role = models.ForeignKey(Org_Roles, on_delete=models.CASCADE, default=1)
     weight = models.IntegerField(default=1)
     sentence = models.CharField(max_length=250, default= "sentence")
     power_word_name = models.CharField(max_length=250, default="pw")
@@ -39,9 +39,9 @@ class NegativeWords(models.Model):
 
     
     word = models.ForeignKey(Words, on_delete=models.CASCADE, default=1)
-    competencys = models.ForeignKey(Competency, on_delete=models.CASCADE, default=1)
+    #competencys = models.ForeignKey(Competency, on_delete=models.CASCADE, default=1)
     sub_competency = models.ForeignKey(Sub_Competency, on_delete = models.CASCADE, default= 1)
-    org_role = models.ForeignKey(Org_Roles, on_delete=models.CASCADE, default=1)
+    #org_role = models.ForeignKey(Org_Roles, on_delete=models.CASCADE, default=1)
     weight = models.IntegerField(default= -7)
     sentence = models.CharField(max_length=250, default= "sentence")
     negative_word_name = models.CharField(max_length=250, default="ww")
