@@ -13,5 +13,4 @@ class Sub_Role(models.Model):
 
     sub_role = models.ForeignKey(Roles, on_delete=models.CASCADE, related_name='role')
     subrole_name = models.CharField(max_length=250)
-
-
+ 
