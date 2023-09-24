@@ -58,6 +58,7 @@ INSTALLED_APPS = [
     'accounts',
     'rest_framework_simplejwt',
     'rest_framework',
+    'rest_framework_tracking',
     'chatbot',
     'industry',
     'organisation',

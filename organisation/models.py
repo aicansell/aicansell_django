@@ -1,7 +1,7 @@
 from django.db import models
 from industry.models import Industry
 
-from role.models import Roles, Sub_Role
+from role.models import Role, Sub_Role
 from competency.models import Competency, Sub_Competency
 #from sean.models import Item
 
@@ -23,8 +23,8 @@ class Org_Roles(models.Model):
 
     org_role_name = models.CharField(max_length=250, blank=True, null=True)
     org = models.ForeignKey(Org, on_delete=models.CASCADE, default = 1, related_name='org1')
-    org_role = models.ForeignKey(Roles, on_delete=models.CASCADE, default = 1, related_name='roles1')
-    org_subrole = models.ForeignKey(Sub_Role, on_delete=models.CASCADE, default = 1, related_name='org')
+    role = models.ForeignKey(Role, on_delete=models.CASCADE, default = 1, related_name='roles1')
+    subrole = models.ForeignKey(Sub_Role, on_delete=models.CASCADE, default = 1, related_name='org')
     
 
 class Weightage(models.Model):

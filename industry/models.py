@@ -6,4 +6,4 @@ class Industry(models.Model):
         return self.industry_name
 
     industry_name = models.CharField(max_length = 300)
-    industry_description = models.CharField(max_length = 500, blank=True, null=True)    
+    industry_description = models.CharField(max_length = 500, blank=True, null=True)
