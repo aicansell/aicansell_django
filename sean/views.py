@@ -167,9 +167,9 @@ print(transcript['text'])
 
 """
 
-@api_view(['GET', 'PUT'])
+@api_view(['GET'])
 @permission_classes([IsAuthenticated])
-def item_result(request, pk):
+def item_rec(request, pk):
     try: 
         item_result = Item.objects.get(pk=pk) 
     except Item.DoesNotExist: 
@@ -187,6 +187,18 @@ def item_result(request, pk):
         else:
             return Response(status=status.HTTP_404_NOT_FOUND)
    
+
+
+
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated])
+def item_result(request, pk):
+    try: 
+        item_result = Item.objects.get(pk=pk) 
+    except Item.DoesNotExist: 
+        return Response({'message': 'The scenario does not exist'}, status=status.HTTP_404_NOT_FOUND) 
+    
+    
     if request.method == 'PUT': 
         item_data = JSONParser().parse(request) 
         

@@ -8,6 +8,8 @@ urlpatterns = [
     #path('itemlist/', views.itemlist, name='itemlist'),
     #path('item_result/', views.item_result, name='item_result'),
     re_path(r'^api/item_results/(?P<pk>[0-9]+)$', views.item_result),
+    re_path(r'^api/item_rec/(?P<pk>[0-9]+)$', views.item_rec),
+
 
     path('itemli/', ItemList.as_view(), name="Item_List")
     
