@@ -10,7 +10,7 @@ from competency.models import Competency, Sub_Competency
 # Create your models here.
 class Org(models.Model):
     def __str__(self):
-        return self.org_name
+        return self.name
 
     name = models.CharField(max_length=250)
     description = models.CharField(max_length=500, blank=True, null=True)
