@@ -176,7 +176,7 @@ def item_rec(request, pk):
         return Response({'message': 'The scenario does not exist'}, status=status.HTTP_404_NOT_FOUND) 
     
     if request.method == 'GET': 
-        item_data = JSONParser().parse(request) 
+        #item_data = JSONParser().parse(request) 
         
         
         serializer = ItemRecommendSerializer(item_result)
