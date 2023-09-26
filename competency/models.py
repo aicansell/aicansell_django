@@ -7,7 +7,7 @@ class Sub_Competency(models.Model):
         return self.subcompetency_name
 
     #sub_competency = models.ForeignKey(Competency, on_delete=models.CASCADE, related_name='role')
-    subcompetency_name = models.CharField(max_length=250, unique = True)
+    subcompetency_name = models.CharField(max_length=250, unique=True)
 
     
 
