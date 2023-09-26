@@ -27,8 +27,9 @@ class Org_Roles(models.Model):
     subrole_org = models.ForeignKey(Sub_Role, on_delete=models.CASCADE, default = 1, related_name='org')
     role_competency = models.ForeignKey(Competency, on_delete=models.CASCADE, default=1, related_name= 'rolecompetency')
     competency_weight = models.IntegerField(default = 1)
-    role_subcompetency = models.ForeignKey(Sub_Competency, on_delete=models.CASCADE, default=1, related_name = 'rolesubcompetency')
-    subcompetency_weight = models.IntegerField(default=1)
+    role_subcompetencys = models.ManyToManyField(Sub_Competency, blank=True)
+    #role_subcompetency = models.ForeignKey(Sub_Competency, on_delete=models.CASCADE, default=1, related_name = 'rolesubcompetency')
+    #subcompetency_weight = models.IntegerField(default=1)
 """
 class Role_Scenario(models.Model):
     def __str__(self):
