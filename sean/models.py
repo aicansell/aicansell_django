@@ -1,6 +1,7 @@
 from django.db import models
-from role.models import Role, Sub_Role
-from organisation.models import Org_Roles
+from role.models import Roles, Sub_Role
+#from organisation.models import Org_Roles
+from orgss.models import Org_Roles
 from competency.models import Competency, Sub_Competency
 from words.models import Words
 
@@ -55,7 +56,7 @@ class EmotionWords(models.Model):
     emotion_word_name = models.CharField(max_length=250)
     competencys = models.ForeignKey(Competency, on_delete=models.CASCADE, default=1)
     sub_competency = models.ForeignKey(Sub_Competency, on_delete = models.CASCADE, default= 1)
-    org_role = models.ForeignKey(Org_Roles, on_delete=models.CASCADE, default=1)
+    #org_role = models.ForeignKey(Org_Roles, on_delete=models.CASCADE, default=1)
     
 
 
@@ -94,7 +95,7 @@ class Item(models.Model):
         (Type2, "Email")
     ]
     item_type = models.CharField(max_length=16, choices = Type_CHOICES, default=Type1)
-    role = models.ForeignKey(Org_Roles, on_delete=models.CASCADE, default=1)
+    role = models.ForeignKey(Org_Roles, on_delete=models.CASCADE, default=4)
     coming_across_as = models.CharField(max_length=250, default="sugestions")
     #competency = models.ForeignKey(Competency, on_delete=models.CASCADE, default=1, blank=True)
     #sub_competency = models.ForeignKey(Sub_Competency, on_delete = models.CASCADE, default= 1, blank=True)

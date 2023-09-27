@@ -2,8 +2,9 @@ from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.dispatch import receiver
 from django.db.models.signals import post_save
-from role.models import Role, Sub_Role
-from organisation.models import Org, Org_Roles
+from role.models import Roles, Sub_Role
+#from organisation.models import Org, Org_Roles
+from orgss.models import Org, Org_Roles
 
 from uuid import uuid4
 

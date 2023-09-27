@@ -39,6 +39,7 @@ urlpatterns = [
     path('', health_check),
     path('', include('competency.urls')),
     path('', include('words.urls')),
+    #path('org/', include('orgss.urls')),
     
 
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

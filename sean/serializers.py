@@ -32,7 +32,7 @@ class ItemRecommendSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Item
-        fields = [ 'item_answer','positive_traits', 'competency_weak_words', 'competency_power_words']
+        fields = ['positive_traits', 'competency_weak_words', 'competency_power_words']
     
 
 
