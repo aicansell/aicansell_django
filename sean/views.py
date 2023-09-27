@@ -4,15 +4,12 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework_tracking.mixins import LoggingMixin
 from .serializers import ItemListSerializer, ItemEmotionSerializer, SeanSerializer, ItemRecommendSerializer
-from .models import Item
-from accounts.models import Account
-#from organisation.models import Role_Scenario
+from sean.models import Item
 
 from rest_framework import status,viewsets, generics, filters
 from django.db.models import F
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.parsers import JSONParser 
-from accounts.serializers import UserSerializer
 
 import string
 from collections import Counter
@@ -25,42 +22,35 @@ from decouple import config
 import speech_recognition as sr
 import pyttsx3
 
-#from rest_framework import viewsets, generics
 
-
-
-# class ItemViewSet(LoggingMixin, ViewSet):
-#     serializer_class = ItemListSerializer
-#     permission_classes = [IsAuthenticated]
+class ItemViewSet(LoggingMixin, ViewSet):
+    serializer_class = ItemListSerializer
+    permission_classes = [IsAuthenticated]
     
-#     @staticmethod
-#     def get_object(pk):
-#         return get_object_or_404(Item, id=pk)
+    @staticmethod
+    def get_object(pk):
+        return get_object_or_404(Item, id=pk)
     
     
-#     @staticmethod
-#     def get_queryset():
-#         return Item.objects.all()
+    @staticmethod
+    def get_queryset():
+        return Item.objects.all()
    
 
-#     def list(self, request):
-#         user = request.user
+    def list(self, request):
+        user = self.request.user
         
-#         #getting user's role id
-#         u2 = user.role_id
+        if user.user_role == 'admin':
+            print(user.role.org)
+            Item.objects.filter(role=user.role)
+        else:
+            print("Bot")
+            
+        return Response({'message': 'Hello'})
+    
+        # items = Item.objects.filter(role = u2).order_by('-id')
+        # serializer = ItemListSerializer(items, many=True)
         
-#         """
-#         u2 = Account.objects.values_list('role')
-#         print(u2)
-#         """
-
-#         items = Item.objects.filter(role = u2).order_by('-id')
-#         serializer = ItemListSerializer(items, many=True)
-        
-#         if items:
-#             return Response(serializer.data, status=status.HTTP_200_OK)
-#         else:
-#             return Response(status=status.HTTP_404_NOT_FOUND)
 """
 # Initialize the recognizer
 r = sr.Recognizer()

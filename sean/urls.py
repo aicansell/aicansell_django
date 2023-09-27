@@ -1,4 +1,8 @@
 from django.urls import path, include, re_path
+from rest_framework.routers import DefaultRouter
+
+from sean.views import ItemViewSet
+
 # from . import views
 # #from sean.views import ItemList
 
@@ -15,7 +19,10 @@ from django.urls import path, include, re_path
     
 # ]
 
+router = DefaultRouter()
+router.register('item', ItemViewSet, basename='item')
+
 urlpatterns = [
-    
+    path('', include(router.urls)),
 ]
 

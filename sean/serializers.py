@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Item,PowerWords
+from sean.models import Item
 
 
 class ItemListSerializer(serializers.ModelSerializer):
@@ -20,10 +20,6 @@ class SeanSerializer(serializers.ModelSerializer):
         model = Item
         fields = ('competency_power_word', 'positive_traits') 
 
-class PowerWordsSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = PowerWords
-        fields = "__all__"
 
 
 class ItemRecommendSerializer(serializers.ModelSerializer):

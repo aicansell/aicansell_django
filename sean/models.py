@@ -1,9 +1,7 @@
 from django.db import models
-from role.models import Role, Sub_Role
 #from organisation.models import Org_Roles
 from orgss.models import Org_Roles
-from competency.models import Competency, Sub_Competency
-from words.models import Words
+from competency.models import Competency
 
 
 class Traits(models.Model):
@@ -17,45 +15,6 @@ class Collection(models.Model):
         return self.trait_name
 
     collection_name = models.CharField(max_length=250, default= "collection")    
-
-class PowerWords(models.Model):
-    def __str__(self):
-        return f'{self.word}'
-
-    
-    word = models.ForeignKey(Words, on_delete=models.CASCADE, default=1)
-    #competencys = models.ForeignKey(Competency, on_delete=models.CASCADE, default=1)
-    sub_competency = models.ForeignKey(Sub_Competency, on_delete = models.CASCADE, default= 1)
-    #org_role = models.ForeignKey(Org_Roles, on_delete=models.CASCADE, default=1)
-    weight = models.IntegerField(default=1)
-    sentence = models.CharField(max_length=250, default= "sentence")
-    power_word_name = models.CharField(max_length=250, default="pw")
-    
-
-class NegativeWords(models.Model):
-    def __str__(self):
-         return f'{self.word}'
-
-    
-    word = models.ForeignKey(Words, on_delete=models.CASCADE, default=1)
-    #competencys = models.ForeignKey(Competency, on_delete=models.CASCADE, default=1)
-    sub_competency = models.ForeignKey(Sub_Competency, on_delete = models.CASCADE, default= 1)
-    #org_role = models.ForeignKey(Org_Roles, on_delete=models.CASCADE, default=1)
-    weight = models.IntegerField(default= -7)
-    sentence = models.CharField(max_length=250, default= "sentence")
-    negative_word_name = models.CharField(max_length=250, default="ww")
-
-
-class EmotionWords(models.Model):
-    def __str__(self):
-        return f'{self.word}'
-
-    word = models.ForeignKey(Words, on_delete=models.CASCADE, default=1)
-    emotion_word_name = models.CharField(max_length=250)
-    competencys = models.ForeignKey(Competency, on_delete=models.CASCADE, default=1)
-    sub_competency = models.ForeignKey(Sub_Competency, on_delete = models.CASCADE, default= 1)
-    #org_role = models.ForeignKey(Org_Roles, on_delete=models.CASCADE, default=1)
-    
 
 
 class Item(models.Model):
@@ -98,11 +57,7 @@ class Item(models.Model):
     #competency = models.ForeignKey(Competency, on_delete=models.CASCADE, default=1, blank=True)
     #sub_competency = models.ForeignKey(Sub_Competency, on_delete = models.CASCADE, default= 1, blank=True)
     competencys = models.ManyToManyField(Competency, blank=True)
-    sub_competency = models.ManyToManyField(Sub_Competency, blank=True)
     #seans_recommendation = models.CharField(max_length=300, default= "improve on")
-    competency_power_words = models.ManyToManyField(PowerWords, blank=True)
-    competency_weak_words = models.ManyToManyField(NegativeWords, blank=True)
-    competency_emotion_word = models.ForeignKey(EmotionWords, on_delete = models.CASCADE, default= 1)
     level = models.IntegerField(default=1)
     positive_traits = models.CharField(max_length=300, default=" ", blank=True)
     negative_traits = models.CharField(max_length=300, default=" ", blank = True)

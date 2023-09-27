@@ -54,6 +54,12 @@ class MyAccountManager(BaseUserManager):
 
 
 class Account(AbstractBaseUser):
+    USER_ROLES = (
+        ('super_admin', 'Super Admin'),
+        ('admin', 'Admin'),
+        ('user', 'User')
+    )
+    
     first_name = models.CharField(max_length = 50)
     last_name = models.CharField(max_length = 50)
     username = models.CharField(max_length= 25, unique = True)
@@ -66,6 +72,7 @@ class Account(AbstractBaseUser):
     is_staff = models.BooleanField(default = False)
     is_active = models.BooleanField(default = True)
     is_superadmin = models.BooleanField(default = False)
+    user_role = models.CharField(max_length=20, choices=USER_ROLES, default='user')
 
     is_email_confirmed = models.BooleanField(default=False)
 
