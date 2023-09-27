@@ -95,7 +95,7 @@ class Item(models.Model):
         (Type2, "Email")
     ]
     item_type = models.CharField(max_length=16, choices = Type_CHOICES, default=Type1)
-    role = models.ForeignKey(Org_Roles, on_delete=models.CASCADE, default=1)
+    role = models.ForeignKey(Org_Roles, on_delete=models.CASCADE, default=3)
     coming_across_as = models.CharField(max_length=250, default="sugestions")
     #competency = models.ForeignKey(Competency, on_delete=models.CASCADE, default=1, blank=True)
     #sub_competency = models.ForeignKey(Sub_Competency, on_delete = models.CASCADE, default= 1, blank=True)
