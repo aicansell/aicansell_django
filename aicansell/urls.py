@@ -34,7 +34,7 @@ urlpatterns = [
     path('chatbot/', include('chatbot.urls')),
     path('quiz/', include('quiz.urls')),
     path('sean/', include('sean.urls')),
-    path('org/', include('orgss.urls')),
+    #path('org/', include('organisation.urls')),
     path('', health_check),
     path('', include('competency.urls')),
     path('', include('words.urls')),
