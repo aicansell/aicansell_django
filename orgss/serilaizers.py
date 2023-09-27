@@ -68,4 +68,4 @@ class WeightageListSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Weightage
-        fields = ['id', 'org_role', 'competency', 'weight']
+        fields = ['id', 'org_role', 'competency', 'weightage']

@@ -10,7 +10,7 @@ class CompetencySerializer(serializers.ModelSerializer):
     sub_compentency = serializers.SerializerMethodField()
     
     def get_sub_compentency(self, obj):
-        sub_compentency = Sub_Competency.objects.filter(id=obj.sub_compentency.id)
+        sub_compentency = obj.sub_competency.all()
         return Sub_CompetencySerializer(sub_compentency, many=True).data
     
     class Meta:
