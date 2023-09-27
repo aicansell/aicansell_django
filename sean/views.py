@@ -1,7 +1,8 @@
-from django.shortcuts import render
 from django.shortcuts import render, get_object_or_404
+from rest_framework.viewsets import ViewSet
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
+from rest_framework_tracking.mixins import LoggingMixin
 from .serializers import ItemListSerializer, ItemEmotionSerializer, SeanSerializer, ItemRecommendSerializer
 from .models import Item
 from accounts.models import Account
@@ -45,15 +46,21 @@ def item_list(request):
 
 
 
-class ItemList(generics.ListAPIView):
-    
-    queryset = Item.objects.all()
+class ItemViewSet(LoggingMixin, ViewSet):
     serializer_class = ItemListSerializer
     permission_classes = [IsAuthenticated]
+    
+    @staticmethod
+    def get_object(pk):
+        return get_object_or_404(Item, id=pk)
+    
+    
+    @staticmethod
+    def get_queryset():
+        return Item.objects.all()
    
 
     def list(self, request):
-        
         user = request.user
         
         #getting user's role id
