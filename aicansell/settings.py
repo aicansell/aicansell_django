@@ -61,7 +61,6 @@ INSTALLED_APPS = [
     'rest_framework_tracking',
     'chatbot',
     'industry',
-    'organisation',
     'role',
     'quiz',
     'storages',

@@ -1,13 +1,11 @@
 from django.db import models
-from role.models import Roles, Sub_Role
+from role.models import Role, Sub_Role
 #from organisation.models import Org_Roles
 from orgss.models import Org_Roles
 from competency.models import Competency, Sub_Competency
 from words.models import Words
 
 
-
-# Create your models here.
 class Traits(models.Model):
     def __str__(self):
         return self.trait_name

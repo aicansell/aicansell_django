@@ -1,8 +1,18 @@
 from rest_framework import serializers
-from .models import Sub_Competency
+from competency.models import Competency, Sub_Competency
 
 class Sub_CompetencySerializer(serializers.ModelSerializer):
-    subcompetency_name = serializers.JSONField()
     class Meta:
         model = Sub_Competency
         fields = '__all__'
+        
+class CompetencySerializer(serializers.ModelSerializer):
+    sub_compentency = serializers.SerializerMethodField()
+    
+    def get_sub_compentency(self, obj):
+        sub_compentency = Sub_Competency.objects.filter(id=obj.sub_compentency.id)
+        return Sub_CompetencySerializer(sub_compentency, many=True).data
+    
+    class Meta:
+        model = Competency
+        fields = ['id', 'name', 'sub_compentency']

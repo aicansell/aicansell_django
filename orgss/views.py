@@ -6,8 +6,8 @@ from rest_framework.response import Response
 from rest_framework.viewsets import ViewSet
 from rest_framework_tracking.mixins import LoggingMixin
 
-from organisation.models import Org, Org_Roles, Weightage
-from organisation.serializers import OrgSerializer, OrgRolesSerializer, OrgRolesListSerializer, WeightageSerializer, WeightageListSerializer
+from orgss.models import Org, Org_Roles, Weightage
+from orgss.serilaizers import OrgSerializer, OrgRolesSerializer, OrgRolesListSerializer, WeightageSerializer, WeightageListSerializer
 
 class OrgViewSet(LoggingMixin, ViewSet):
     serializer_class = OrgSerializer
@@ -210,7 +210,7 @@ class WeightageViewSet(LoggingMixin, ViewSet):
         request_data = self.request.data
         data = {
             'org_role': request_data.get('org_role'),
-            'subcompetency': request_data.get('subcompetency'),
+            'competency': request_data.get('competency'),
             'weight': request_data.get('weight'),
         }
         
@@ -231,7 +231,7 @@ class WeightageViewSet(LoggingMixin, ViewSet):
         
         data = {
             'org_role': request_data.get('org_role', instance.org_role),
-            'subcompetency': request_data.get('subcompetency', instance.subcompetency),
+            'competency': request_data.get('competency', instance.competency),
             'weight': request_data.get('weight', instance.weight),
         }
         

@@ -1,5 +1,5 @@
 from django.db import models
-from organisation.models import Org, Org_Roles
+from orgss.models import Org, Org_Roles
 
 
 

@@ -28,56 +28,39 @@ import pyttsx3
 #from rest_framework import viewsets, generics
 
 
-# Create your views here.
 
-#listing scenarios
-
-@api_view(['GET']) 
-def item_list(request):
+# class ItemViewSet(LoggingMixin, ViewSet):
+#     serializer_class = ItemListSerializer
+#     permission_classes = [IsAuthenticated]
     
-    item_list = Item.objects.all().order_by('-id')
-    serializer = ItemListSerializer(item_list, many=True)
-
-    # if there is something in items else raise error
-    if item_list:
-        return Response(serializer.data)
-    else:
-        return Response(status=status.HTTP_404_NOT_FOUND)
-
-
-
-class ItemViewSet(LoggingMixin, ViewSet):
-    serializer_class = ItemListSerializer
-    permission_classes = [IsAuthenticated]
-    
-    @staticmethod
-    def get_object(pk):
-        return get_object_or_404(Item, id=pk)
+#     @staticmethod
+#     def get_object(pk):
+#         return get_object_or_404(Item, id=pk)
     
     
-    @staticmethod
-    def get_queryset():
-        return Item.objects.all()
+#     @staticmethod
+#     def get_queryset():
+#         return Item.objects.all()
    
 
-    def list(self, request):
-        user = request.user
+#     def list(self, request):
+#         user = request.user
         
-        #getting user's role id
-        u2 = user.role_id
+#         #getting user's role id
+#         u2 = user.role_id
         
-        """
-        u2 = Account.objects.values_list('role')
-        print(u2)
-        """
+#         """
+#         u2 = Account.objects.values_list('role')
+#         print(u2)
+#         """
 
-        items = Item.objects.filter(role = u2).order_by('-id')
-        serializer = ItemListSerializer(items, many=True)
+#         items = Item.objects.filter(role = u2).order_by('-id')
+#         serializer = ItemListSerializer(items, many=True)
         
-        if items:
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        else:
-            return Response(status=status.HTTP_404_NOT_FOUND)
+#         if items:
+#             return Response(serializer.data, status=status.HTTP_200_OK)
+#         else:
+#             return Response(status=status.HTTP_404_NOT_FOUND)
 """
 # Initialize the recognizer
 r = sr.Recognizer()

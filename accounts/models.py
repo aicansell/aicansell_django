@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.dispatch import receiver
 from django.db.models.signals import post_save
-from role.models import Roles, Sub_Role
+from role.models import Role, Sub_Role
 #from organisation.models import Org, Org_Roles
 from orgss.models import Org, Org_Roles
 
@@ -73,7 +73,7 @@ class Account(AbstractBaseUser):
     #user_org = models.ForeignKey(Org, on_delete=models.CASCADE, default = 1, related_name='userorg1')
     #user_role = models.ForeignKey(Roles, on_delete=models.CASCADE, default = 1, related_name='roles2')
     #user_subrole = models.ForeignKey(Sub_Role, on_delete=models.CASCADE, default = 1, related_name='roles3')
-
+    #admin user
 
     
 
