@@ -1,6 +1,7 @@
 from django.db import models
 #from organisation.models import Org_Roles
 from orgss.models import Org_Roles
+from accounts.models import Account
 from competency.models import Competency
 
 
@@ -31,9 +32,7 @@ class Item(models.Model):
     item_name = models.CharField(max_length=256)
     item_description = models.CharField(max_length=300, blank=True, null = True)
    
-    
-    #item_role = models.ForeignKey(Roles, on_delete = models.CASCADE, default=1, related_name = 'itemrole')
-    #item_subrole = models.ForeignKey(Sub_Role, on_delete = models.CASCADE, default=1, related_name = 'itemsubrole')
+    user = models.ForeignKey(Account, on_delete=models.CASCADE, null=True, blank=True)
     item_answer = models.TextField(max_length=700, default="Your answer")
     item_emotion = models.TextField(default= "emotions")
     item_answercount = models.IntegerField(default=1)
@@ -52,7 +51,7 @@ class Item(models.Model):
         (Type2, "Email")
     ]
     item_type = models.CharField(max_length=16, choices = Type_CHOICES, default=Type1)
-    role = models.ForeignKey(Org_Roles, on_delete=models.CASCADE, default=4)
+    role = models.ForeignKey(Org_Roles, on_delete=models.CASCADE, blank=True, null=True)
     coming_across_as = models.CharField(max_length=250, default="sugestions")
     #competency = models.ForeignKey(Competency, on_delete=models.CASCADE, default=1, blank=True)
     #sub_competency = models.ForeignKey(Sub_Competency, on_delete = models.CASCADE, default= 1, blank=True)

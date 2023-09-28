@@ -4,13 +4,21 @@ from sean.models import Item
 
 class ItemListSerializer(serializers.ModelSerializer):
     role = serializers.StringRelatedField()
-    #competency_power_words = serializers.StringRelatedField(many=True)
-    #competencys = serializers.StringRelatedField(many=True)
+    user = serializers.SerializerMethodField()
+    
+    def get_user(self, obj):
+        if obj.user:
+            return obj.user.first_name
+        return None
+
     class Meta:
         model = Item
-        fields = ['id','item_name', 'item_description', 'thumbnail', 'category', 'role', 'item_type', 'level']
-        #fields = ['id','item_name', 'competencys', 'thumbnail', 'category', 'role', 'item_type', 'competency_power_words']
+        fields = ['id', 'item_name', 'item_description', 'thumbnail', 'category', 'role', 'item_type', 'level', 'user']
 
+class ItemSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Item
+        fields = '__all__'
         
 
 class SeanSerializer(serializers.ModelSerializer):

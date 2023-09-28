@@ -41,15 +41,46 @@ class ItemViewSet(LoggingMixin, ViewSet):
         user = self.request.user
         
         if user.user_role == 'admin':
-            print(user.role.org)
-            Item.objects.filter(role=user.role)
+            data = Item.objects.filter(role=user.role)
+            serialized_data = ItemListSerializer(data, many=True).data
+            return Response(serialized_data, status=status.HTTP_200_OK)
         else:
-            print("Bot")
-            
-        return Response({'message': 'Hello'})
+            data = Item.objects.filter(user=user)
+            serialized_data = ItemListSerializer(data, many=True).data
+            return Response(serialized_data, status=status.HTTP_200_OK)
+        
+    def retrieve(self, request, **kwargs):
+        pk = kwargs.pop('pk')
+        response = {
+            'status': 'Success',
+            'data': self.serializer_class(self.get_object(pk)).data
+        }
+        return Response(response, status=status.HTTP_200_OK)
     
-        # items = Item.objects.filter(role = u2).order_by('-id')
-        # serializer = ItemListSerializer(items, many=True)
+    def create(self, request):
+        data = {
+            'item_name' : request.data.get('item_name'),
+            'item_description' : request.data.get('item_description'),
+            'user' : request.user.id,
+            'item_answer' : request.data.get('item_answer'),
+            'item_emotion' : request.data.get('item_emotion'),
+            'item_answercount' : request.data.get('item_answercount'),
+            'category' : request.data.get('category'),
+            'thumbnail' : request.data.get('thumbnail'),
+            'item_gender' : request.data.get('item_gender'),
+            'item_type' : request.data.get('item_type'),      
+        }
+        
+        serialized_data = self.serializer_class(data=data)
+        serialized_data.is_valid(raise_exception=True)
+        serialized_data.save()
+        response = {
+            'status': 'Success',
+            'data': serialized_data.data,
+            'message': 'Item was successfully created.'
+        }
+        return Response(response, status=status.HTTP_201_CREATED)
+
         
 """
 # Initialize the recognizer
