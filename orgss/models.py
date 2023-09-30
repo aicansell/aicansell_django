@@ -22,7 +22,7 @@ class Org_Roles(models.Model):
     org = models.ForeignKey(Org, on_delete=models.CASCADE, default = 1)
     role = models.ForeignKey(Role, on_delete=models.CASCADE, default = 1)
     subrole = models.ForeignKey(Sub_Role, on_delete=models.CASCADE, null=True, blank=True)
-    
+
 
 class Weightage(models.Model):
     org_role = models.ForeignKey(Org_Roles, on_delete=models.CASCADE)
@@ -31,9 +31,9 @@ class Weightage(models.Model):
     
     def __str__(self):
         return f'{self.competency}'
-    
-    
-    
+
+
+
 """
 class Role_Scenario(models.Model):
     def __str__(self):

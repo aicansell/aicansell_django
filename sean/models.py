@@ -63,7 +63,7 @@ class Item(models.Model):
     user_powerwords = models.CharField(max_length=300, default="up")
     user_weakwords = models.CharField(max_length=300, default="unp")
     expert = models.FileField(upload_to='media', blank = True, null=True)
-    
+
 
 
 class Suggestion(models.Model):

@@ -41,13 +41,14 @@ class ItemViewSet(LoggingMixin, ViewSet):
         user = self.request.user
         
         if user.user_role == 'admin':
-            data = Item.objects.filter(role=user.role)
+            data = Item.objects.filter(role__org=user.role.org)
             serialized_data = ItemListSerializer(data, many=True).data
             return Response(serialized_data, status=status.HTTP_200_OK)
         else:
             data = Item.objects.filter(user=user)
             serialized_data = ItemListSerializer(data, many=True).data
             return Response(serialized_data, status=status.HTTP_200_OK)
+    
         
     def retrieve(self, request, **kwargs):
         pk = kwargs.pop('pk')
@@ -57,18 +58,19 @@ class ItemViewSet(LoggingMixin, ViewSet):
         }
         return Response(response, status=status.HTTP_200_OK)
     
+    
     def create(self, request):
         data = {
-            'item_name' : request.data.get('item_name'),
-            'item_description' : request.data.get('item_description'),
-            'user' : request.user.id,
-            'item_answer' : request.data.get('item_answer'),
-            'item_emotion' : request.data.get('item_emotion'),
-            'item_answercount' : request.data.get('item_answercount'),
-            'category' : request.data.get('category'),
-            'thumbnail' : request.data.get('thumbnail'),
-            'item_gender' : request.data.get('item_gender'),
-            'item_type' : request.data.get('item_type'),      
+            'item_name': request.data.get('item_name'),
+            'item_description': request.data.get('item_description'),
+            'user': request.user.id,
+            'item_answer': request.data.get('item_answer'),
+            'item_emotion': request.data.get('item_emotion'),
+            'item_answercount': request.data.get('item_answercount'),
+            'category': request.data.get('category'),
+            'thumbnail': request.data.get('thumbnail'),
+            'item_gender': request.data.get('item_gender'),
+            'item_type': request.data.get('item_type'),
         }
         
         serialized_data = self.serializer_class(data=data)
