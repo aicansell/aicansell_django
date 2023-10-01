@@ -40,12 +40,15 @@ class OrgRolesListSerializer(serializers.ModelSerializer):
         return RoleSerializer(role, many=True).data
     
     def get_subrole(self, obj):
-        subrole = Sub_Role.objects.filter(id=obj.subrole.id)
-        return SubRoleSerializer(subrole, many=True).data
+        if obj.subrole:  # Check if subrole is not None
+            subrole = Sub_Role.objects.filter(id=obj.subrole.id)
+            return SubRoleSerializer(subrole, many=True).data
+        return None  # Return None or an empty list depending on your requirements
     
     class Meta:
         model = Org_Roles
         fields = ['id', 'org_role_name', 'org', 'role', 'subrole']
+
 
 
 class WeightageSerializer(serializers.ModelSerializer):
