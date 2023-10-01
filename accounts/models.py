@@ -109,6 +109,7 @@ class UserProfile(models.Model):
     quiz_score = models.IntegerField(default=1)
     quizzes_streak = models.IntegerField(default=1)
     scenarios_attempted = models.IntegerField(default=1)
+    scenarios_attempted_score = models.CharField(max_length= 500, null=True, blank=True, default="")
     jadu_attempted = models.IntegerField(default=1)
     jadu_asked = models.IntegerField(default=1)
     bookmarks = models.CharField(blank=True,null=True, max_length=300)

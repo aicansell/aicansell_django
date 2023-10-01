@@ -1,19 +1,27 @@
 from django.shortcuts import render, get_object_or_404
-from rest_framework.viewsets import ViewSet
-from rest_framework.decorators import api_view, permission_classes
-from rest_framework.response import Response
-from rest_framework_tracking.mixins import LoggingMixin
-from .serializers import ItemListSerializer, ItemEmotionSerializer, SeanSerializer, ItemRecommendSerializer
-from sean.models import Item
-
 from rest_framework import status,viewsets, generics, filters
 from django.db.models import F
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.parsers import JSONParser 
+from rest_framework.viewsets import ViewSet
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.response import Response
+from rest_framework_tracking.mixins import LoggingMixin
+
+
+from .serializers import ItemListSerializer, ItemEmotionSerializer, SeanSerializer, ItemRecommendSerializer
+from sean.models import Item
+from orgss.models import Weightage
+from accounts.models import UserProfile
 
 import string
 from collections import Counter
 from django.http import JsonResponse
+
+import nltk
+nltk.download('stopwords')
+from nltk.corpus import stopwords
+from nltk.tokenize import word_tokenize
 
 import speech_recognition as sr
 import json
@@ -26,20 +34,21 @@ import pyttsx3
 class ItemViewSet(LoggingMixin, ViewSet):
     serializer_class = ItemListSerializer
     permission_classes = [IsAuthenticated]
-    
+
     @staticmethod
     def get_object(pk):
+        """Get an Item object by its primary key."""
         return get_object_or_404(Item, id=pk)
-    
-    
+
     @staticmethod
     def get_queryset():
+        """Get all Item objects."""
         return Item.objects.all()
-   
 
     def list(self, request):
+        """List items based on user role."""
         user = self.request.user
-        
+
         if user.user_role == 'admin':
             data = Item.objects.filter(role__org=user.role.org)
             serialized_data = ItemListSerializer(data, many=True).data
@@ -48,31 +57,73 @@ class ItemViewSet(LoggingMixin, ViewSet):
             data = Item.objects.filter(user=user)
             serialized_data = ItemListSerializer(data, many=True).data
             return Response(serialized_data, status=status.HTTP_200_OK)
-    
-        
+
     def retrieve(self, request, **kwargs):
+        """Retrieve a specific item by its primary key."""
         pk = kwargs.pop('pk')
         response = {
             'status': 'Success',
             'data': self.serializer_class(self.get_object(pk)).data
         }
         return Response(response, status=status.HTTP_200_OK)
-    
-    
+
     def create(self, request):
+        """Create or update an item with emotion analysis."""
+        instance = Item.objects.get(id=request.data.get('id'))
+
+        emotion_str = request.data.get('item_emotion')
+
+        instance.item_emotion = instance.item_emotion + ',' + emotion_str
+
+        # Tokenize the emotion string into words
+        emotion_words = word_tokenize(emotion_str)
+
+        # Remove punctuation and convert to lowercase
+        emotion_words = [word.lower() for word in emotion_words if word not in string.punctuation]
+
+        # Remove stop words
+        stop_words = set(stopwords.words('english'))
+        emotion_words = [word for word in emotion_words if word not in stop_words]
+
+        words = Weightage.objects.filter(org_role=instance.role)
+
+        # Get the associated power_words, negative_words, and emotion_words for each competency
+        power_words = words.values_list('competency__sub_competency__power_words', flat=True)
+        negative_words = words.values_list('competency__sub_competency__negative_words', flat=True)
+
+        power_words_count = 0
+        negative_words_count = 0
+
+        for word in emotion_words:
+            if word in power_words:
+                power_words_count += 1
+            elif word in negative_words:
+                negative_words_count += 1
+
+        score = power_words_count - negative_words_count
+
+        userprofile_instance = UserProfile.objects.get(user=request.user)
+        userprofile_instance.scenarios_attempted += 1
+        if userprofile_instance.scenarios_attempted_score:
+            userprofile_instance.scenarios_attempted_score += str(score) + ','
+        else:
+            userprofile_instance.scenarios_attempted_score = str(score) + ','
+        userprofile_instance.save()
+
+        instance.save()
+
         data = {
-            'item_name': request.data.get('item_name'),
-            'item_description': request.data.get('item_description'),
-            'user': request.user.id,
-            'item_answer': request.data.get('item_answer'),
-            'item_emotion': request.data.get('item_emotion'),
-            'item_answercount': request.data.get('item_answercount'),
-            'category': request.data.get('category'),
-            'thumbnail': request.data.get('thumbnail'),
-            'item_gender': request.data.get('item_gender'),
-            'item_type': request.data.get('item_type'),
+            'id': instance.id,
+            'item_name': instance.item_name,
+            'item_description': instance.item_description,
+            'thumbnail': instance.thumbnail,
+            'category': instance.category,
+            'role': instance.role,
+            'item_type': instance.item_type,
+            'level': instance.level,
+            'user': instance.user
         }
-        
+
         serialized_data = self.serializer_class(data=data)
         serialized_data.is_valid(raise_exception=True)
         serialized_data.save()
