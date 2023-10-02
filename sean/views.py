@@ -96,9 +96,11 @@ class ItemViewSet(LoggingMixin, ViewSet):
 
         for word in emotion_words:
             if word in power_words:
+                instance.user_powerwords = instance.get('user_powerwords', '') + word + ','
                 power_words_count += 1
             elif word in negative_words:
                 negative_words_count += 1
+                instance.user_weakwords = instance.get('user_weakwords', '') + word + ','
 
         score = power_words_count - negative_words_count
 
@@ -121,12 +123,11 @@ class ItemViewSet(LoggingMixin, ViewSet):
             'role': instance.role,
             'item_type': instance.item_type,
             'level': instance.level,
-            'user': instance.user
         }
 
         serialized_data = self.serializer_class(data=data)
         serialized_data.is_valid(raise_exception=True)
-        serialized_data.save()
+
         response = {
             'status': 'Success',
             'data': serialized_data.data,

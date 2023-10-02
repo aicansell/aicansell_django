@@ -32,7 +32,6 @@ class Item(models.Model):
     item_name = models.CharField(max_length=256)
     item_description = models.CharField(max_length=300, blank=True, null = True)
    
-    user = models.ForeignKey(Account, on_delete=models.CASCADE, null=True, blank=True)
     item_answer = models.TextField(max_length=700, default="Your answer")
     item_emotion = models.TextField(default= "emotions")
     item_answercount = models.IntegerField(default=1)
@@ -60,8 +59,8 @@ class Item(models.Model):
     level = models.IntegerField(default=1)
     positive_traits = models.CharField(max_length=300, default=" ", blank=True)
     negative_traits = models.CharField(max_length=300, default=" ", blank = True)
-    user_powerwords = models.CharField(max_length=300, default="up")
-    user_weakwords = models.CharField(max_length=300, default="unp")
+    user_powerwords = models.CharField(max_length=300, default="")
+    user_weakwords = models.CharField(max_length=300, default="")
     expert = models.FileField(upload_to='media', blank = True, null=True)
 
 
