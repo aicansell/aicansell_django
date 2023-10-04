@@ -31,3 +31,10 @@ class Competency(models.Model):
 
     competency_name = models.CharField(max_length = 250, unique=True)
     sub_competency = models.ManyToManyField(Sub_Competency, blank=True)
+
+class Competency1(models.Model):
+    def __str__(self):
+        return self.competency_name
+
+    competency_name = models.CharField(max_length = 250, unique=True)
+    sub_competency = models.ManyToManyField(Sub_Competency1, blank=True)
