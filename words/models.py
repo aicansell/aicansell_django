@@ -7,7 +7,7 @@ class Words(models.Model):
 
     word_name = models.CharField(max_length=250)
 
-class PowerWords1(models.Model):
+class PowerWords(models.Model):
     def __str__(self):
         return f'{self.word}'
 
@@ -18,7 +18,7 @@ class PowerWords1(models.Model):
     power_word_name = models.CharField(max_length=250, default="pw")
     
 
-class NegativeWords1(models.Model):
+class NegativeWords(models.Model):
     def __str__(self):
          return f'{self.word}'
 

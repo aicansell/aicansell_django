@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Words, PowerWords1, NegativeWords1, EmotionWords
+from .models import Words, PowerWords, NegativeWords, EmotionWords
 
 class WordSerializer(serializers.ModelSerializer):
     word_name = serializers.JSONField()
@@ -9,12 +9,12 @@ class WordSerializer(serializers.ModelSerializer):
 
 class PowerWordsSerializer(serializers.ModelSerializer):
     class Meta:
-        model = PowerWords1
+        model = PowerWords
         fields = "__all__"
 
 class NegativeWordsSerializer(serializers.ModelSerializer):
     class Meta:
-        model = NegativeWords1
+        model = NegativeWords
         fields = "__all__"
         
 class EmotionWordsSerializer(serializers.ModelSerializer):

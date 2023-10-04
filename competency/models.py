@@ -1,6 +1,6 @@
 from django.db import models
 
-from words.models import PowerWords1, NegativeWords1, EmotionWords
+from words.models import PowerWords, NegativeWords, EmotionWords
 
 
 # Create your models here.
@@ -19,8 +19,8 @@ class Sub_Competency1(models.Model):
         return self.name
 
     name = models.CharField(max_length=250, unique=True)
-    power_words = models.ManyToManyField(PowerWords1, blank=True)
-    negative_words = models.ManyToManyField(NegativeWords1, blank=True)
+    power_words = models.ManyToManyField(PowerWords, blank=True)
+    negative_words = models.ManyToManyField(NegativeWords, blank=True)
     emotion_words = models.ManyToManyField(EmotionWords, blank=True)
 
     
