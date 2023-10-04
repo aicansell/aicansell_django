@@ -4,6 +4,7 @@ from rest_framework import status
 from .models import Sub_Competency
 from .serializers import Sub_CompetencySerializer
 from rest_framework import generics, status  
+from rest_framework.viewsets import ViewSet
 
 
       

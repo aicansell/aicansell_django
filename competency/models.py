@@ -1,5 +1,8 @@
 from django.db import models
 
+from words.models import PowerWords, NegativeWords, EmotionWords
+
+
 # Create your models here.
 
 class Sub_Competency(models.Model):
@@ -9,6 +12,17 @@ class Sub_Competency(models.Model):
     #sub_competency = models.ForeignKey(Competency, on_delete=models.CASCADE, related_name='role')
     subcompetency_name = models.CharField(max_length=250, unique=True)
 
+
+
+class Sub_Competency1(models.Model):
+    def __str__(self):
+        return self.name
+
+    name = models.CharField(max_length=250, unique=True)
+    power_words = models.ManyToManyField(PowerWords, blank=True)
+    negative_words = models.ManyToManyField(NegativeWords, blank=True)
+    emotion_words = models.ManyToManyField(EmotionWords, blank=True)
+
     
 
 class Competency(models.Model):
@@ -17,6 +31,3 @@ class Competency(models.Model):
 
     competency_name = models.CharField(max_length = 250, unique=True)
     sub_competency = models.ManyToManyField(Sub_Competency, blank=True)
-
-    
-

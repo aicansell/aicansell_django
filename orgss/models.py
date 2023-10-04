@@ -29,13 +29,13 @@ class Org_Roles(models.Model):
 
 class Weightage(models.Model):
     org_role = models.ForeignKey(Org_Roles, on_delete=models.CASCADE)
-    role_competency = models.ForeignKey(Competency, on_delete=models.CASCADE, default=1, related_name= 'rolecompetency1')
+    competency = models.ForeignKey(Competency, on_delete=models.CASCADE, default=1, related_name= 'rolecompetency1')
     #subcompetencys = models.ForeignKey(Sub_Competency, on_delete=models.CASCADE, default=1)
-    subcompetency = models.ManyToManyField(Sub_Competency, blank=True)
-    weight = models.IntegerField(default=1)
+    #subcompetency = models.ManyToManyField(Sub_Competency, blank=True)
+    weightage = models.IntegerField(default=1)
     
     def __str__(self):
-        return f'{self.role_competency}'
+        return f'{self.competency}'
     
     
     

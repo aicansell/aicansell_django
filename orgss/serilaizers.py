@@ -1,12 +1,16 @@
 from rest_framework import serializers
 
 from industry.models import Industry
-from organisation.models import Org, Org_Roles, Weightage
+
 from industry.serializers import IndustrySerializer
 from role.models import Role, Sub_Role
 from competency.models import Sub_Competency
 from role.serializers import RoleSerializer, SubRoleSerializer
-from competency.serializers import Sub_CompetencySerializer
+
+from orgss.models import Org, Org_Roles, Weightage
+
+from competency.serializers import CompetencySerializer
+
 
 class OrgSerializer(serializers.ModelSerializer):
     industry_data = serializers.SerializerMethodField()
@@ -39,30 +43,34 @@ class OrgRolesListSerializer(serializers.ModelSerializer):
         return RoleSerializer(role, many=True).data
     
     def get_subrole(self, obj):
-        subrole = Sub_Role.objects.filter(id=obj.subrole.id)
-        return SubRoleSerializer(subrole, many=True).data
+        if obj.subrole:  # Check if subrole is not None
+            subrole = Sub_Role.objects.filter(id=obj.subrole.id)
+            return SubRoleSerializer(subrole, many=True).data
+        return None  # Return None or an empty list depending on your requirements
     
     class Meta:
         model = Org_Roles
         fields = ['id', 'org_role_name', 'org', 'role', 'subrole']
+     
 
 class WeightageSerializer(serializers.ModelSerializer):
     class Meta:
         model = Weightage
-        fields = ['id', 'org_role', 'subcompetency', 'weight']
+        fields = ['id', 'org_role', 'subcompetency', 'weightage']
+
 
 class WeightageListSerializer(serializers.ModelSerializer):
     org_role = serializers.SerializerMethodField()
-    subcompetency = serializers.SerializerMethodField()
+    competency = serializers.SerializerMethodField()
     
     def get_org_role(self, obj):
         org_role = Org_Roles.objects.filter(id=obj.org_role.id)
         return OrgRolesListSerializer(org_role, many=True).data
     
-    def get_subcompetency(self, obj):
-        subcompetency = Sub_Competency.objects.filter(id=obj.subcompetency.id)
-        return Sub_CompetencySerializer(subcompetency, many=True).data
+    def get_competency(self, obj):
+        competency = Competency.objects.filter(id=obj.competency.id)
+        return CompetencySerializer(competency, many=True).data
     
     class Meta:
         model = Weightage
-        fields = ['id', 'org_role', 'subcompetency', 'weight']
+        fields = ['id', 'org_role', 'competency', 'weightage']        
