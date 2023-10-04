@@ -11,7 +11,7 @@ from rest_framework_tracking.mixins import LoggingMixin
 
 from .serializers import ItemListSerializer, ItemEmotionSerializer, SeanSerializer, ItemRecommendSerializer
 from sean.models import Item
-from orgss.models import Weightage
+from orgss.models import Weightage, Org_Roles
 from accounts.models import UserProfile
 
 import string
@@ -46,17 +46,41 @@ class ItemViewSet(LoggingMixin, ViewSet):
         return Item.objects.all()
 
     def list(self, request):
-        """List items based on user role."""
+        """
+        List items based on user role.
+
+        This view lists items based on the user's role. For admin users, it calculates
+        word counts and scenarios attempted counts for each organization role and
+        provides a summary of counts for the entire organization.
+
+        Args:
+            request: The HTTP request object.
+
+        Returns:
+            Response: The HTTP response containing the calculated counts.
+        """
         user = self.request.user
 
         if user.user_role == 'admin':
-            data = Item.objects.filter(role__org=user.role.org)
-            serialized_data = ItemListSerializer(data, many=True).data
-            return Response(serialized_data, status=status.HTTP_200_OK)
-        else:
-            data = Item.objects.filter(user=user)
-            serialized_data = ItemListSerializer(data, many=True).data
-            return Response(serialized_data, status=status.HTTP_200_OK)
+            org_id = user.role.org
+            item_data = Item.objects.filter(role__org=org_id)
+            user_data = UserProfile.objects.filter(user__role__org=org_id)
+            org_role_names = Org_Roles.objects.filter(org=org_id).values_list('role__name', flat=True)
+            
+            response = {
+                'org_word_count': sum(len(item.item_emotion.split(' ')) for item in item_data),
+                'org_scenarios_attempted': sum(user.scenarios_attempted for user in user_data),
+            }
+
+            for org_role in org_role_names:
+                users = user_data.filter(user__role__role__name__icontains=org_role)
+                response[f"{org_id}_{org_role}_word_count"] = sum(len(item.item_emotion.split(' ')) for item in item_data.filter(role__role__name__icontains=org_role))
+                response[f"{org_id}_{org_role}_scenarios_attempted"] = sum(user.scenarios_attempted for user in users)
+
+            return Response(response, status=status.HTTP_200_OK)
+        
+        return Response({"message": "You are not authorized to access these details"}, status=status.HTTP_401_UNAUTHORIZED)
+        
 
     def retrieve(self, request, **kwargs):
         """Retrieve a specific item by its primary key."""
@@ -329,7 +353,4 @@ def item_result(request, pk):
             
             
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST) 
-
-
-
 

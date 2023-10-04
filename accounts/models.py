@@ -82,8 +82,6 @@ class Account(AbstractBaseUser):
     #user_subrole = models.ForeignKey(Sub_Role, on_delete=models.CASCADE, default = 1, related_name='roles3')
     #admin user
 
-    
-
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username', 'first_name', 'last_name']
