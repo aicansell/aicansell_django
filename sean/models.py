@@ -71,6 +71,11 @@ class Item(models.Model):
     Type1 = "Simulation"
     Type2 = "Email"
 
+    Scenario_Type1 = "Sales"
+    Scenario_Type2 = "Customer Service"
+    Scenario_Type3 = "Interview"
+
+
     item_name = models.CharField(max_length=256)
     item_description = models.CharField(max_length=300, blank=True, null = True)
    
@@ -95,6 +100,13 @@ class Item(models.Model):
         (Type2, "Email")
     ]
     item_type = models.CharField(max_length=16, choices = Type_CHOICES, default=Type1)
+    Scenario_Type_CHOICES = [
+        (Scenario_Type1, "Sales"),
+        (Scenario_Type2, "Customer Service"),
+        (Scenario_Type3, "Interview"),
+        
+    ]
+    scenario_type = models.CharField(max_length= 16, choices = Scenario_Type_CHOICES, default= Scenario_Type1)
     role = models.ForeignKey(Org_Roles, on_delete=models.CASCADE, default=4)
     coming_across_as = models.CharField(max_length=250, default="sugestions")
     #competency = models.ForeignKey(Competency, on_delete=models.CASCADE, default=1, blank=True)
