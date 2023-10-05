@@ -77,7 +77,7 @@ class OrgViewSet(LoggingMixin, ViewSet):
             'data': serialized_data.data,
             'message': 'Org was successfully updated.'
         }
-        return Response(response, status=status.HTTP_201_CREATED)
+        return Response(response, status=status.HTTP_200_OK)
 
 
     def destroy(self, request, **kwargs):

@@ -1,6 +1,4 @@
-from django.shortcuts import render, get_object_or_404
-from rest_framework import status,viewsets, generics, filters
-from django.db.models import F
+from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.parsers import JSONParser 
 from rest_framework.viewsets import ViewSet
@@ -8,16 +6,17 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework_tracking.mixins import LoggingMixin
 
+from django.shortcuts import get_object_or_404
+from django.db.models import F
+from django.http import JsonResponse
 
-from .serializers import ItemListSerializer, ItemEmotionSerializer, SeanSerializer, ItemRecommendSerializer
+from sean.serializers import ItemListSerializer, ItemEmotionSerializer, ItemRecommendSerializer
 from sean.models import Item
 from orgss.models import Weightage, Org_Roles
 from accounts.models import UserProfile
 
-import string
 from collections import Counter
-from django.http import JsonResponse
-
+import string
 import nltk
 nltk.download('stopwords')
 from nltk.corpus import stopwords
@@ -67,21 +66,38 @@ class ItemViewSet(LoggingMixin, ViewSet):
             user_data = UserProfile.objects.filter(user__role__org=org_id)
             org_role_names = Org_Roles.objects.filter(org=org_id).values_list('role__name', flat=True)
             
+            # Initialize response dictionaries
             response = {
                 'org_word_count': sum(len(item.item_emotion.split(' ')) for item in item_data),
                 'org_scenarios_attempted': sum(user.scenarios_attempted for user in user_data),
             }
+            
+            roles_word_count = {}
+            roles_scenarios_attempted = {}
 
+            # Calculate word count and scenarios attempted for each organization role
             for org_role in org_role_names:
                 users = user_data.filter(user__role__role__name__icontains=org_role)
-                response[f"{org_id}_{org_role}_word_count"] = sum(len(item.item_emotion.split(' ')) for item in item_data.filter(role__role__name__icontains=org_role))
-                response[f"{org_id}_{org_role}_scenarios_attempted"] = sum(user.scenarios_attempted for user in users)
+                roles_word_count[f"{org_id}_{org_role}_word_count"] = sum(len(item.item_emotion.split(' ')) for item in item_data.filter(role__role__name__icontains=org_role))
+                roles_scenarios_attempted[f"{org_id}_{org_role}_scenarios_attempted"] = sum(user.scenarios_attempted for user in users)
+                
+            # Add role-specific counts to the response
+            response["roles_word_count"] = roles_word_count
+            response["roles_scenarios_attempted"] = roles_scenarios_attempted
+            
+            # Calculate scenarios attempted for each user
+            users_scenarios_attempted = {}
+                
+            for user in user_data:
+                users_scenarios_attempted[f"{user.user.username}_scenarios_attempted"] = user.scenarios_attempted
 
+            # Add user-specific counts to the response
+            response["users_scenarios_attempted"] = users_scenarios_attempted
+            
             return Response(response, status=status.HTTP_200_OK)
         
         return Response({"message": "You are not authorized to access these details"}, status=status.HTTP_401_UNAUTHORIZED)
         
-
     def retrieve(self, request, **kwargs):
         """Retrieve a specific item by its primary key."""
         pk = kwargs.pop('pk')
