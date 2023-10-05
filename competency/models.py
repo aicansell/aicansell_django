@@ -12,6 +12,11 @@ class Sub_Competency(models.Model):
     #sub_competency = models.ForeignKey(Competency, on_delete=models.CASCADE, related_name='role')
     subcompetency_name = models.CharField(max_length=250, unique=True)
 
+class senti(models.Model):
+    def __str__(self):
+        return self.name
+
+    name = models.CharField(max_length=250, unique=True)
 
 
 class Sub_Competency1(models.Model):
@@ -38,3 +43,4 @@ class Competency1(models.Model):
 
     competency_name = models.CharField(max_length = 250, unique=True)
     sub_competency = models.ManyToManyField(Sub_Competency1, blank=True)
+    competency_sentiment = models.ManyToManyField(senti, blank=True)
