@@ -71,6 +71,8 @@ INSTALLED_APPS = [
     'orgss',
 
     'corsheaders',
+    'rest_framework_tracking',
+    
     
     
 ]

@@ -2,9 +2,9 @@ from django.shortcuts import render
 from django.shortcuts import render, get_object_or_404
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
-from .serializers import ItemListSerializer, ItemEmotionSerializer, SeanSerializer, ItemRecommendSerializer
+from .serializers import ItemListSerializer, ItemEmotionSerializer, SeanSerializer, ItemRecommendSerializer, ItemListSerializer1
 from .models import Item
-from accounts.models import Account
+from accounts.models import Account, UserProfile
 #from organisation.models import Role_Scenario
 
 from rest_framework import status,viewsets, generics, filters
@@ -24,6 +24,19 @@ from decouple import config
 import speech_recognition as sr
 import pyttsx3
 
+
+from rest_framework.viewsets import ViewSet
+from rest_framework_tracking.mixins import LoggingMixin
+
+from orgss.models import Weightage, Org_Roles
+"""
+import nltk
+nltk.download('stopwords')
+from nltk.corpus import stopwords
+from nltk.tokenize import word_tokenize
+
+"""
+
 #from rest_framework import viewsets, generics
 
 
@@ -36,18 +49,6 @@ def item_list(request):
     
     item_list = Item.objects.all().order_by('-id')
     serializer = ItemListSerializer(item_list, many=True)
-
-    # if there is something in items else raise error
-    if item_list:
-        return Response(serializer.data)
-    else:
-        return Response(status=status.HTTP_404_NOT_FOUND)
-
-@api_view(['GET']) 
-def item_list(request):
-    
-    item_list = Item.objects.all().order_by('-id')
-    serializer = SeanSerializer(item_list, many=True)
 
     # if there is something in items else raise error
     if item_list:
@@ -275,7 +276,5 @@ def item_result(request, pk):
             
             
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST) 
-
-
 
 
