@@ -167,10 +167,24 @@ class ItemViewSet(LoggingMixin, ViewSet):
 
         serialized_data = self.serializer_class(data=data)
         serialized_data.is_valid(raise_exception=True)
+        
+        data = serialized_data.data
+        
+        response_data = {
+            'id': data.get('id'),
+            'item_name': data.get('item_name'),
+            'item_description': data.get('item_description'),
+            'thumbnail': data.get('thumbnail'),
+            'category': data.get('category'),
+            'role': data.get('role'),
+            'item_type': data.get('item_type'),
+            'level': data.get('level'),
+            'compentency_score': score,
+        }
 
         response = {
             'status': 'Success',
-            'data': serialized_data.data,
+            'data': response_data,
             'message': 'Item was successfully created.'
         }
         return Response(response, status=status.HTTP_201_CREATED)
