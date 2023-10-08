@@ -27,6 +27,7 @@ env
 *.log
 *.swp
 .DS_Store
+.git
 
 
 # eb virtual env
