@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Item, Suggestion, PowerWords, NegativeWords, EmotionWords, Traits, Collection, Item1, MasterCompetency
+from .models import Item, Suggestion, PowerWords, NegativeWords, EmotionWords, Traits, Collection, Item1
 
 # Register your models here.
 
@@ -12,6 +12,5 @@ admin.site.register(EmotionWords)
 admin.site.register(Traits)
 admin.site.register(Collection)
 admin.site.register(Item1)
-admin.site.register(MasterCompetency)
 
 

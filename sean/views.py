@@ -46,6 +46,196 @@ nlp = spacy.load('en_core_web_sm')"""
 
 
 
+class ItemViewSet(LoggingMixin, ViewSet):
+    serializer_class = ItemListSerializer1
+    permission_classes = [IsAuthenticated]
+
+
+    @staticmethod
+    def get_object(pk):
+        """Get an Item object by its primary key."""
+        return get_object_or_404(Item, id=pk)
+
+
+    @staticmethod
+    def get_queryset():
+        """Get all Item objects."""
+        return Item.objects.all()
+
+
+    def list(self, request):
+        """
+        List items based on user role.
+
+
+        This view lists items based on the user's role. For admin users, it calculates
+        word counts and scenarios attempted counts for each organization role and
+        provides a summary of counts for the entire organization.
+
+
+        Args:
+            request: The HTTP request object.
+
+
+        Returns:
+            Response: The HTTP response containing the calculated counts.
+        """
+        user = self.request.user
+
+
+        if user.user_role == 'admin':
+            org_id = user.role.org
+            item_data = Item.objects.filter(role__org=org_id)
+            user_data = UserProfile.objects.filter(user__role__org=org_id)
+            org_role_names = Org_Roles.objects.filter(org=org_id).values_list('role__name', flat=True)
+           
+            # Initialize response dictionaries
+            response = {
+                'org_word_count': sum(len(item.item_emotion.split(' ')) for item in item_data),
+                'org_scenarios_attempted': sum(user.scenarios_attempted for user in user_data),
+            }
+           
+            roles_word_count = {}
+            roles_scenarios_attempted = {}
+
+
+            # Calculate word count and scenarios attempted for each organization role
+            for org_role in org_role_names:
+                users = user_data.filter(user__role__role__name__icontains=org_role)
+                roles_word_count[f"{org_id}_{org_role}_word_count"] = sum(len(item.item_emotion.split(' ')) for item in item_data.filter(role__role__name__icontains=org_role))
+                roles_scenarios_attempted[f"{org_id}_{org_role}_scenarios_attempted"] = sum(user.scenarios_attempted for user in users)
+               
+            # Add role-specific counts to the response
+            response["roles_word_count"] = roles_word_count
+            response["roles_scenarios_attempted"] = roles_scenarios_attempted
+           
+            # Calculate scenarios attempted for each user
+            users_scenarios_attempted = {}
+               
+            for user in user_data:
+                users_scenarios_attempted[f"{user.user.username}_scenarios_attempted"] = user.scenarios_attempted
+
+
+            # Add user-specific counts to the response
+            response["users_scenarios_attempted"] = users_scenarios_attempted
+           
+            return Response(response, status=status.HTTP_200_OK)
+       
+        return Response({"message": "You are not authorized to access these details"}, status=status.HTTP_401_UNAUTHORIZED)
+       
+    def retrieve(self, request, **kwargs):
+        """Retrieve a specific item by its primary key."""
+        pk = kwargs.pop('pk')
+        response = {
+            'status': 'Success',
+            'data': self.serializer_class(self.get_object(pk)).data
+        }
+        return Response(response, status=status.HTTP_200_OK)
+
+
+    def create(self, request):
+        """Create or update an item with emotion analysis."""
+        instance = Item.objects.get(id=request.data.get('id'))
+
+
+        emotion_str = request.data.get('item_emotion')
+
+
+        instance.item_emotion = instance.item_emotion + ',' + emotion_str
+
+
+        # Tokenize the emotion string into words
+        emotion_words = nlp(emotion_str)
+        #emotion_words = word_tokenize(emotion_str)
+
+
+        # Remove punctuation and convert to lowercase
+        #emotion_words = [word.lower() for word in emotion_words if word not in string.punctuation]
+
+
+        # Remove stop words
+        #stop_words = set(stopwords.words('english'))
+        stop_words = spacy.lang.en.stop_words.STOP_WORDS
+        emotion_words = [word for word in emotion_words if word not in stop_words]
+
+
+        words = Weightage.objects.filter(org_role=instance.role)
+
+
+        # Get the associated power_words, negative_words, and emotion_words for each competency
+        power_words = words.values_list('competency__sub_competency__power_words', flat=True)
+        negative_words = words.values_list('competency__sub_competency__negative_words', flat=True)
+
+
+        power_words_count = 0
+        negative_words_count = 0
+
+
+        for word in emotion_words:
+            if word in power_words:
+                instance.user_powerwords = instance.get('user_powerwords', '') + word + ','
+                power_words_count += 1
+            elif word in negative_words:
+                negative_words_count += 1
+                instance.user_weakwords = instance.get('user_weakwords', '') + word + ','
+
+
+        score = power_words_count + negative_words_count
+
+
+        userprofile_instance = UserProfile.objects.get(user=request.user)
+        userprofile_instance.scenarios_attempted += 1
+        if userprofile_instance.scenarios_attempted_score:
+            userprofile_instance.scenarios_attempted_score += str(score) + ','
+        else:
+            userprofile_instance.scenarios_attempted_score = str(score) + ','
+        userprofile_instance.save()
+
+
+        instance.save()
+
+        """
+        data = {
+            'id': instance.id,
+            'item_name': instance.item_name,
+            'item_description': instance.item_description,
+            'thumbnail': instance.thumbnail,
+            'category': instance.category,
+            'role': instance.role,
+            'item_type': instance.item_type,
+            'level': instance.level,
+        }
+        """
+        data = serialized_data.data
+
+        response_data = {
+            'id': data.get('id'),
+            'item_name': data.get('item_name'),
+            'item_description': data.get('item_description'),
+            'thumbnail': data.get('thumbnail'),
+            'category': data.get('category'),
+            'role': data.get('role'),
+            'item_type': data.get('item_type'),
+            'level': data.get('level'),
+            'compentency_score': score,
+        }
+        serialized_data = self.serializer_class(data=data)
+        serialized_data.is_valid(raise_exception=True)
+
+
+        response = {
+            'status': 'Success',
+            #'data': serialized_data.data,
+            'data': response_data,
+            'message': 'Item was successfully created.'
+        }
+        return Response(response, status=status.HTTP_201_CREATED)
+
+
+       
+
+
+
 #listing scenarios
 
 @api_view(['GET']) 
