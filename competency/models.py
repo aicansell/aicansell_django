@@ -5,6 +5,13 @@ from words.models import PowerWords, NegativeWords, EmotionWords
 
 # Create your models here.
 
+class MasterCompetency(models.Model):
+    def __str__(self):
+        return self.name
+
+    name = models.CharField(max_length=250, unique=True)
+
+
 class Sub_Competency(models.Model):
     def __str__(self):
         return self.subcompetency_name
@@ -44,3 +51,4 @@ class Competency1(models.Model):
     competency_name = models.CharField(max_length = 250, unique=True)
     sub_competency = models.ManyToManyField(Sub_Competency1, blank=True)
     competency_sentiment = models.ManyToManyField(Senti, blank=True)
+    #master_competency = models.ForeignKey(MasterCompetency, default = 1, on_delete= models.CASCADE)
