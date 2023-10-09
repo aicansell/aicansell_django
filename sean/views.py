@@ -35,14 +35,15 @@ nltk.download('stopwords')
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 """
-
+"""
 import spacy
-nlp = spacy.load('en_core_web_sm')
+nlp = spacy.load('en_core_web_sm')""" 
 
 #from rest_framework import viewsets, generics
 
 
 # Create your views here.
+
 
 
 #listing scenarios
