@@ -11,13 +11,13 @@ class MasterCompetency(models.Model):
 
     name = models.CharField(max_length=250, unique=True)
 
-
+"""
 class Sub_Competency(models.Model):
     def __str__(self):
         return self.subcompetency_name
 
     #sub_competency = models.ForeignKey(Competency, on_delete=models.CASCADE, related_name='role')
-    subcompetency_name = models.CharField(max_length=250, unique=True)
+    subcompetency_name = models.CharField(max_length=250, unique=True)"""
 
 class Senti(models.Model):
     def __str__(self):
@@ -37,13 +37,6 @@ class Sub_Competency1(models.Model):
 
     
 
-class Competency(models.Model):
-    def __str__(self):
-        return self.competency_name
-
-    competency_name = models.CharField(max_length = 250, unique=True)
-    sub_competency = models.ManyToManyField(Sub_Competency, blank=True)
-
 class Competency1(models.Model):
     def __str__(self):
         return self.competency_name
@@ -51,4 +44,4 @@ class Competency1(models.Model):
     competency_name = models.CharField(max_length = 250, unique=True)
     sub_competency = models.ManyToManyField(Sub_Competency1, blank=True)
     competency_sentiment = models.ManyToManyField(Senti, blank=True)
-    #master_competency = models.ForeignKey(MasterCompetency, default = 1, on_delete= models.CASCADE)
+    master_competency = models.ForeignKey(MasterCompetency, default = 1, on_delete= models.CASCADE)

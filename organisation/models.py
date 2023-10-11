@@ -2,7 +2,7 @@ from django.db import models
 from industry.models import Industry
 
 from role.models import Roles, Sub_Role
-from competency.models import Competency, Sub_Competency
+from competency.models import Competency1, Sub_Competency1
 #from sean.models import Item
 
 #from quiz.models import Quiz
@@ -25,9 +25,9 @@ class Org_Roles(models.Model):
     org_na =  models.ForeignKey(Org, on_delete=models.CASCADE, default = 1, related_name='org1')
     org_role = models.ForeignKey(Roles, on_delete=models.CASCADE, default = 1, related_name='roles1')
     subrole_org = models.ForeignKey(Sub_Role, on_delete=models.CASCADE, default = 1, related_name='org')
-    role_competency = models.ForeignKey(Competency, on_delete=models.CASCADE, default=1, related_name= 'rolecompetency')
+    role_competency = models.ForeignKey(Competency1, on_delete=models.CASCADE, default=1, related_name= 'rolecompetency')
     competency_weight = models.IntegerField(default = 1)
-    role_subcompetencys = models.ManyToManyField(Sub_Competency, blank=True)
+    role_subcompetencys = models.ManyToManyField(Sub_Competency1, blank=True)
     #role_subcompetency = models.ForeignKey(Sub_Competency, on_delete=models.CASCADE, default=1, related_name = 'rolesubcompetency')
     #subcompetency_weight = models.IntegerField(default=1)
 """

@@ -2,7 +2,7 @@ from django.db import models
 from industry.models import Industry
 
 from role.models import Roles, Sub_Role
-from competency.models import Competency, Sub_Competency
+from competency.models import Competency1, Sub_Competency1
 #from sean.models import Item
 
 #from quiz.models import Quiz
@@ -29,7 +29,7 @@ class Org_Roles(models.Model):
 
 class Weightage(models.Model):
     org_role = models.ForeignKey(Org_Roles, on_delete=models.CASCADE)
-    competency = models.ForeignKey(Competency, on_delete=models.CASCADE, default=1, related_name= 'rolecompetency1')
+    competency = models.ForeignKey(Competency1, on_delete=models.CASCADE, default=1, related_name= 'rolecompetency1')
     #subcompetencys = models.ForeignKey(Sub_Competency, on_delete=models.CASCADE, default=1)
     #subcompetency = models.ManyToManyField(Sub_Competency, blank=True)
     weightage = models.IntegerField(default=1)

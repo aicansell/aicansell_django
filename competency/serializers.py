@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from competency.models import Competency, Sub_Competency
+from competency.models import Competency1, Sub_Competency1
 
 
 from words.serializers import PowerWordsSerializer, NegativeWordsSerializer, EmotionWordsSerializer
@@ -7,7 +7,7 @@ from words.serializers import PowerWordsSerializer, NegativeWordsSerializer, Emo
 class Sub_CompetencySerializer(serializers.ModelSerializer):
     subcompetency_name = serializers.JSONField()
     class Meta:
-        model = Sub_Competency
+        model = Sub_Competency1
         fields = '__all__'
 
 
@@ -32,7 +32,7 @@ class Sub_CompetencySerializer1(serializers.ModelSerializer):
         return EmotionWordsSerializer(emotion_words, many=True).data
     
     class Meta:
-        model = Sub_Competency
+        model = Sub_Competency1
         fields = '__all__'
         
 class CompetencySerializer(serializers.ModelSerializer):
@@ -40,8 +40,8 @@ class CompetencySerializer(serializers.ModelSerializer):
     
     def get_sub_compentency(self, obj):
         sub_compentency = obj.sub_competency.all()
-        return Sub_CompetencySerializer(sub_compentency, many=True).data
+        return Sub_CompetencySerializer1(sub_compentency, many=True).data
     
     class Meta:
-        model = Competency
+        model = Competency1
         fields = ['id', 'name', 'sub_compentency']        

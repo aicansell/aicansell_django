@@ -1,7 +1,7 @@
 #from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from .models import Sub_Competency
+from .models import Sub_Competency1
 from .serializers import Sub_CompetencySerializer
 from rest_framework import generics, status  
 from rest_framework.viewsets import ViewSet
@@ -9,7 +9,7 @@ from rest_framework.viewsets import ViewSet
 
       
 class ProductView(generics.ListCreateAPIView):  
-        queryset = Sub_Competency.objects.all()  
+        queryset = Sub_Competency1.objects.all()  
         serializer_class = Sub_CompetencySerializer
       
         def create(self, request, *args, **kwargs):  

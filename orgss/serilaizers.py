@@ -4,7 +4,7 @@ from industry.models import Industry
 
 from industry.serializers import IndustrySerializer
 from role.models import Role, Sub_Role
-from competency.models import Sub_Competency
+from competency.models import Sub_Competency1
 from role.serializers import RoleSerializer, SubRoleSerializer
 
 from orgss.models import Org, Org_Roles, Weightage
