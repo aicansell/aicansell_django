@@ -38,16 +38,6 @@ class NegativeWords(models.Model):
     negative_word_name = models.CharField(max_length=250, default="ww")
 
 
-class EmotionWords(models.Model):
-    def __str__(self):
-        return f'{self.word}'
-
-    word = models.ForeignKey(Words, on_delete=models.CASCADE, default=1)
-    emotion_word_name = models.CharField(max_length=250)
-    competencys = models.ForeignKey(Competency1, on_delete=models.CASCADE, default=1)
-    sub_competency = models.ForeignKey(Sub_Competency1, on_delete = models.CASCADE, default= 1)
-    #org_role = models.ForeignKey(Org_Roles, on_delete=models.CASCADE, default=1)
-    
 
 class Item1(models.Model):
     def __str__(self):
@@ -162,7 +152,7 @@ class Item(models.Model):
     #seans_recommendation = models.CharField(max_length=300, default= "improve on")
     competency_power_words = models.ManyToManyField(PowerWords, blank=True)
     competency_weak_words = models.ManyToManyField(NegativeWords, blank=True)
-    competency_emotion_word = models.ForeignKey(EmotionWords, on_delete = models.CASCADE, default= 1)
+    #competency_emotion_word = models.ForeignKey(EmotionWords, on_delete = models.CASCADE, default= 1)
     level = models.IntegerField(default=1)
     positive_traits = models.CharField(max_length=300, default=" ", blank=True)
     negative_traits = models.CharField(max_length=300, default=" ", blank = True)
