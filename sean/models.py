@@ -148,7 +148,7 @@ class Item(models.Model):
     #competency = models.ForeignKey(Competency, on_delete=models.CASCADE, default=1, blank=True)
     #sub_competency = models.ForeignKey(Sub_Competency, on_delete = models.CASCADE, default= 1, blank=True)
     competencys = models.ManyToManyField(Competency1, blank=True)
-    sub_competency = models.ManyToManyField(Sub_Competency1, blank=True)
+    #sub_competency = models.ManyToManyField(Sub_Competency1, blank=True)
     #seans_recommendation = models.CharField(max_length=300, default= "improve on")
     competency_power_words = models.ManyToManyField(PowerWords, blank=True)
     competency_weak_words = models.ManyToManyField(NegativeWords, blank=True)
