@@ -145,17 +145,17 @@ class ItemViewSet(LoggingMixin, ViewSet):
 
 
         # Tokenize the emotion string into words
-        emotion_words = nlp(emotion_str)
-        #emotion_words = word_tokenize(emotion_str)
+        #emotion_words = nlp(emotion_str)
+        emotion_words = word_tokenize(emotion_str)
 
 
         # Remove punctuation and convert to lowercase
-        #emotion_words = [word.lower() for word in emotion_words if word not in string.punctuation]
+        emotion_words = [word.lower() for word in emotion_words if word not in string.punctuation]
 
 
         # Remove stop words
-        #stop_words = set(stopwords.words('english'))
-        stop_words = spacy.lang.en.stop_words.STOP_WORDS
+        stop_words = set(stopwords.words('english'))
+        #stop_words = spacy.lang.en.stop_words.STOP_WORDS
         emotion_words = [word for word in emotion_words if word not in stop_words]
 
 
@@ -194,18 +194,7 @@ class ItemViewSet(LoggingMixin, ViewSet):
 
         instance.save()
 
-        """
-        data = {
-            'id': instance.id,
-            'item_name': instance.item_name,
-            'item_description': instance.item_description,
-            'thumbnail': instance.thumbnail,
-            'category': instance.category,
-            'role': instance.role,
-            'item_type': instance.item_type,
-            'level': instance.level,
-        }
-        """
+        
         data = serialized_data.data
 
         response_data = {

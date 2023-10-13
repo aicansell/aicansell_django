@@ -42,6 +42,9 @@ class Competency1(models.Model):
     competency_sentiment = models.ManyToManyField(Senti, blank=True)
     #master_competency = models.ForeignKey(MasterCompetency, default = 1, on_delete= models.CASCADE)
 
+    def get_senti_as_string(self):
+        return ', '.join(self.competency_sentiment.values_list('name', flat=True))
+
 class MasterCompetency(models.Model):
     def __str__(self):
         return self.name
