@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from .models import Item
 #from competency.models import Competency1
-from competency.serializers import Sub_CompetencySerializer1, CompetencySerializer
+from competency.serializers import CompetencySerializer
 
 """
 class ItemListSerializer(serializers.ModelSerializer):
@@ -26,17 +26,6 @@ class ItemSerializer(serializers.ModelSerializer):
         model = Item
         fields = '__all__'
     
-
-"""
-class ItemRecommendSerializer(serializers.ModelSerializer):
-    competency_weak_words = serializers.StringRelatedField(many=True)
-    competency_power_words = serializers.StringRelatedField(many=True)
-
-    class Meta:
-        model = Item
-        fields = ['positive_traits', 'competency_weak_words', 'competency_power_words']
-    
-"""
 
 class ItemEmotionSerializer(serializers.ModelSerializer):
     
