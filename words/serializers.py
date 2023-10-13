@@ -8,11 +8,13 @@ class WordSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class PowerWordsSerializer(serializers.ModelSerializer):
+    word = serializers.StringRelatedField()
     class Meta:
         model = PowerWords
         fields = "__all__"
 
 class NegativeWordsSerializer(serializers.ModelSerializer):
+    word = serializers.StringRelatedField()
     class Meta:
         model = NegativeWords
         fields = "__all__"

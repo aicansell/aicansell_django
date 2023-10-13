@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.shortcuts import render, get_object_or_404
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
-from .serializers import ItemListSerializer, ItemEmotionSerializer, SeanSerializer, ItemRecommendSerializer, ItemListSerializer1
+from .serializers import ItemListSerializer1, ItemEmotionSerializer, ItemRecommendSerializer
 from .models import Item
 from accounts.models import Account, UserProfile
 #from organisation.models import Role_Scenario
@@ -237,7 +237,7 @@ class ItemViewSet(LoggingMixin, ViewSet):
 
 
 #listing scenarios
-
+"""
 @api_view(['GET']) 
 def item_list(request):
     
@@ -249,12 +249,12 @@ def item_list(request):
         return Response(serializer.data)
     else:
         return Response(status=status.HTTP_404_NOT_FOUND)
-
+"""
 
 class ItemList(generics.ListAPIView):
     
     queryset = Item.objects.all()
-    serializer_class = ItemListSerializer
+    serializer_class = ItemListSerializer1
     permission_classes = [IsAuthenticated]
    
 
@@ -271,7 +271,7 @@ class ItemList(generics.ListAPIView):
         """
 
         items = Item.objects.filter(role = u2).order_by('-id')
-        serializer = ItemListSerializer(items, many=True)
+        serializer = ItemListSerializer1(items, many=True)
         
         if items:
             return Response(serializer.data, status=status.HTTP_200_OK)
@@ -375,6 +375,7 @@ def item_rec(request, pk):
         
         
         serializer = ItemRecommendSerializer(item_result)
+        #serializer = ItemRecoSerializer(item_result)
         return Response(serializer.data)
        
         if item_result:

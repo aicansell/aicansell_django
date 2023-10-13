@@ -44,4 +44,4 @@ class CompetencySerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Competency1
-        fields = ['id', 'name', 'sub_compentency']        
+        fields = ['id', 'competency_name', 'sub_compentency', 'competency_sentiment']        
