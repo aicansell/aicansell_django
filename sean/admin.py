@@ -1,14 +1,11 @@
 from django.contrib import admin
-from .models import Item, Suggestion, PowerWords, NegativeWords, Item1
+from .models import Item, Suggestion
 
 # Register your models here.
 
 
 admin.site.register(Item)
 admin.site.register(Suggestion)
-admin.site.register(PowerWords)
-admin.site.register(NegativeWords)
 
-admin.site.register(Item1)
 
 
