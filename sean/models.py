@@ -30,16 +30,12 @@ class Item(models.Model):
     item_name = models.CharField(max_length=256)
     item_description = models.CharField(max_length=300, blank=True, null = True)
    
-    
-    #item_role = models.ForeignKey(Roles, on_delete = models.CASCADE, default=1, related_name = 'itemrole')
-    #item_subrole = models.ForeignKey(Sub_Role, on_delete = models.CASCADE, default=1, related_name = 'itemsubrole')
     item_answer = models.TextField(max_length=700, default="Your answer")
     item_emotion = models.TextField(default= "emotions")
     item_answercount = models.IntegerField(default=1)
     category = models.CharField(max_length=256, blank=True, default="Personal")
     thumbnail = models.ImageField(upload_to='media', default = "c.png")  
-    #power_words = models.CharField(max_length=300, default="Tip")
-    #weak_words = models.CharField(max_length=300, default='appear')
+    
     Gender_CHOICES = [
         (Gender1, "Female"),
         (Gender2, "Male"),
@@ -60,8 +56,7 @@ class Item(models.Model):
     scenario_type = models.CharField(max_length= 16, choices = Scenario_Type_CHOICES, default= Scenario_Type1)
     role = models.ForeignKey(Org_Roles, on_delete=models.CASCADE, default=4)
     coming_across_as = models.CharField(max_length=250, default="sugestions")
-    #competency = models.ForeignKey(Competency, on_delete=models.CASCADE, default=1, blank=True)
-    #sub_competency = models.ForeignKey(Sub_Competency, on_delete = models.CASCADE, default= 1, blank=True)
+    
     competencys = models.ManyToManyField(Competency1, blank=True)
     #competency_power_words = models.ManyToManyField(PowerWords, blank=True)
     #competency_weak_words = models.ManyToManyField(NegativeWords, blank=True)
