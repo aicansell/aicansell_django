@@ -83,7 +83,7 @@ class Account(AbstractBaseUser):
 
     is_email_confirmed = models.BooleanField(default=False)
 
-    role = models.ForeignKey(Org_Roles, on_delete=models.CASCADE, default= 3)
+    role = models.ForeignKey(Org_Roles, on_delete=models.CASCADE, default= 4)
     #user_org = models.ForeignKey(Org, on_delete=models.CASCADE, default = 1, related_name='userorg1')
     #user_role = models.ForeignKey(Roles, on_delete=models.CASCADE, default = 1, related_name='roles2')
     #user_subrole = models.ForeignKey(Sub_Role, on_delete=models.CASCADE, default = 1, related_name='roles3')
