@@ -17,7 +17,7 @@ class OrgSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Org
-        fields = ['id', 'name', 'description', 'industry', 'industry_data']
+        fields = ['id', 'org_name', 'description', 'industry', 'industry_data']
 
 
 class OrgRolesSerializer(serializers.ModelSerializer):
