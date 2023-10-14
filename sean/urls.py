@@ -1,7 +1,7 @@
 from django.urls import path, include, re_path
 from rest_framework.routers import DefaultRouter
 
-from sean.views import ItemViewSet
+from sean.views import ItemViewSet, ItemHandleViewSet
 
 # from . import views
 # #from sean.views import ItemList
@@ -21,6 +21,7 @@ from sean.views import ItemViewSet
 
 router = DefaultRouter()
 router.register('item', ItemViewSet, basename='item')
+router.register('itemhandle', ItemHandleViewSet, basename='itemhandle')
 
 urlpatterns = [
     path('', include(router.urls)),
