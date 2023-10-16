@@ -3,10 +3,11 @@ from . import views
 from sean.views import ItemList
 from rest_framework.routers import DefaultRouter
 
-from sean.views import ItemViewSet
+from sean.views import ItemViewSet, ItemHandleViewSet
 
 router = DefaultRouter()
 router.register('item', ItemViewSet, basename='item')
+router.register('itemhandle', ItemHandleViewSet, basename='itemhandle')
 
 
 

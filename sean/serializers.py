@@ -19,13 +19,19 @@ class ItemListSerializer1(serializers.ModelSerializer):
 
     class Meta:
         model = Item
-        fields = ['id', 'item_name', 'item_description', 'item_emotion', 'thumbnail', 'category', 'role', 'item_type', 'scenario_type','level', 'user_powerwords', 'user_weakwords']     
+        fields = ['id', 'item_name', 'item_emotion', 'thumbnail', 'category', 'role', 'item_type', 'scenario_type','level', 'user_powerwords', 'user_weakwords']     
 
 class ItemSerializer(serializers.ModelSerializer):
+    role = serializers.StringRelatedField()
+    #competencys = CompetencySerializer(many=True)
+
     class Meta:
         model = Item
-        fields = '__all__'
-    
+        #depth = 1
+        #fields = '__all__'
+        fields = ['id', 'item_name', 'item_emotion', 'thumbnail', 'category', 'role', 'scenario_type', 'item_type', 
+                    'item_answercount', 'item_gender', 'level', 'coming_across_as', 'get_competencys_as_string',
+                    'user_powerwords', 'user_weakwords']
 
 class ItemEmotionSerializer(serializers.ModelSerializer):
     

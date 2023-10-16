@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.shortcuts import render, get_object_or_404
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
-from .serializers import ItemListSerializer1, ItemEmotionSerializer, ItemRecommendSerializer
+from .serializers import ItemListSerializer1, ItemEmotionSerializer, ItemRecommendSerializer, ItemSerializer
 from .models import Item
 from accounts.models import Account, UserProfile
 #from organisation.models import Role_Scenario
@@ -31,7 +31,7 @@ from rest_framework_tracking.mixins import LoggingMixin
 from orgss.models import Weightage, Org_Roles
 
 import nltk
-nltk.download('stopwords')
+#nltk.download('stopwords')
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 
@@ -170,14 +170,19 @@ class ItemViewSet(LoggingMixin, ViewSet):
         power_words_count = 0
         negative_words_count = 0
 
+        user_power_words = []
+        user_weak_words = []
+
 
         for word in emotion_words:
             if word in power_words:
                 instance.user_powerwords = instance.get('user_powerwords', '') + word + ','
                 power_words_count += 1
+                user_power_words.append(word)
             elif word in negative_words:
                 negative_words_count += 1
                 instance.user_weakwords = instance.get('user_weakwords', '') + word + ','
+                user_weak_words.append(word)
 
 
         score = power_words_count + negative_words_count
@@ -193,7 +198,19 @@ class ItemViewSet(LoggingMixin, ViewSet):
 
 
         instance.save()
-
+        """data = {
+            'id': instance.id,
+            'item_name': instance.item_name,
+            'item_description': instance.item_description,
+            'thumbnail': instance.thumbnail,
+            'category': instance.category,
+            'role': instance.role,
+            'item_type': instance.item_type,
+            'level': instance.level,
+        }
+        serialized_data = self.serializer_class(data=data)
+        serialized_data.is_valid(raise_exception=True)"""
+        
         
         data = serialized_data.data
 
@@ -207,9 +224,11 @@ class ItemViewSet(LoggingMixin, ViewSet):
             'item_type': data.get('item_type'),
             'level': data.get('level'),
             'compentency_score': score,
+            'powerword_detected': user_power_words,
+            'weekword_detected': user_weak_words,
         }
-        serialized_data = self.serializer_class(data=data)
-        serialized_data.is_valid(raise_exception=True)
+        #serialized_data = self.serializer_class(data=data)
+        #serialized_data.is_valid(raise_exception=True)
 
 
         response = {
@@ -221,6 +240,115 @@ class ItemViewSet(LoggingMixin, ViewSet):
         return Response(response, status=status.HTTP_201_CREATED)
 
 
+class ItemHandleViewSet(LoggingMixin, ViewSet):
+    permission_classes = [IsAuthenticated]
+    serializer_class = ItemSerializer
+
+    @staticmethod
+    def get_object(pk):
+        return get_object_or_404(Item, id=pk)
+
+    @staticmethod
+    def get_queryset():
+        return Item.objects.all()
+
+    def list(self, request):
+        data = Item.objects.filter(role=self.request.user.role).order_by('-id')
+
+        serializer_data = self.serializer_class(data, many=True).data
+        response = {
+            'status': 'Success',
+            'data': serializer_data,
+        }
+        return Response(response, status=status.HTTP_200_OK)
+
+    def retrieve(self, request, **kwargs):
+        pk = kwargs.pop('pk')
+        response = {
+            'status': 'Success',
+            'data': self.serializer_class(self.get_object(pk)).data
+        }
+        return Response(response, status=status.HTTP_200_OK)
+
+    def create(self, request):
+        request_data = self.request.data
+        data = {
+            'item_name': request_data.get('item_name'),
+            #'item_description': request_data.get('item_description'),
+            #er': request_data.get('item_answer'),
+            'item_emotion': request_data.get('item_emotion'),
+            'item_answercount': request_data.get('item_answercount'),
+            'category': request_data.get('category'),
+            'thumbnail': request_data.get('thumbnail'),
+            'item_gender': request_data.get('item_gender'),
+            'item_type': request_data.get('item_type'),
+            'role': request_data.get('role'),
+            'coming_across_as': request_data.get('coming_across_as'),
+            'competencys': request_data.get('competencys'),
+            'level': request_data.get('level'),
+            #'positive_traits': request_data.get('positive_traits'),
+            #'negative_traits': request_data.get('negative_traits'),
+            'user_powerwords': request_data.get('user_powerwords'),
+            'user_weakwords': request_data.get('user_weakwords'),
+            #'expert': request_data.get('expert'),
+        }
+
+        serialized_data = self.serializer_class(data=data)
+        serialized_data.is_valid(raise_exception=True)
+        serialized_data.save()
+        response = {
+            'status': 'Success',
+            'data': serialized_data.data,
+            'message': 'Item was successfully created.'
+        }
+        return Response(response, status=status.HTTP_201_CREATED)
+
+    def update(self, request, **kwargs):
+        instance = self.get_object(kwargs.pop('pk'))
+        request_data = self.request.data
+
+        data = {
+            'item_name': request_data.get('item_name', instance.item_name),
+            #'item_description': request_data.get('item_description', instance.item_description),
+            #'item_answer': request_data.get('item_answer', instance.item_answer),
+            'item_emotion': request_data.get('item_emotion', instance.item_emotion),
+            'item_answercount': request_data.get('item_answercount', instance.item_answercount),
+            'category': request_data.get('category', instance.category),
+            'thumbnail': request_data.get('thumbnail', instance.thumbnail),
+            'item_gender': request_data.get('item_gender', instance.item_gender),
+            'item_type': request_data.get('item_type', instance.item_type),
+            'role': request_data.get('role', instance.role_id),
+            'coming_across_as': request_data.get('coming_across_as', instance.coming_across_as),
+            'competencys': request_data.get('competencys', instance.competencys),
+            'level': request_data.get('level', instance.level),
+            #'positive_traits': request_data.get('positive_traits', instance.positive_traits),
+            #'negative_traits': request_data.get('negative_traits', instance.negative_traits),
+            'user_powerwords': request_data.get('user_powerwords', instance.user_powerwords),
+            'user_weakwords': request_data.get('user_weakwords', instance.user_weakwords),
+            #'expert': request_data.get('expert', instance.expert),
+        }
+
+        serialized_data = self.serializer_class(instance=instance, data=data)
+        serialized_data.is_valid(raise_exception=True)
+        serialized_data.save()
+        response = {
+            'status': 'Success',
+            'data': serialized_data.data,
+            'message': 'Item was successfully updated.'
+        }
+        return Response(response, status=status.HTTP_200_OK)
+
+
+    def destroy(self, request, **kwargs):
+        instance = self.get_object(kwargs.pop('pk'))
+        instance.delete()
+
+        response = {
+            'data': '',
+            'message': "Successfully deleted Item"
+        }
+
+        return Response(response, status=status.HTTP_204_NO_CONTENT)
        
 
 

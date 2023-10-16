@@ -66,6 +66,9 @@ class Item(models.Model):
     user_powerwords = models.CharField(max_length=300, default="up")
     user_weakwords = models.CharField(max_length=300, default="unp")
     expert = models.FileField(upload_to='media', blank = True, null=True)
+
+    def get_competencys_as_string(self):
+        return ', '.join(self.competencys.values_list('competency_name', flat=True))
     
 
 
