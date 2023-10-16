@@ -16,6 +16,7 @@ from orgss.models import Weightage, Org_Roles
 from accounts.models import UserProfile
 
 from collections import Counter
+from concurrent.futures import ThreadPoolExecutor  # Import ThreadPoolExecutor
 import string
 import nltk
 from nltk.corpus import stopwords
@@ -109,6 +110,14 @@ class ItemViewSet(LoggingMixin, ViewSet):
     def create(self, request):
         """Create or update an item with emotion analysis."""
         instance = Item.objects.get(id=request.data.get('id'))
+        
+        def process_emotion_word(word):
+            if word in power_words:
+                instance.user_powerwords = instance.get('user_powerwords', '') + word + ','
+                user_power_words.append(word)
+            elif word in negative_words:
+                instance.user_weakwords = instance.get('user_weakwords', '') + word + ','
+                user_weak_words.append(word)
 
         emotion_str = request.data.get('item_emotion')
 
@@ -129,24 +138,15 @@ class ItemViewSet(LoggingMixin, ViewSet):
         # Get the associated power_words, negative_words, and emotion_words for each competency
         power_words = words.values_list('competency__sub_competency__power_words', flat=True)
         negative_words = words.values_list('competency__sub_competency__negative_words', flat=True)
-
-        power_words_count = 0
-        negative_words_count = 0
         
         user_power_words = []
         user_weak_words = []
+                
+        # Use ThreadPoolExecutor for concurrent processing
+        with ThreadPoolExecutor(max_workers=4) as executor:
+            executor.map(process_emotion_word, emotion_words)
 
-        for word in emotion_words:
-            if word in power_words:
-                instance.user_powerwords = instance.get('user_powerwords', '') + word + ','
-                power_words_count += 1
-                user_power_words.append(word)
-            elif word in negative_words:
-                negative_words_count += 1
-                instance.user_weakwords = instance.get('user_weakwords', '') + word + ','
-                user_weak_words.append(word)
-
-        score = power_words_count - negative_words_count
+        score = len(user_power_words) - len(user_weak_words)
 
         userprofile_instance = UserProfile.objects.get(user=request.user)
         userprofile_instance.scenarios_attempted += 1
