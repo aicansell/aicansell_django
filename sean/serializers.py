@@ -2,6 +2,7 @@ from rest_framework import serializers
 from .models import Item
 #from competency.models import Competency1
 from competency.serializers import CompetencySerializer
+from competency.models import Competency1
 
 """
 class ItemListSerializer(serializers.ModelSerializer):
@@ -22,16 +23,14 @@ class ItemListSerializer1(serializers.ModelSerializer):
         fields = ['id', 'item_name', 'item_emotion', 'thumbnail', 'category', 'role', 'item_type', 'scenario_type','level', 'user_powerwords', 'user_weakwords']     
 
 class ItemSerializer(serializers.ModelSerializer):
-    role = serializers.StringRelatedField()
-    #competencys = CompetencySerializer(many=True)
+    #role = serializers.StringRelatedField()
+    competencys = CompetencySerializer(many=True)
 
     class Meta:
         model = Item
-        #depth = 1
-        #fields = '__all__'
-        fields = ['id', 'item_name', 'item_emotion', 'thumbnail', 'category', 'role', 'scenario_type', 'item_type', 
-                    'item_answercount', 'item_gender', 'level', 'coming_across_as', 'get_competencys_as_string',
-                    'user_powerwords', 'user_weakwords']
+        depth = 1
+        fields = '__all__'
+        
 
 class ItemEmotionSerializer(serializers.ModelSerializer):
     
