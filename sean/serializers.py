@@ -4,23 +4,26 @@ from .models import Item
 from competency.serializers import CompetencySerializer
 from competency.models import Competency1
 
-"""
-class ItemListSerializer(serializers.ModelSerializer):
+
+class ItemLiSerializer(serializers.ModelSerializer):
     role = serializers.StringRelatedField()
     #competency_power_words = serializers.StringRelatedField(many=True)
     #competencys = serializers.StringRelatedField(many=True)
     class Meta:
         model = Item
-        fields = ['id','item_name', 'item_description', 'thumbnail', 'category', 'role', 'item_type', 'level']
+        fields = ['id','item_name', 'thumbnail', 'category', 'scenario_type', 'item_gender', 'role', 'item_type', 'level']
         #fields = ['id','item_name', 'competencys', 'thumbnail', 'category', 'role', 'item_type', 'competency_power_words']
-"""
+
 
 class ItemListSerializer1(serializers.ModelSerializer):
-    role = serializers.StringRelatedField()
+    #role = serializers.StringRelatedField()
+    competencys = CompetencySerializer(many=True)
 
     class Meta:
         model = Item
-        fields = ['id', 'item_name', 'item_emotion', 'thumbnail', 'category', 'role', 'item_type', 'scenario_type','level', 'user_powerwords', 'user_weakwords']     
+        depth = 1
+        fields = '__all__'
+        #fields = ['id', 'item_name', 'item_emotion', 'thumbnail', 'category', 'role', 'item_type', 'gender','scenario_type','level', 'user_powerwords', 'user_weakwords', 'competencys']     
 
 class ItemSerializer(serializers.ModelSerializer):
     #role = serializers.StringRelatedField()

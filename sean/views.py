@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.shortcuts import render, get_object_or_404
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
-from .serializers import ItemListSerializer1, ItemEmotionSerializer, ItemRecommendSerializer, ItemSerializer
+from .serializers import ItemListSerializer1, ItemEmotionSerializer, ItemRecommendSerializer, ItemSerializer, ItemLiSerializer
 from .models import Item
 from accounts.models import Account, UserProfile
 #from organisation.models import Role_Scenario
@@ -30,10 +30,11 @@ from rest_framework_tracking.mixins import LoggingMixin
 
 from orgss.models import Weightage, Org_Roles
 
+"""
 import nltk
 #nltk.download('stopwords')
 from nltk.corpus import stopwords
-from nltk.tokenize import word_tokenize
+from nltk.tokenize import word_tokenize"""
 
 
 import spacy
@@ -48,6 +49,7 @@ nlp = spacy.load('en_core_web_sm')
 
 class ItemViewSet(LoggingMixin, ViewSet):
     serializer_class = ItemListSerializer1
+    #serializer_class = ItemSerializer
     permission_classes = [IsAuthenticated]
 
 
@@ -145,17 +147,17 @@ class ItemViewSet(LoggingMixin, ViewSet):
 
 
         # Tokenize the emotion string into words
-        #emotion_words = nlp(emotion_str)
-        emotion_words = word_tokenize(emotion_str)
+        emotion_words = nlp(emotion_str)
+        #emotion_words = word_tokenize(emotion_str)
 
 
         # Remove punctuation and convert to lowercase
-        emotion_words = [word.lower() for word in emotion_words if word not in string.punctuation]
+        #emotion_words = [word.lower() for word in emotion_words if word not in string.punctuation]
 
 
         # Remove stop words
-        stop_words = set(stopwords.words('english'))
-        #stop_words = spacy.lang.en.stop_words.STOP_WORDS
+        #stop_words = set(stopwords.words('english'))
+        stop_words = spacy.lang.en.stop_words.STOP_WORDS
         emotion_words = [word for word in emotion_words if word not in stop_words]
 
 
@@ -198,19 +200,21 @@ class ItemViewSet(LoggingMixin, ViewSet):
 
 
         instance.save()
-        """data = {
+        
+        data = {
             'id': instance.id,
             'item_name': instance.item_name,
             'item_description': instance.item_description,
-            'thumbnail': instance.thumbnail,
+            #'thumbnail': instance.thumbnail,
             'category': instance.category,
-            'role': instance.role,
+            'role': instance.role_id,
             'item_type': instance.item_type,
             'level': instance.level,
+            'competencys': instance.competencys
         }
         serialized_data = self.serializer_class(data=data)
-        serialized_data.is_valid(raise_exception=True)"""
-        
+        serialized_data.is_valid(raise_exception=True)
+       
         
         data = serialized_data.data
 
@@ -218,18 +222,22 @@ class ItemViewSet(LoggingMixin, ViewSet):
             'id': data.get('id'),
             'item_name': data.get('item_name'),
             'item_description': data.get('item_description'),
-            'thumbnail': data.get('thumbnail'),
+            #'thumbnail': data.get('thumbnail'),
             'category': data.get('category'),
-            'role': data.get('role'),
+            'role': data.get('role_id'),
             'item_type': data.get('item_type'),
             'level': data.get('level'),
             'compentency_score': score,
             'powerword_detected': user_power_words,
             'weekword_detected': user_weak_words,
+            'competencys': data.get('competencys')
         }
         #serialized_data = self.serializer_class(data=data)
         #serialized_data.is_valid(raise_exception=True)
 
+        serialized_data = self.serializer_class(instance=instance, data=data)
+        serialized_data.is_valid(raise_exception=True)
+        serialized_data.save()
 
         response = {
             'status': 'Success',
@@ -371,7 +379,7 @@ def item_list(request):
 class ItemList(generics.ListAPIView):
     
     queryset = Item.objects.all()
-    serializer_class = ItemListSerializer1
+    serializer_class = ItemLiSerializer
     permission_classes = [IsAuthenticated]
    
 
@@ -388,7 +396,7 @@ class ItemList(generics.ListAPIView):
         """
 
         items = Item.objects.filter(role = u2).order_by('-id')
-        serializer = ItemListSerializer1(items, many=True)
+        serializer = ItemLiSerializer(items, many=True)
         
         if items:
             return Response(serializer.data, status=status.HTTP_200_OK)
