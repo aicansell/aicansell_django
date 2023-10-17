@@ -17,13 +17,23 @@ class ItemLiSerializer(serializers.ModelSerializer):
 
 class ItemListSerializer1(serializers.ModelSerializer):
     #role = serializers.StringRelatedField()
-    competencys = CompetencySerializer(many=True)
+    #competencys = CompetencySerializer(many=True)
 
     class Meta:
         model = Item
-        depth = 1
-        fields = '__all__'
-        #fields = ['id', 'item_name', 'item_emotion', 'thumbnail', 'category', 'role', 'item_type', 'gender','scenario_type','level', 'user_powerwords', 'user_weakwords', 'competencys']     
+        #depth = 1
+        #fields = '__all__'
+        fields = ['id', 'item_emotion','user_powerwords', 'user_weakwords']
+
+    """
+    def create(self, validated_data):
+        competencys_data = validated_data.pop('competencys', [])  # Remove books from validated data
+        item = Item.objects.create(**validated_data)
+
+        # Associate book instances with the author
+        item.competencys.set(competencys_data)
+
+        return item   """ 
 
 class ItemSerializer(serializers.ModelSerializer):
     #role = serializers.StringRelatedField()
@@ -32,8 +42,7 @@ class ItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = Item
         depth = 1
-        fields = '__all__'
-        
+        fields = '__all__'   
 
 class ItemEmotionSerializer(serializers.ModelSerializer):
     
@@ -53,4 +62,4 @@ class ItemRecommendSerializer(serializers.ModelSerializer):
     class Meta:
         model = Item
         depth = 1
-        fields = ['coming_across_as','competencys'] 
+        fields = ['coming_across_as','competencys']   

@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.shortcuts import render, get_object_or_404
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
-from .serializers import ItemListSerializer1, ItemEmotionSerializer, ItemRecommendSerializer, ItemSerializer, ItemLiSerializer
+from .serializers import ItemListSerializer1, ItemEmotionSerializer, ItemRecommendSerializer,ItemSerializer, ItemLiSerializer
 from .models import Item
 from accounts.models import Account, UserProfile
 #from organisation.models import Role_Scenario
@@ -12,6 +12,7 @@ from django.db.models import F
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.parsers import JSONParser 
 from accounts.serializers import UserSerializer
+#from concurrent.futures import ThreadPoolExecutor 
 
 import string
 from collections import Counter
@@ -49,7 +50,6 @@ nlp = spacy.load('en_core_web_sm')
 
 class ItemViewSet(LoggingMixin, ViewSet):
     serializer_class = ItemListSerializer1
-    #serializer_class = ItemSerializer
     permission_classes = [IsAuthenticated]
 
 
@@ -138,9 +138,30 @@ class ItemViewSet(LoggingMixin, ViewSet):
     def create(self, request):
         """Create or update an item with emotion analysis."""
         instance = Item.objects.get(id=request.data.get('id'))
-
-
+        
         emotion_str = request.data.get('item_emotion')
+
+        competency = instance.competencys.all()
+
+        # Initialize an empty list to collect words
+        power_word_list = []
+        negative_word_list = []
+
+        # Loop through each competency and its sub-competencies
+        for competency in competency:
+            sub_competencies = competency.sub_competency.all()
+
+            # Loop through each sub-competency and its power words
+            for sub_competency in sub_competencies:
+                power_words = sub_competency.power_words.all()
+                negative_words = sub_competency.negative_words.all()
+
+                # Loop through each power word and its words
+                for power_word in power_words:
+                    power_word_list.append(power_word.word.word_name)
+
+                for negative_word in negative_words:
+                    negative_word_list.append(negative_word.word.word_name)
 
 
         instance.item_emotion = instance.item_emotion + ',' + emotion_str
@@ -149,6 +170,8 @@ class ItemViewSet(LoggingMixin, ViewSet):
         # Tokenize the emotion string into words
         emotion_words = nlp(emotion_str)
         #emotion_words = word_tokenize(emotion_str)
+        for token in emotion_words:
+            print(token.text, end = '|')
 
 
         # Remove punctuation and convert to lowercase
@@ -158,36 +181,40 @@ class ItemViewSet(LoggingMixin, ViewSet):
         # Remove stop words
         #stop_words = set(stopwords.words('english'))
         stop_words = spacy.lang.en.stop_words.STOP_WORDS
-        emotion_words = [word for word in emotion_words if word not in stop_words]
+        emotion_words = [word for word in emotion_words if word.text not in stop_words]
+        
 
-
+        #print(emotion_words)
+        """
         words = Weightage.objects.filter(org_role=instance.role)
-
 
         # Get the associated power_words, negative_words, and emotion_words for each competency
         power_words = words.values_list('competency__sub_competency__power_words', flat=True)
         negative_words = words.values_list('competency__sub_competency__negative_words', flat=True)
 
-
-        power_words_count = 0
-        negative_words_count = 0
+        #power_words_count = 0
+        #negative_words_count = 0"""
 
         user_power_words = []
         user_weak_words = []
+        """
+        with ThreadPoolExecutor(max_workers=4) as executor:
+            executor.map(process_emotion_word, emotion_words)"""
 
-
-        for word in emotion_words:
-            if word in power_words:
+       
+        for token in emotion_words:
+            if token.text in power_words:
                 instance.user_powerwords = instance.get('user_powerwords', '') + word + ','
                 power_words_count += 1
                 user_power_words.append(word)
-            elif word in negative_words:
+            elif token.text in negative_words:
                 negative_words_count += 1
                 instance.user_weakwords = instance.get('user_weakwords', '') + word + ','
                 user_weak_words.append(word)
 
 
-        score = power_words_count + negative_words_count
+        #score = power_words_count + negative_words_count
+        score = len(user_power_words) - len(user_weak_words)
 
 
         userprofile_instance = UserProfile.objects.get(user=request.user)
@@ -204,13 +231,13 @@ class ItemViewSet(LoggingMixin, ViewSet):
         data = {
             'id': instance.id,
             'item_name': instance.item_name,
-            'item_description': instance.item_description,
+            #'item_description': instance.item_description,
             #'thumbnail': instance.thumbnail,
-            'category': instance.category,
-            'role': instance.role_id,
-            'item_type': instance.item_type,
-            'level': instance.level,
-            'competencys': instance.competencys
+            #'category': instance.category,
+            #'role': instance.role_id,
+            #'item_type': instance.item_type,
+            #'level': instance.level,
+            #'competencys': instance.competencys
         }
         serialized_data = self.serializer_class(data=data)
         serialized_data.is_valid(raise_exception=True)
@@ -221,16 +248,18 @@ class ItemViewSet(LoggingMixin, ViewSet):
         response_data = {
             'id': data.get('id'),
             'item_name': data.get('item_name'),
-            'item_description': data.get('item_description'),
+            #'item_description': data.get('item_description'),
             #'thumbnail': data.get('thumbnail'),
-            'category': data.get('category'),
-            'role': data.get('role_id'),
-            'item_type': data.get('item_type'),
-            'level': data.get('level'),
+            #'category': data.get('category'),
+            #'role': data.get('role_id'),
+            #'item_type': data.get('item_type'),
+            #'level': data.get('level'),
             'compentency_score': score,
             'powerword_detected': user_power_words,
             'weekword_detected': user_weak_words,
-            'competencys': data.get('competencys')
+            'power_word_list': power_word_list,
+            'negative_word_list': negative_word_list,
+            #'competencys': data.get('competencys')
         }
         #serialized_data = self.serializer_class(data=data)
         #serialized_data.is_valid(raise_exception=True)
