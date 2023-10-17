@@ -111,15 +111,30 @@ class ItemViewSet(LoggingMixin, ViewSet):
         """Create or update an item with emotion analysis."""
         instance = Item.objects.get(id=request.data.get('id'))
         
-        def process_emotion_word(word):
-            if word in power_words:
-                instance.user_powerwords = instance.get('user_powerwords', '') + word + ','
-                user_power_words.append(word)
-            elif word in negative_words:
-                instance.user_weakwords = instance.get('user_weakwords', '') + word + ','
-                user_weak_words.append(word)
-
         emotion_str = request.data.get('item_emotion')
+        
+        competency = instance.competencys.all()
+        
+        # Initialize an empty list to collect words
+        power_word_list = []
+        negative_word_list = []
+
+        # Loop through each competency and its sub-competencies
+        for competency in competency:
+            sub_competencies = competency.sub_competency.all()
+
+            # Loop through each sub-competency and its power words
+            for sub_competency in sub_competencies:
+                power_words = sub_competency.power_words.all()
+                negative_words = sub_competency.negative_words.all()
+
+                # Loop through each power word and its words
+                for power_word in power_words:
+                    power_word_list.append(power_word.word.word_name)
+                    
+                for negative_word in negative_words:
+                    negative_word_list.append(negative_word.word.word_name)
+                
 
         instance.item_emotion = instance.item_emotion + ',' + emotion_str
 
@@ -132,24 +147,23 @@ class ItemViewSet(LoggingMixin, ViewSet):
         # Remove stop words
         stop_words = set(stopwords.words('english'))
         emotion_words = [word for word in emotion_words if word not in stop_words]
-
-        words = Weightage.objects.filter(org_role=instance.role)
-
-        # Get the associated power_words, negative_words, and emotion_words for each competency
-        power_words = words.values_list('competency__sub_competency__power_words', flat=True)
-        negative_words = words.values_list('competency__sub_competency__negative_words', flat=True)
         
         user_power_words = []
         user_weak_words = []
-                
-        # Use ThreadPoolExecutor for concurrent processing
-        with ThreadPoolExecutor(max_workers=4) as executor:
-            executor.map(process_emotion_word, emotion_words)
+            
+        for word in emotion_words:
+            if word in power_word_list:
+                instance.user_powerwords = (instance.user_powerwords or '') + word + ','
+                user_power_words.append(word)
+            elif word in negative_word_list:
+                instance.user_weakwords = (instance.user_weakwords or '') + word + ','
+                user_weak_words.append(word)
 
         score = len(user_power_words) - len(user_weak_words)
 
         userprofile_instance = UserProfile.objects.get(user=request.user)
         userprofile_instance.scenarios_attempted += 1
+        instance.item_answercount += 1
         if userprofile_instance.scenarios_attempted_score:
             userprofile_instance.scenarios_attempted_score += str(score) + ','
         else:
@@ -161,11 +175,9 @@ class ItemViewSet(LoggingMixin, ViewSet):
         data = {
             'id': instance.id,
             'item_name': instance.item_name,
-            'item_description': instance.item_description,
-            'thumbnail': instance.thumbnail,
+            'item_answercount': instance.item_answercount,
             'category': instance.category,
             'role': instance.role,
-            'item_type': instance.item_type,
             'level': instance.level,
         }
 
@@ -177,15 +189,15 @@ class ItemViewSet(LoggingMixin, ViewSet):
         response_data = {
             'id': data.get('id'),
             'item_name': data.get('item_name'),
-            'item_description': data.get('item_description'),
-            'thumbnail': data.get('thumbnail'),
             'category': data.get('category'),
+            'item_answercount': data.get('item_answercount'),
             'role': data.get('role'),
-            'item_type': data.get('item_type'),
             'level': data.get('level'),
             'compentency_score': score,
             'powerword_detected': user_power_words,
             'weekword_detected': user_weak_words,
+            'power_word_list': power_word_list,
+            'negative_word_list': negative_word_list,
         }
 
         response = {

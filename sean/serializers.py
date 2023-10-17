@@ -7,7 +7,7 @@ class ItemListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Item
-        fields = ['id', 'item_name', 'item_description', 'item_emotion', 'thumbnail', 'category', 'role', 'item_type', 'level', 'user_powerwords', 'user_weakwords']
+        fields = ['id', 'item_name', 'item_emotion', 'category', 'role', 'level', 'user_powerwords', 'user_weakwords']
 
 class ItemSerializer(serializers.ModelSerializer):
     class Meta:
