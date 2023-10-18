@@ -156,6 +156,9 @@ class ItemViewSet(LoggingMixin, ViewSet):
                 power_words = sub_competency.power_words.all()
                 negative_words = sub_competency.negative_words.all()
 
+                print(power_words)
+                print(negative_words)
+
                 # Loop through each power word and its words
                 for power_word in power_words:
                     power_word_list.append(power_word.word.word_name)
@@ -200,31 +203,25 @@ class ItemViewSet(LoggingMixin, ViewSet):
 
         user_power_words = []
         user_weak_words = []
+        
         """
-        with ThreadPoolExecutor(max_workers=4) as executor:
-            executor.map(process_emotion_word, emotion_words)"""
-
+        for word in emotion_words:
+            if word.text in power_word_list:
+                instance.user_powerwords = instance.get('user_powerwords', '') + word.text + ','
+                power_words_count += 1
+                user_power_words.append(word.text)
+            elif token.text in negative_word_list:
+                negative_words_count += 1
+                instance.user_weakwords = instance.get('user_weakwords', '') + token.text + ','
+                user_weak_words.append(token.text)"""
+        
         for token in emotion_words:
-            if token.text in power_words:
-                instance.user_powerwords = instance.get('user_powerwords', '') + word + ','
-                power_words_count += 1
-                user_power_words.append(word)
-            elif token.text in negative_words:
-                negative_words_count += 1
-                instance.user_weakwords = instance.get('user_weakwords', '') + word + ','
-                user_weak_words.append(word)
-
-        """
-        for chunk in emotion_words.noun_chunks:
-            if chunk.text in power_words:
-                instance.user_powerwords = instance.get('user_powerwords', '') + word + ','
-                power_words_count += 1
-                user_power_words.append(word)
-            elif chunk.text in negative_words:
-                negative_words_count += 1
-                instance.user_weakwords = instance.get('user_weakwords', '') + word + ','
-                user_weak_words.append(word)  """      
-
+            if token.text in power_word_list:
+                instance.user_powerwords = (instance.user_powerwords or '') + token.text + ','
+                user_power_words.append(token.text)
+            elif token.text in negative_word_list:
+                instance.user_weakwords = (instance.user_weakwords or '') + token.text + ','
+                user_weak_words.append(token.text)
 
         #score = power_words_count + negative_words_count
         score = len(user_power_words) - len(user_weak_words)
