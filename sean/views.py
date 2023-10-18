@@ -156,9 +156,6 @@ class ItemViewSet(LoggingMixin, ViewSet):
                 power_words = sub_competency.power_words.all()
                 negative_words = sub_competency.negative_words.all()
 
-                print(power_words)
-                print(negative_words)
-
                 # Loop through each power word and its words
                 for power_word in power_words:
                     power_word_list.append(power_word.word.word_name)
@@ -175,8 +172,6 @@ class ItemViewSet(LoggingMixin, ViewSet):
         #emotion_words = word_tokenize(emotion_str)
         for token in emotion_words:
             print(token.text, end = '|')
-        for chunks in emotion_words.noun_chunks:
-            print(chunks.text)    
 
 
         # Remove punctuation and convert to lowercase
