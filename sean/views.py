@@ -172,6 +172,8 @@ class ItemViewSet(LoggingMixin, ViewSet):
         #emotion_words = word_tokenize(emotion_str)
         for token in emotion_words:
             print(token.text, end = '|')
+        for chunks in emotion_words.noun_chunks:
+            print(chunks.text)    
 
 
         # Remove punctuation and convert to lowercase
@@ -182,6 +184,7 @@ class ItemViewSet(LoggingMixin, ViewSet):
         #stop_words = set(stopwords.words('english'))
         stop_words = spacy.lang.en.stop_words.STOP_WORDS
         emotion_words = [word for word in emotion_words if word.text not in stop_words]
+        print(emotion_words)
         
 
         #print(emotion_words)
@@ -201,7 +204,6 @@ class ItemViewSet(LoggingMixin, ViewSet):
         with ThreadPoolExecutor(max_workers=4) as executor:
             executor.map(process_emotion_word, emotion_words)"""
 
-       
         for token in emotion_words:
             if token.text in power_words:
                 instance.user_powerwords = instance.get('user_powerwords', '') + word + ','
@@ -211,6 +213,17 @@ class ItemViewSet(LoggingMixin, ViewSet):
                 negative_words_count += 1
                 instance.user_weakwords = instance.get('user_weakwords', '') + word + ','
                 user_weak_words.append(word)
+
+        """
+        for chunk in emotion_words.noun_chunks:
+            if chunk.text in power_words:
+                instance.user_powerwords = instance.get('user_powerwords', '') + word + ','
+                power_words_count += 1
+                user_power_words.append(word)
+            elif chunk.text in negative_words:
+                negative_words_count += 1
+                instance.user_weakwords = instance.get('user_weakwords', '') + word + ','
+                user_weak_words.append(word)  """      
 
 
         #score = power_words_count + negative_words_count
@@ -238,6 +251,7 @@ class ItemViewSet(LoggingMixin, ViewSet):
             #'item_type': instance.item_type,
             #'level': instance.level,
             #'competencys': instance.competencys
+            'coming_across_as': instance.coming_across_as
         }
         serialized_data = self.serializer_class(data=data)
         serialized_data.is_valid(raise_exception=True)
@@ -254,6 +268,7 @@ class ItemViewSet(LoggingMixin, ViewSet):
             #'role': data.get('role_id'),
             #'item_type': data.get('item_type'),
             #'level': data.get('level'),
+            'coming_across_as': data.get('coming_across_as'),
             'compentency_score': score,
             'powerword_detected': user_power_words,
             'weekword_detected': user_weak_words,

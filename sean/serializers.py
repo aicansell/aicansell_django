@@ -23,7 +23,7 @@ class ItemListSerializer1(serializers.ModelSerializer):
         model = Item
         #depth = 1
         #fields = '__all__'
-        fields = ['id', 'item_emotion','user_powerwords', 'user_weakwords']
+        fields = ['id', 'item_emotion','user_powerwords', 'user_weakwords', 'coming_across_as']
 
     """
     def create(self, validated_data):
