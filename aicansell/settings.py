@@ -43,7 +43,7 @@ SECRET_KEY = get_env_variable('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = get_env_variable('DEBUG')
 
-ALLOWED_HOSTS = ['django-aicansell-env.eba-2a8k8khv.us-west-2.elasticbeanstalk.com', '*']
+ALLOWED_HOSTS = ['https://aicansellapp.com/', ' https://aicansell.com/', '*']
 
 
 # Application definition

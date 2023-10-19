@@ -211,7 +211,7 @@ class WeightageViewSet(LoggingMixin, ViewSet):
         data = {
             'org_role': request_data.get('org_role'),
             'subcompetency': request_data.get('subcompetency'),
-            'weight': request_data.get('weight'),
+            'weightage': request_data.get('weightage'),
         }
         
         serialized_data = self.serializer_class(data=data)
@@ -232,7 +232,7 @@ class WeightageViewSet(LoggingMixin, ViewSet):
         data = {
             'org_role': request_data.get('org_role', instance.org_role),
             'subcompetency': request_data.get('subcompetency', instance.subcompetency),
-            'weight': request_data.get('weight', instance.weight),
+            'weightage': request_data.get('weightage', instance.weightage),
         }
         
         serialized_data = self.serializer_class(instance=instance, data=data)
