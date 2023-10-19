@@ -7,6 +7,11 @@ class Words(models.Model):
 
     word_name = models.CharField(max_length=250)
 
+    def save(self, *args, **kwargs):
+        # Convert the field to lowercase before saving
+        self.word_name = self.word_name.lower()
+        super(Words, self).save(*args, **kwargs)
+
 class PowerWords(models.Model):
     def __str__(self):
         return f'{self.word}'
