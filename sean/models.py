@@ -4,20 +4,6 @@ from orgss.models import Org_Roles
 from accounts.models import Account
 from competency.models import Competency
 
-
-class Traits(models.Model):
-    def __str__(self):
-        return self.trait_name
-
-    trait_name = models.CharField(max_length=250, default= "trait")
-
-class Collection(models.Model):
-    def __str__(self):
-        return self.trait_name
-
-    collection_name = models.CharField(max_length=250, default= "collection")    
-
-
 class Item(models.Model):
     def __str__(self):
         return self.item_name

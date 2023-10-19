@@ -1,7 +1,12 @@
 from django.db import models
 
 from words.models import PowerWords, NegativeWords, EmotionWords
+    
+class Senti(models.Model):
+    def _str_(self):
+        return self.name
 
+    name = models.CharField(max_length=250, unique=True)
 
 class Sub_Competency(models.Model):
     def __str__(self):
@@ -19,6 +24,11 @@ class Competency(models.Model):
 
     name = models.CharField(max_length = 250, unique=True)
     sub_competency = models.ManyToManyField(Sub_Competency, blank=True)
-
+    competency_sentiment = models.ManyToManyField(Senti, blank=True)
     
+class MasterCompetency(models.Model):
+    def _str_(self):
+        return self.name
 
+    name = models.CharField(max_length=250, unique=True)
+    master_competency = models.ManyToManyField(Competency, blank = True)

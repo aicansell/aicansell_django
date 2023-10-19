@@ -89,7 +89,7 @@ class ItemViewSet(LoggingMixin, ViewSet):
             users_scenarios_attempted = {}
                 
             for user in user_data:
-                users_scenarios_attempted[f"{user.user.username}_scenarios_attempted"] = user.scenarios_attempted
+                users_scenarios_attempted[f"{user.user.email}_scenarios_attempted"] = user.scenarios_attempted
 
             # Add user-specific counts to the response
             response["users_scenarios_attempted"] = users_scenarios_attempted
@@ -130,10 +130,10 @@ class ItemViewSet(LoggingMixin, ViewSet):
 
                 # Loop through each power word and its words
                 for power_word in power_words:
-                    power_word_list.append(power_word.word.word_name)
+                    power_word_list.append(power_word.word.word_name.lower())
                     
                 for negative_word in negative_words:
-                    negative_word_list.append(negative_word.word.word_name)
+                    negative_word_list.append(negative_word.word.word_name.lower())
                 
 
         instance.item_emotion = instance.item_emotion + ',' + emotion_str

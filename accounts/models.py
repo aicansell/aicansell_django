@@ -47,6 +47,7 @@ class MyAccountManager(BaseUserManager):
         user.is_staff = True
         user.is_active = True
         user.is_superadmin = True
+        user.user_role = 'super_admin'
 
         user.save(using = self.db)
         return user
@@ -108,8 +109,8 @@ class UserProfile(models.Model):
     quizzes_streak = models.IntegerField(default=1)
     scenarios_attempted = models.IntegerField(default=1)
     scenarios_attempted_score = models.CharField(max_length= 500, null=True, blank=True, default="")
-    jadu_attempted = models.IntegerField(default=1)
-    jadu_asked = models.IntegerField(default=1)
+    jadu_attempted = models.IntegerField(default=1, null=True, blank=True)
+    jadu_asked = models.IntegerField(default=1, null=True, blank=True)
     bookmarks = models.CharField(blank=True,null=True, max_length=300)
     gender = models.CharField(blank=True, null=True, max_length=10)
     user_scenario_submitted = models.CharField(max_length= 250, default= "")
