@@ -54,7 +54,7 @@ class Item(models.Model):
         
     ]
     scenario_type = models.CharField(max_length= 16, choices = Scenario_Type_CHOICES, default= Scenario_Type1)
-    #role = models.ForeignKey(Org_Roles, on_delete=models.CASCADE, default=4)
+    role = models.ForeignKey(Org_Roles, on_delete=models.CASCADE, default=1)
     coming_across_as = models.CharField(max_length=250, default="sugestions")
     
     competencys = models.ManyToManyField(Competency, blank=True)
