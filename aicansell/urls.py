@@ -39,7 +39,7 @@ urlpatterns = [
     #path('org/', include('organisation.urls')),
     path('', health_check),
     path('', include('competency.urls')),
-    path('', include('words.urls')),
+    path('words/', include('words.urls')),
     #path('org/', include('orgss.urls')),
     
 
