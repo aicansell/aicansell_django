@@ -155,6 +155,8 @@ class ItemViewSet(LoggingMixin, ViewSet):
             for sub_competency in sub_competencies:
                 power_words = sub_competency.power_words.all()
                 negative_words = sub_competency.negative_words.all()
+                print(power_words)
+                print(negative_words)
 
                 # Loop through each power word and its words
                 for power_word in power_words:
@@ -224,6 +226,7 @@ class ItemViewSet(LoggingMixin, ViewSet):
 
         userprofile_instance = UserProfile.objects.get(user=request.user)
         userprofile_instance.scenarios_attempted += 1
+        instance.item_answercount += 1
         if userprofile_instance.scenarios_attempted_score:
             userprofile_instance.scenarios_attempted_score += str(score) + ','
         else:
