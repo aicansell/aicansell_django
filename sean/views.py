@@ -160,10 +160,10 @@ class ItemViewSet(LoggingMixin, ViewSet):
 
                 # Loop through each power word and its words
                 for power_word in power_words:
-                    power_word_list.append(power_word.word.word_name)
+                    power_word_list.append(power_word.word.word_name.lower())
 
                 for negative_word in negative_words:
-                    negative_word_list.append(negative_word.word.word_name)
+                    negative_word_list.append(negative_word.word.word_name.lower())
 
 
         instance.item_emotion = instance.item_emotion + ',' + emotion_str
