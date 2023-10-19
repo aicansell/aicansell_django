@@ -34,13 +34,14 @@ urlpatterns = [
     path('chatbot/', include('chatbot.urls')),
     path('quiz/', include('quiz.urls')),
     path('sean/', include('sean.urls')),
-    path('orgss/', include('orgss.urls')),
+    #path('orgss/', include('orgss.urls')),
     path('industry/', include('industry.urls')),
     #path('org/', include('organisation.urls')),
     path('', health_check),
     path('', include('competency.urls')),
-    path('words/', include('words.urls')),
+    #path('', include('words.urls')),
     #path('org/', include('orgss.urls')),
+    path('words/', include('words.urls')),
     
 
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

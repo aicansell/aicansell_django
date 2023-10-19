@@ -1,7 +1,7 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 
-from orgss.views import OrgViewSet, OrgRolesViewSet, WeightageViewSet
+from organisation.views import OrgViewSet, OrgRolesViewSet, WeightageViewSet
 
 router = DefaultRouter()
 router.register('org', OrgViewSet, basename='org')

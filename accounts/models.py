@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.dispatch import receiver
 from django.db.models.signals import post_save
-from role.models import Role, Sub_Role
+#from role.models import Role, Sub_Role
 #from organisation.models import Org, Org_Roles
 from orgss.models import Org, Org_Roles
 
@@ -77,7 +77,7 @@ class Account(AbstractBaseUser):
 
     is_email_confirmed = models.BooleanField(default=False)
 
-    role = models.ForeignKey(Org_Roles, on_delete=models.CASCADE, null=True, blank=True)
+    role = models.ForeignKey(Org_Roles, on_delete=models.CASCADE, default= 1)
     #user_org = models.ForeignKey(Org, on_delete=models.CASCADE, default = 1, related_name='userorg1')
     #user_role = models.ForeignKey(Roles, on_delete=models.CASCADE, default = 1, related_name='roles2')
     #user_subrole = models.ForeignKey(Sub_Role, on_delete=models.CASCADE, default = 1, related_name='roles3')
@@ -118,6 +118,12 @@ class UserProfile(models.Model):
     user_scenario_bookmarked = models.CharField(max_length= 250, default= "")
     level = models.IntegerField(default=1)
     city = models.CharField(max_length= 250, default= "")
+    user_powerwords = models.CharField(max_length= 250, default='upw')
+    user_weakwords = models.CharField(max_length= 250, default = 'uww')
+    scenario_attempt_pw = models.CharField(max_length=250, default= "sapw")
+    scenario_attempt_ww = models.CharField(max_length=250, default = "saww")
+    pw_competency = models.CharField(max_length= 250, default = "pw")
+    ww_competency = models.CharField(max_length=250, default = "ww")
 
 
 @receiver(post_save,sender=Account)
