@@ -31,16 +31,13 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('accounts/', include('accounts.urls')),
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('chatbot/', include('chatbot.urls')),
     path('quiz/', include('quiz.urls')),
     path('sean/', include('sean.urls')),
-    #path('orgss/', include('orgss.urls')),
     path('industry/', include('industry.urls')),
-    #path('org/', include('organisation.urls')),
     path('', health_check),
     path('', include('competency.urls')),
-    #path('', include('words.urls')),
-    #path('org/', include('orgss.urls')),
     path('words/', include('words.urls')),
     
 
