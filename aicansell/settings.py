@@ -69,6 +69,8 @@ INSTALLED_APPS = [
     'competency',
     'words',
     'orgss',
+
+    'corsheaders',
     
     
 ]

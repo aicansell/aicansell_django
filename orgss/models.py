@@ -1,17 +1,20 @@
 from django.db import models
 from industry.models import Industry
 
-from role.models import Role, Sub_Role
-from competency.models import Competency
+#from role.models import Roles, Sub_Role
+from competency.models import Competency, Sub_Competency
+#from sean.models import Item
 
+#from quiz.models import Quiz
 
+# Create your models here.
 class Org(models.Model):
     def __str__(self):
         return self.name
 
     name = models.CharField(max_length=250)
     description = models.CharField(max_length=500, blank=True, null=True)
-    industry = models.ForeignKey(Industry, on_delete=models.CASCADE, related_name='industry')
+    industry1 = models.ForeignKey(Industry, on_delete=models.CASCADE, related_name='industry1', default = 1)
 
 
 class Org_Roles(models.Model):
@@ -19,19 +22,20 @@ class Org_Roles(models.Model):
         return self.org_role_name
 
     org_role_name = models.CharField(max_length=250, blank=True, null=True)
-    org = models.ForeignKey(Org, on_delete=models.CASCADE, default = 1)
-    role = models.ForeignKey(Role, on_delete=models.CASCADE, default = 1)
-    subrole = models.ForeignKey(Sub_Role, on_delete=models.CASCADE, null=True, blank=True)
-
+    org = models.ForeignKey(Org, on_delete=models.CASCADE, default = 1, related_name='org1')
+    #role = models.ForeignKey(Roles, on_delete=models.CASCADE, default = 1, related_name='roles12')
+    #subrole = models.ForeignKey(Sub_Role, on_delete=models.CASCADE, default = 1, related_name='org1')
+    
 
 class Weightage(models.Model):
     org_role = models.ForeignKey(Org_Roles, on_delete=models.CASCADE)
-    competency = models.ForeignKey(Competency, on_delete=models.CASCADE, related_name='competency')
+    competency = models.ForeignKey(Competency, on_delete=models.CASCADE, default=1, related_name= 'rolecompetency1')
+    #subcompetencys = models.ForeignKey(Sub_Competency, on_delete=models.CASCADE, default=1)
+    #subcompetency = models.ManyToManyField(Sub_Competency, blank=True)
     weightage = models.IntegerField(default=1)
     
     def __str__(self):
         return f'{self.competency}'
-
 
 
 """

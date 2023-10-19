@@ -1,12 +1,16 @@
 from rest_framework import serializers
 
 from industry.models import Industry
-from orgss.models import Org, Org_Roles, Weightage
+
 from industry.serializers import IndustrySerializer
 from role.models import Role, Sub_Role
-from competency.models import Competency
+from competency.models import Sub_Competency1
 from role.serializers import RoleSerializer, SubRoleSerializer
+
+from orgss.models import Org, Org_Roles, Weightage
+
 from competency.serializers import CompetencySerializer
+
 
 class OrgSerializer(serializers.ModelSerializer):
     industry_data = serializers.SerializerMethodField()
@@ -24,8 +28,7 @@ class OrgRolesSerializer(serializers.ModelSerializer):
     class Meta:
         model = Org_Roles
         fields = ['id', 'org_role_name', 'org', 'org_role', 'org_subrole']
-
-   
+        
 class OrgRolesListSerializer(serializers.ModelSerializer):
     org = serializers.SerializerMethodField()
     role = serializers.SerializerMethodField()
@@ -48,13 +51,12 @@ class OrgRolesListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Org_Roles
         fields = ['id', 'org_role_name', 'org', 'role', 'subrole']
-
-
+     
 
 class WeightageSerializer(serializers.ModelSerializer):
     class Meta:
         model = Weightage
-        fields = ['id', 'org_role', 'competency', 'weightage']
+        fields = ['id', 'org_role', 'subcompetency', 'weightage']
 
 
 class WeightageListSerializer(serializers.ModelSerializer):
@@ -71,4 +73,4 @@ class WeightageListSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Weightage
-        fields = ['id', 'org_role', 'competency', 'weightage']
+        fields = ['id', 'org_role', 'competency', 'weightage']        
