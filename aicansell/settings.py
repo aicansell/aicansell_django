@@ -43,7 +43,7 @@ SECRET_KEY = get_env_variable('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = get_env_variable('DEBUG')
 
-ALLOWED_HOSTS = ['https://aicansellapp.com/', ' https://aicansell.com/', '*']
+ALLOWED_HOSTS = ['django-aicansell-env.eba-2a8k8khv.us-west-2.elasticbeanstalk.com', '*']
 
 
 # Application definition
@@ -83,6 +83,9 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware',
 ]
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
@@ -117,6 +120,13 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'aicansell.wsgi.application'
 AUTH_USER_MODEL = 'accounts.Account'
+
+CORS_ORIGIN_WHITELIST = [
+    'https://aicansellapp.com',
+    'https://aicansell.com',
+]
+
+CORS_ALLOW_ALL_ORIGINS = True
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
