@@ -226,6 +226,8 @@ class ItemViewSet(LoggingMixin, ViewSet):
 
         userprofile_instance = UserProfile.objects.get(user=request.user)
         userprofile_instance.scenarios_attempted += 1
+        userprofile_instance.user_powerwords = (userprofile_instance.user_powerwords or '') + user_power_words
+        userprofile_instance.user_weakwords = (userprofile_instance.user_weakwords or '') + user_weak_words
         instance.item_answercount += 1
         if userprofile_instance.scenarios_attempted_score:
             userprofile_instance.scenarios_attempted_score += str(score) + ','
@@ -301,11 +303,21 @@ class ItemHandleViewSet(LoggingMixin, ViewSet):
 
     def list(self, request):
         data = Item.objects.filter(role=self.request.user.role).order_by('-id')
+        
+        user_instance = UserProfile.objects.get(user=request.user)
+        
+        user_details = {
+            'power_words_used': user_instance.user_powerwords,
+            'week_words_used': user_instance.user_weakwords,
+            'scenarios_attempted': user_instance.scenarios_attempted,
+            'scenarios_attempted_score': user_instance.scenarios_attempted_score,
+        }
 
         serializer_data = self.serializer_class(data, many=True).data
         response = {
             'status': 'Success',
             'data': serializer_data,
+            'user_details': user_details
         }
         return Response(response, status=status.HTTP_200_OK)
 
