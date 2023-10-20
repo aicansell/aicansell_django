@@ -3,18 +3,6 @@ from django.db import models
 from words.models import PowerWords, NegativeWords, EmotionWords
 
 
-# Create your models here.
-
-
-
-"""
-class Sub_Competency(models.Model):
-    def __str__(self):
-        return self.subcompetency_name
-
-    #sub_competency = models.ForeignKey(Competency, on_delete=models.CASCADE, related_name='role')
-    subcompetency_name = models.CharField(max_length=250, unique=True)"""
-
 class Senti(models.Model):
     def __str__(self):
         return self.name
@@ -30,7 +18,6 @@ class Sub_Competency(models.Model):
     power_words = models.ManyToManyField(PowerWords, blank=True)
     negative_words = models.ManyToManyField(NegativeWords, blank=True)
     emotion_words = models.ManyToManyField(EmotionWords, blank=True)
-
     
 
 class Competency(models.Model):
@@ -40,14 +27,14 @@ class Competency(models.Model):
     competency_name = models.CharField(max_length = 250, unique=True)
     sub_competency = models.ManyToManyField(Sub_Competency, blank=True)
     competency_sentiment = models.ManyToManyField(Senti, blank=True)
-    #master_competency = models.ForeignKey(MasterCompetency, default = 1, on_delete= models.CASCADE)
 
     def get_senti_as_string(self):
         return ', '.join(self.competency_sentiment.values_list('name', flat=True))
+
 
 class MasterCompetency(models.Model):
     def __str__(self):
         return self.name
 
     name = models.CharField(max_length=250, unique=True)
-    master_competency = models.ManyToManyField(Competency, blank = True) 
+    master_competency = models.ManyToManyField(Competency, blank = True)
