@@ -27,7 +27,7 @@ class Item(models.Model):
     Scenario_Type3 = "Interview"
 
 
-    item_name = models.CharField(max_length=256)
+    item_name = models.CharField(max_length=700)
     item_description = models.CharField(max_length=300, blank=True, null = True)
    
     item_answer = models.TextField(max_length=700, default="Your answer")
