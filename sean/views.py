@@ -123,7 +123,7 @@ class ItemViewSet(LoggingMixin, ViewSet):
         """Create or update an item with emotion analysis."""
         instance = Item.objects.get(id=request.data.get('id'))
         
-        emotion_str = request.data.get('item_emotion').lower()
+        emotion_str = request.data.get('item_emotion').lower().lower()
 
         competency = instance.competencys.all()
 
@@ -161,6 +161,8 @@ class ItemViewSet(LoggingMixin, ViewSet):
             print(token.text, end = '|')
 
 
+        # Remove stop words
+        
         stop_words = spacy.lang.en.stop_words.STOP_WORDS
         emotion_words = [word for word in emotion_words if word.text not in stop_words]
         
@@ -182,8 +184,8 @@ class ItemViewSet(LoggingMixin, ViewSet):
 
         userprofile_instance = UserProfile.objects.get(user=request.user)
         userprofile_instance.scenarios_attempted += 1
-        userprofile_instance.user_powerwords = (userprofile_instance.user_powerwords or '') + user_power_words
-        userprofile_instance.user_weakwords = (userprofile_instance.user_weakwords or '') + user_weak_words
+        userprofile_instance.user_powerwords = (userprofile_instance.user_powerwords or '') + ", ".join(user_power_words) 
+        userprofile_instance.user_weakwords = (userprofile_instance.user_weakwords or '') + ", ".join(user_weak_words)
         instance.item_answercount += 1
         if userprofile_instance.scenarios_attempted_score:
             userprofile_instance.scenarios_attempted_score += str(score) + ','
@@ -213,8 +215,10 @@ class ItemViewSet(LoggingMixin, ViewSet):
             'powerword_detected': user_power_words,
             'weekword_detected': user_weak_words,
             'power_word_list': power_word_list,
-            'negative_word_list': negative_word_list
+            'negative_word_list': negative_word_list,
+            
         }
+       
 
         serialized_data = self.serializer_class(instance=instance, data=data)
         serialized_data.is_valid(raise_exception=True)
@@ -272,8 +276,6 @@ class ItemHandleViewSet(LoggingMixin, ViewSet):
         request_data = self.request.data
         data = {
             'item_name': request_data.get('item_name'),
-            #'item_description': request_data.get('item_description'),
-            #er': request_data.get('item_answer'),
             'item_emotion': request_data.get('item_emotion'),
             'item_answercount': request_data.get('item_answercount'),
             'category': request_data.get('category'),
@@ -284,11 +286,9 @@ class ItemHandleViewSet(LoggingMixin, ViewSet):
             'coming_across_as': request_data.get('coming_across_as'),
             'competencys': request_data.get('competencys'),
             'level': request_data.get('level'),
-            #'positive_traits': request_data.get('positive_traits'),
-            #'negative_traits': request_data.get('negative_traits'),
             'user_powerwords': request_data.get('user_powerwords'),
             'user_weakwords': request_data.get('user_weakwords'),
-            #'expert': request_data.get('expert'),
+            
         }
 
         serialized_data = self.serializer_class(data=data)
@@ -352,19 +352,7 @@ class ItemHandleViewSet(LoggingMixin, ViewSet):
 
 
 #listing scenarios
-"""
-@api_view(['GET']) 
-def item_list(request):
-    
-    item_list = Item.objects.all().order_by('-id')
-    serializer = ItemListSerializer(item_list, many=True)
 
-    # if there is something in items else raise error
-    if item_list:
-        return Response(serializer.data)
-    else:
-        return Response(status=status.HTTP_404_NOT_FOUND)
-"""
 
 class ItemList(generics.ListAPIView):
     

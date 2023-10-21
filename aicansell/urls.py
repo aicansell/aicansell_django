@@ -38,6 +38,9 @@ urlpatterns = [
     path('industry/', include('industry.urls')),
     path('', health_check),
     path('', include('competency.urls')),
+    #path('', include('words.urls')),
+    path('', include('orgss.urls')),
+    path('refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('words/', include('words.urls')),
     
 

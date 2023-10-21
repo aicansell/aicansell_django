@@ -3,8 +3,8 @@ from rest_framework import serializers
 from industry.models import Industry
 
 from industry.serializers import IndustrySerializer
-from role.models import Role, Sub_Role
-from competency.models import Sub_Competency1
+from role.models import Roles, Sub_Role
+from competency.models import Sub_Competency
 from role.serializers import RoleSerializer, SubRoleSerializer
 
 from orgss.models import Org, Org_Roles, Weightage

@@ -1,10 +1,10 @@
 from rest_framework import serializers
 
-from role.models import Role, Sub_Role
+from role.models import Roles, Sub_Role
 
 class RoleSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Role
+        model = Roles
         fields = ['id', 'name']
         
 class SubRoleSerializer(serializers.ModelSerializer):

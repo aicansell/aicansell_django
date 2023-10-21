@@ -7,7 +7,7 @@ from rest_framework.viewsets import ViewSet
 from rest_framework_tracking.mixins import LoggingMixin
 
 from orgss.models import Org, Org_Roles, Weightage
-from orgss.serializers import OrgSerializer, OrgRolesSerializer, OrgRolesListSerializer, WeightageSerializer, WeightageListSerializer
+from orgss.serilaizers import OrgSerializer, OrgRolesSerializer, OrgRolesListSerializer, WeightageSerializer, WeightageListSerializer
 
 class OrgViewSet(LoggingMixin, ViewSet):
     serializer_class = OrgSerializer
