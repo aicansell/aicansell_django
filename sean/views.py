@@ -205,6 +205,8 @@ class ItemViewSet(LoggingMixin, ViewSet):
 
         userprofile_instance = UserProfile.objects.get(user=request.user)
         userprofile_instance.scenarios_attempted += 1
+        userprofile_instance.user_powerwords = (userprofile_instance.user_powerwords or '') + "".join(user_power_words)
+        userprofile_instance.user_weakwords = (userprofile_instance.user_weakwords or '') + "".join(user_weak_words)
         instance.item_answercount += 1
         if userprofile_instance.scenarios_attempted_score:
             userprofile_instance.scenarios_attempted_score += str(score) + ','
@@ -285,8 +287,6 @@ class ItemHandleViewSet(LoggingMixin, ViewSet):
         request_data = self.request.data
         data = {
             'item_name': request_data.get('item_name'),
-            #'item_description': request_data.get('item_description'),
-            #er': request_data.get('item_answer'),
             'item_emotion': request_data.get('item_emotion'),
             'item_answercount': request_data.get('item_answercount'),
             'category': request_data.get('category'),
@@ -297,11 +297,9 @@ class ItemHandleViewSet(LoggingMixin, ViewSet):
             'coming_across_as': request_data.get('coming_across_as'),
             'competencys': request_data.get('competencys'),
             'level': request_data.get('level'),
-            #'positive_traits': request_data.get('positive_traits'),
-            #'negative_traits': request_data.get('negative_traits'),
             'user_powerwords': request_data.get('user_powerwords'),
             'user_weakwords': request_data.get('user_weakwords'),
-            #'expert': request_data.get('expert'),
+            
         }
 
         serialized_data = self.serializer_class(data=data)
