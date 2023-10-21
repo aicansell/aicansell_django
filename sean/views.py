@@ -205,8 +205,8 @@ class ItemViewSet(LoggingMixin, ViewSet):
 
         userprofile_instance = UserProfile.objects.get(user=request.user)
         userprofile_instance.scenarios_attempted += 1
-        userprofile_instance.user_powerwords = (userprofile_instance.user_powerwords or '') + "".join(user_power_words)
-        userprofile_instance.user_weakwords = (userprofile_instance.user_weakwords or '') + "".join(user_weak_words)
+        userprofile_instance.user_powerwords = (userprofile_instance.user_powerwords or '') + ", ".join(user_power_words) 
+        userprofile_instance.user_weakwords = (userprofile_instance.user_weakwords or '') + ", ".join(user_weak_words)
         instance.item_answercount += 1
         if userprofile_instance.scenarios_attempted_score:
             userprofile_instance.scenarios_attempted_score += str(score) + ','
