@@ -31,12 +31,6 @@ from rest_framework_tracking.mixins import LoggingMixin
 
 from orgss.models import Weightage, Org_Roles
 
-"""
-import nltk
-#nltk.download('stopwords')
-from nltk.corpus import stopwords
-from nltk.tokenize import word_tokenize"""
-
 
 import spacy
 nlp = spacy.load('en_core_web_sm')
@@ -139,7 +133,7 @@ class ItemViewSet(LoggingMixin, ViewSet):
         """Create or update an item with emotion analysis."""
         instance = Item.objects.get(id=request.data.get('id'))
         
-        emotion_str = request.data.get('item_emotion')
+        emotion_str = request.data.get('item_emotion').lower()
 
         competency = instance.competencys.all()
 
@@ -171,17 +165,12 @@ class ItemViewSet(LoggingMixin, ViewSet):
 
         # Tokenize the emotion string into words
         emotion_words = nlp(emotion_str)
-        #emotion_words = word_tokenize(emotion_str)
         for token in emotion_words:
             print(token.text, end = '|')
 
 
-        # Remove punctuation and convert to lowercase
-        #emotion_words = [word.lower() for word in emotion_words if word not in string.punctuation]
-
-
         # Remove stop words
-        #stop_words = set(stopwords.words('english'))
+        
         stop_words = spacy.lang.en.stop_words.STOP_WORDS
         emotion_words = [word for word in emotion_words if word.text not in stop_words]
         print(emotion_words)
@@ -201,16 +190,6 @@ class ItemViewSet(LoggingMixin, ViewSet):
         user_power_words = []
         user_weak_words = []
         
-        """
-        for word in emotion_words:
-            if word.text in power_word_list:
-                instance.user_powerwords = instance.get('user_powerwords', '') + word.text + ','
-                power_words_count += 1
-                user_power_words.append(word.text)
-            elif token.text in negative_word_list:
-                negative_words_count += 1
-                instance.user_weakwords = instance.get('user_weakwords', '') + token.text + ','
-                user_weak_words.append(token.text)"""
         
         for token in emotion_words:
             if token.text in power_word_list:
@@ -239,13 +218,6 @@ class ItemViewSet(LoggingMixin, ViewSet):
         data = {
             'id': instance.id,
             'item_name': instance.item_name,
-            #'item_description': instance.item_description,
-            #'thumbnail': instance.thumbnail,
-            #'category': instance.category,
-            #'role': instance.role_id,
-            #'item_type': instance.item_type,
-            #'level': instance.level,
-            #'competencys': instance.competencys
             'coming_across_as': instance.coming_across_as
         }
         serialized_data = self.serializer_class(data=data)
@@ -257,22 +229,15 @@ class ItemViewSet(LoggingMixin, ViewSet):
         response_data = {
             'id': data.get('id'),
             'item_name': data.get('item_name'),
-            #'item_description': data.get('item_description'),
-            #'thumbnail': data.get('thumbnail'),
-            #'category': data.get('category'),
-            #'role': data.get('role_id'),
-            #'item_type': data.get('item_type'),
-            #'level': data.get('level'),
             'coming_across_as': data.get('coming_across_as'),
             'compentency_score': score,
             'powerword_detected': user_power_words,
             'weekword_detected': user_weak_words,
             'power_word_list': power_word_list,
             'negative_word_list': negative_word_list,
-            #'competencys': data.get('competencys')
+            
         }
-        #serialized_data = self.serializer_class(data=data)
-        #serialized_data.is_valid(raise_exception=True)
+       
 
         serialized_data = self.serializer_class(instance=instance, data=data)
         serialized_data.is_valid(raise_exception=True)
@@ -280,7 +245,6 @@ class ItemViewSet(LoggingMixin, ViewSet):
 
         response = {
             'status': 'Success',
-            #'data': serialized_data.data,
             'data': response_data,
             'message': 'Item was successfully created.'
         }
@@ -401,19 +365,7 @@ class ItemHandleViewSet(LoggingMixin, ViewSet):
 
 
 #listing scenarios
-"""
-@api_view(['GET']) 
-def item_list(request):
-    
-    item_list = Item.objects.all().order_by('-id')
-    serializer = ItemListSerializer(item_list, many=True)
 
-    # if there is something in items else raise error
-    if item_list:
-        return Response(serializer.data)
-    else:
-        return Response(status=status.HTTP_404_NOT_FOUND)
-"""
 
 class ItemList(generics.ListAPIView):
     
