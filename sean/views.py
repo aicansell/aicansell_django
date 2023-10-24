@@ -1,18 +1,16 @@
-from django.shortcuts import render
 from django.shortcuts import render, get_object_or_404
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from .serializers import ItemListSerializer1, ItemEmotionSerializer, ItemRecommendSerializer,ItemSerializer, ItemLiSerializer
 from .models import Item
 from accounts.models import Account, UserProfile
-#from organisation.models import Role_Scenario
 
 from rest_framework import status,viewsets, generics, filters
 from django.db.models import F
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.parsers import JSONParser 
-from accounts.serializers import UserSerializer
-#from concurrent.futures import ThreadPoolExecutor 
+from rest_framework.parsers import JSONParser
+from rest_framework.viewsets import ViewSet
+from rest_framework_tracking.mixins import LoggingMixin
 
 import string
 from collections import Counter
@@ -26,20 +24,12 @@ import speech_recognition as sr
 import pyttsx3
 
 
-from rest_framework.viewsets import ViewSet
-from rest_framework_tracking.mixins import LoggingMixin
 
 from orgss.models import Weightage, Org_Roles
 
 
 import spacy
 nlp = spacy.load('en_core_web_sm')
-
-#from rest_framework import viewsets, generics
-
-
-# Create your views here.
-
 
 
 class ItemViewSet(LoggingMixin, ViewSet):
@@ -133,7 +123,7 @@ class ItemViewSet(LoggingMixin, ViewSet):
         """Create or update an item with emotion analysis."""
         instance = Item.objects.get(id=request.data.get('id'))
         
-        emotion_str = request.data.get('item_emotion').lower()
+        emotion_str = request.data.get('item_emotion').lower().lower()
 
         competency = instance.competencys.all()
 
@@ -158,6 +148,8 @@ class ItemViewSet(LoggingMixin, ViewSet):
 
                 for negative_word in negative_words:
                     negative_word_list.append(negative_word.word.word_name.lower())
+                    
+                
 
 
         instance.item_emotion = instance.item_emotion + ',' + emotion_str
@@ -170,22 +162,9 @@ class ItemViewSet(LoggingMixin, ViewSet):
 
 
         # Remove stop words
-        
         stop_words = spacy.lang.en.stop_words.STOP_WORDS
         emotion_words = [word for word in emotion_words if word.text not in stop_words]
-        print(emotion_words)
         
-
-        #print(emotion_words)
-        """
-        words = Weightage.objects.filter(org_role=instance.role)
-
-        # Get the associated power_words, negative_words, and emotion_words for each competency
-        power_words = words.values_list('competency__sub_competency__power_words', flat=True)
-        negative_words = words.values_list('competency__sub_competency__negative_words', flat=True)
-
-        #power_words_count = 0
-        #negative_words_count = 0"""
 
         user_power_words = []
         user_weak_words = []
@@ -199,7 +178,6 @@ class ItemViewSet(LoggingMixin, ViewSet):
                 instance.user_weakwords = (instance.user_weakwords or '') + token.text + ','
                 user_weak_words.append(token.text)
 
-        #score = power_words_count + negative_words_count
         score = len(user_power_words) - len(user_weak_words)
 
 
@@ -267,11 +245,21 @@ class ItemHandleViewSet(LoggingMixin, ViewSet):
 
     def list(self, request):
         data = Item.objects.filter(role=self.request.user.role).order_by('-id')
+        
+        user_instance = UserProfile.objects.get(user=request.user)
+        
+        user_details = {
+            'power_words_used': user_instance.user_powerwords,
+            'week_words_used': user_instance.user_weakwords,
+            'scenarios_attempted': user_instance.scenarios_attempted,
+            'scenarios_attempted_score': user_instance.scenarios_attempted_score,
+        }
 
         serializer_data = self.serializer_class(data, many=True).data
         response = {
             'status': 'Success',
             'data': serializer_data,
+            'user_details': user_details
         }
         return Response(response, status=status.HTTP_200_OK)
 
