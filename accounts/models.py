@@ -124,6 +124,7 @@ class UserProfile(models.Model):
     scenario_attempt_ww = models.CharField(max_length=250, default = "saww")
     pw_competency = models.CharField(max_length= 250, default = "pw")
     ww_competency = models.CharField(max_length=250, default = "ww")
+    competency_score = models.TextField(null=True, blank=True)
 
 
 @receiver(post_save,sender=Account)
