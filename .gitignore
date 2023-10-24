@@ -3,6 +3,7 @@ __pycache__/
 *.pyc
 *.py[cod]
 *$py.class
+*/__pycache__/*
 
 # Local development settings
 .env
@@ -28,6 +29,7 @@ env
 *.log
 *.swp
 .DS_Store
+
 
 
 # eb virtual env

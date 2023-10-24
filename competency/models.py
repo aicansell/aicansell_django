@@ -18,6 +18,7 @@ class Sub_Competency(models.Model):
     power_words = models.ManyToManyField(PowerWords, blank=True)
     negative_words = models.ManyToManyField(NegativeWords, blank=True)
     emotion_words = models.ManyToManyField(EmotionWords, blank=True)
+
     
 
 class Competency(models.Model):

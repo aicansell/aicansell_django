@@ -4,8 +4,10 @@ from django.db import models
 class Roles(models.Model):
     def __str__(self):
         return self.name
+       
 
     name = models.CharField(max_length = 250)
+    
 
 class Sub_Role(models.Model):
     def __str__(self):

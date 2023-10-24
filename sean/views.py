@@ -24,6 +24,22 @@ import speech_recognition as sr
 import pyttsx3
 
 
+from rest_framework.viewsets import ViewSet
+from rest_framework_tracking.mixins import LoggingMixin
+
+from orgss.models import Weightage, Org_Roles
+
+"""
+import nltk
+#nltk.download('stopwords')
+from nltk.corpus import stopwords
+from nltk.tokenize import word_tokenize"""
+
+
+import spacy
+nlp = spacy.load('en_core_web_sm')
+
+
 
 from orgss.models import Weightage, Org_Roles
 

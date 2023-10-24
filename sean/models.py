@@ -6,6 +6,7 @@ from competency.models import Competency, Sub_Competency
 from words.models import Words
 
 from accounts.models import Account
+from accounts.models import Account
 
 
 # Create your models here.
@@ -25,7 +26,6 @@ class Item(models.Model):
     Scenario_Type1 = "Sales"
     Scenario_Type2 = "Customer Service"
     Scenario_Type3 = "Interview"
-
 
     item_name = models.CharField(max_length=700)
     item_description = models.CharField(max_length=300, blank=True, null = True)

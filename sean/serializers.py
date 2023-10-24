@@ -54,7 +54,6 @@ class ItemEmotionSerializer(serializers.ModelSerializer):
         model = Item
         fields = [ 'item_answer', 'coming_across_as', 'positive_traits', 'negative_traits']
         
-
 class ItemRecommendSerializer(serializers.ModelSerializer):
     
     competencys = CompetencySerializer(many=True)

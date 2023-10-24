@@ -2,6 +2,7 @@ from rest_framework import serializers
 
 from industry.models import Industry
 
+
 from industry.serializers import IndustrySerializer
 from role.models import Roles, Sub_Role
 from competency.models import Sub_Competency

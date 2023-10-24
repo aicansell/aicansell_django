@@ -10,9 +10,6 @@ from uuid import uuid4
 
 
 
-
-
-
 # Create your models here.
 class MyAccountManager(BaseUserManager):
     def create_user(self, first_name, last_name, email, username, password=None):
@@ -53,13 +50,23 @@ class MyAccountManager(BaseUserManager):
         return user
 
 
+    
+    def __str__(self):
+        return self.email
+
+    def has_perm(self, perm, obj=None):
+        return self.is_admin
+
+    def has_module_perms(self, add_label):
+        return True        
 
 class Account(AbstractBaseUser):
+
     USER_ROLES = (
         ('super_admin', 'Super Admin'),
         ('admin', 'Admin'),
         ('user', 'User')
-    )
+        )
     
     first_name = models.CharField(max_length = 50)
     last_name = models.CharField(max_length = 50)
@@ -113,9 +120,9 @@ class UserProfile(models.Model):
     jadu_asked = models.IntegerField(default=1, null=True, blank=True)
     bookmarks = models.CharField(blank=True,null=True, max_length=300)
     gender = models.CharField(blank=True, null=True, max_length=10)
-    user_scenario_submitted = models.CharField(max_length= 250, default= "")
+    #user_scenario_submitted = models.CharField(max_length= 250, default= "")
     user_scenario_saved = models.CharField(max_length= 250, default= "")
-    user_scenario_bookmarked = models.CharField(max_length= 250, default= "")
+    #user_scenario_bookmarked = models.CharField(max_length= 250, default= "")
     level = models.IntegerField(default=1)
     city = models.CharField(max_length= 250, default= "")
     user_powerwords = models.CharField(max_length= 250, default='upw')
