@@ -149,8 +149,8 @@ class ItemViewSet(LoggingMixin, ViewSet):
             for sub_competency in sub_competencies:
                 power_words = sub_competency.power_words.all()
                 negative_words = sub_competency.negative_words.all()
-                print(power_words)
-                print(negative_words)
+                #print(power_words)
+                #print(negative_words)
 
                 # Loop through each power word and its words
                 for power_word in power_words:
