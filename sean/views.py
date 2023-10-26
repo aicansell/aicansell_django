@@ -7,6 +7,7 @@ from accounts.models import Account, UserProfile
 
 from rest_framework import status,viewsets, generics, filters
 from django.db.models import F
+from django.db import transaction
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.parsers import JSONParser
 from rest_framework.viewsets import ViewSet
@@ -37,6 +38,7 @@ from nltk.tokenize import word_tokenize"""
 
 
 import spacy
+import threading
 nlp = spacy.load('en_core_web_sm')
 
 
@@ -136,17 +138,37 @@ class ItemViewSet(LoggingMixin, ViewSet):
 
 
     def create(self, request):
+        
+        def process_user_data(request, user_power_words, user_weak_words, score):
+            print("\n\nStarting Thread: UserProfile")
+            try:
+                with transaction.atomic():  # Ensure database integrity
+                    userprofile_instance = UserProfile.objects.get(user=request.user)
+                    userprofile_instance.scenarios_attempted += 1
+                    userprofile_instance.user_powerwords = (userprofile_instance.user_powerwords or '') + ", ".join(user_power_words)
+                    userprofile_instance.user_weakwords = (userprofile_instance.user_weakwords or '') + ", ".join(user_weak_words)
+                    if userprofile_instance.scenarios_attempted_score:
+                        userprofile_instance.scenarios_attempted_score += str(score) + ','
+                    else:
+                        userprofile_instance.scenarios_attempted_score = str(score) + ','
+                    userprofile_instance.save()
+            except Exception as e:
+                print("Got error|| While saving user profile")
+        
         """Create or update an item with emotion analysis."""
         instance = Item.objects.get(id=request.data.get('id'))
         
-        emotion_str = request.data.get('item_emotion').lower().lower()
+        emotion_str = request.data.get('item_emotion').lower()
 
-        competency = instance.competencys.all()
+        competency = instance.competencys.all().prefetch_related(
+        'sub_competency__power_words__word',
+        'sub_competency__negative_words__word'
+        )
 
         # Initialize an empty list to collect words
         power_word_list = []
         negative_word_list = []
-
+        
         # Loop through each competency and its sub-competencies
         for competency in competency:
             sub_competencies = competency.sub_competency.all()
@@ -155,8 +177,6 @@ class ItemViewSet(LoggingMixin, ViewSet):
             for sub_competency in sub_competencies:
                 power_words = sub_competency.power_words.all()
                 negative_words = sub_competency.negative_words.all()
-                #print(power_words)
-                #print(negative_words)
 
                 # Loop through each power word and its words
                 for power_word in power_words:
@@ -164,10 +184,8 @@ class ItemViewSet(LoggingMixin, ViewSet):
 
                 for negative_word in negative_words:
                     negative_word_list.append(negative_word.word.word_name.lower())
+        
                     
-                
-
-
         instance.item_emotion = instance.item_emotion + ',' + emotion_str
 
 
@@ -185,7 +203,6 @@ class ItemViewSet(LoggingMixin, ViewSet):
         user_power_words = []
         user_weak_words = []
         
-        
         for token in emotion_words:
             if token.text in power_word_list:
                 instance.user_powerwords = (instance.user_powerwords or '') + token.text + ','
@@ -196,17 +213,13 @@ class ItemViewSet(LoggingMixin, ViewSet):
 
         score = len(user_power_words) - len(user_weak_words)
 
-
-        userprofile_instance = UserProfile.objects.get(user=request.user)
-        userprofile_instance.scenarios_attempted += 1
-        userprofile_instance.user_powerwords = (userprofile_instance.user_powerwords or '') + ", ".join(user_power_words) 
-        userprofile_instance.user_weakwords = (userprofile_instance.user_weakwords or '') + ", ".join(user_weak_words)
         instance.item_answercount += 1
-        if userprofile_instance.scenarios_attempted_score:
-            userprofile_instance.scenarios_attempted_score += str(score) + ','
-        else:
-            userprofile_instance.scenarios_attempted_score = str(score) + ','
-        userprofile_instance.save()
+        
+        processing_thread = threading.Thread(
+        target=process_user_data,
+        args=(request, user_power_words, user_weak_words, score)
+        )
+        processing_thread.start()
 
 
         instance.save()
@@ -230,8 +243,7 @@ class ItemViewSet(LoggingMixin, ViewSet):
             'powerword_detected': user_power_words,
             'weekword_detected': user_weak_words,
             'power_word_list': power_word_list,
-            'negative_word_list': negative_word_list,
-            
+            'negative_word_list': negative_word_list,  
         }
        
 
@@ -501,8 +513,6 @@ def item_rec(request, pk):
         else:
             return Response(status=status.HTTP_404_NOT_FOUND)
    
-
-
 
 @api_view(['PUT'])
 @permission_classes([IsAuthenticated])
