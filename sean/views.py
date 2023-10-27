@@ -54,18 +54,15 @@ class ItemViewSet(LoggingMixin, ViewSet):
     serializer_class = ItemListSerializer1
     permission_classes = [IsAuthenticated]
 
-
     @staticmethod
     def get_object(pk):
         """Get an Item object by its primary key."""
         return get_object_or_404(Item, id=pk)
 
-
     @staticmethod
     def get_queryset():
         """Get all Item objects."""
         return Item.objects.all()
-
 
     def list(self, request):
         """
@@ -136,7 +133,6 @@ class ItemViewSet(LoggingMixin, ViewSet):
         }
         return Response(response, status=status.HTTP_200_OK)
 
-
     def create(self, request):
         
         def process_user_data(request, user_power_words, user_weak_words, score):
@@ -155,12 +151,62 @@ class ItemViewSet(LoggingMixin, ViewSet):
             except Exception as e:
                 print("Got error|| While saving user profile")
         
+        def update_competency_score(request, competencys, emotion_words):
+            
+            userprofile_instance = UserProfile.objects.get(user=request.user)
+            
+            try:
+                competency_score = json.loads(userprofile_instance.competency_score)
+            except:
+                competency_score = {}
+
+            # Define the variables
+            new_competency_score = {}
+
+            # Loop through each competency
+            for competency in competencys:
+                sub_competencies = competency.sub_competency.all()
+                power_word_list = []
+                negative_word_list = []
+
+                # Loop through each sub-competency and its power words
+                for sub_competency in sub_competencies:
+                    power_words = sub_competency.power_words.all()
+                    negative_words = sub_competency.negative_words.all()
+
+                    # Loop through each power word and its words
+                    for power_word in power_words:
+                        power_word_list.append(power_word.word.word_name.lower())
+
+                    for negative_word in negative_words:
+                        negative_word_list.append(negative_word.word.word_name.lower())
+
+                power_word_count = 0
+                negative_word_count = 0
+                
+                # Calculate power_word_count and negative_word_count based on emotion_words
+                for word in emotion_words:
+                    if word.text in power_word_list:
+                        power_word_count += 1
+                    elif word.text in negative_word_list:
+                        negative_word_count += 1
+
+                # Update the competency_score
+                competency_name = str(competency.competency_name)
+                existing_score = competency_score.get(competency_name, '')
+                new_score = f"{existing_score},{power_word_count - negative_word_count}"
+                new_competency_score[competency_name] = new_score
+
+            # Update the competency_score in the user profile
+            userprofile_instance.competency_score = json.dumps(new_competency_score)
+            userprofile_instance.save()
+        
         """Create or update an item with emotion analysis."""
         instance = Item.objects.get(id=request.data.get('id'))
         
         emotion_str = request.data.get('item_emotion').lower()
 
-        competency = instance.competencys.all().prefetch_related(
+        competencys = instance.competencys.all().prefetch_related(
         'sub_competency__power_words__word',
         'sub_competency__negative_words__word'
         )
@@ -170,7 +216,7 @@ class ItemViewSet(LoggingMixin, ViewSet):
         negative_word_list = []
         
         # Loop through each competency and its sub-competencies
-        for competency in competency:
+        for competency in competencys:
             sub_competencies = competency.sub_competency.all()
 
             # Loop through each sub-competency and its power words
@@ -184,15 +230,20 @@ class ItemViewSet(LoggingMixin, ViewSet):
 
                 for negative_word in negative_words:
                     negative_word_list.append(negative_word.word.word_name.lower())
-        
                     
-        instance.item_emotion = instance.item_emotion + ',' + emotion_str
-
-
-        # Tokenize the emotion string into words
+         # Tokenize the emotion string into words
         emotion_words = nlp(emotion_str)
         for token in emotion_words:
             print(token.text, end = '|')
+                            
+        update_thread = threading.Thread(
+            target=update_competency_score,
+            args=(request, competencys, emotion_words)
+        )
+        update_thread.start()
+
+                   
+        instance.item_emotion = instance.item_emotion + ',' + emotion_str
 
 
         # Remove stop words
@@ -375,10 +426,6 @@ class ItemHandleViewSet(LoggingMixin, ViewSet):
 
         return Response(response, status=status.HTTP_204_NO_CONTENT)
        
-
-
-
-#listing scenarios
 
 
 class ItemList(generics.ListAPIView):
