@@ -150,6 +150,8 @@ class ItemViewSet(LoggingMixin, ViewSet):
                     userprofile_instance.save()
             except Exception as e:
                 print("Got error|| While saving user profile")
+
+                
         
         def update_competency_score(request, competencys, emotion_words):
             
