@@ -84,7 +84,7 @@ def forgot_password(request):
 
     host = get_current_host(request)
 
-    link = "https://aicansell.com/accounts/reset_password/{token}".format(host=host, token=token)
+    link = "{host}accounts/reset_password/{token}".format(host=host, token=token)
     body =  "Click on the following link to reset your password {link}".format(link=link)
 
     send_mail(
