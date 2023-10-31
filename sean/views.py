@@ -151,7 +151,7 @@ class ItemViewSet(LoggingMixin, ViewSet):
             except Exception as e:
                 print("Got error|| While saving user profile")
 
-                
+
         
         def update_competency_score(request, competencys, emotion_words):
             
@@ -299,6 +299,7 @@ class ItemViewSet(LoggingMixin, ViewSet):
             'negative_word_list': negative_word_list,  
         }
        
+
 
         serialized_data = self.serializer_class(instance=instance, data=data)
         serialized_data.is_valid(raise_exception=True)

@@ -57,6 +57,7 @@ class Item(models.Model):
     role = models.ForeignKey(Org_Roles, on_delete=models.CASCADE, default=1)
     coming_across_as = models.CharField(max_length=250, null=True, blank=True)
     
+    
     competencys = models.ManyToManyField(Competency, blank=True)
     #competency_power_words = models.ManyToManyField(PowerWords, blank=True)
     #competency_weak_words = models.ManyToManyField(NegativeWords, blank=True)
