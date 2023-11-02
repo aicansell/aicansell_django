@@ -43,6 +43,11 @@ class ItemSerializer(serializers.ModelSerializer):
         model = Item
         depth = 1
         fields = '__all__'   
+        
+class ItemUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Item
+        fields = '__all__'   
 
 class ItemEmotionSerializer(serializers.ModelSerializer):
     

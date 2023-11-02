@@ -1,7 +1,7 @@
 from django.shortcuts import render, get_object_or_404
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
-from .serializers import ItemListSerializer1, ItemEmotionSerializer, ItemRecommendSerializer,ItemSerializer, ItemLiSerializer
+from .serializers import ItemListSerializer1, ItemEmotionSerializer, ItemRecommendSerializer,ItemSerializer, ItemLiSerializer, ItemUserSerializer
 from .models import Item
 from accounts.models import Account, UserProfile
 
@@ -315,7 +315,7 @@ class ItemViewSet(LoggingMixin, ViewSet):
 
 class ItemHandleViewSet(LoggingMixin, ViewSet):
     permission_classes = [IsAuthenticated]
-    serializer_class = ItemSerializer
+    serializer_class = ItemUserSerializer
 
     @staticmethod
     def get_object(pk):
@@ -335,6 +335,7 @@ class ItemHandleViewSet(LoggingMixin, ViewSet):
             'week_words_used': user_instance.user_weakwords,
             'scenarios_attempted': user_instance.scenarios_attempted,
             'scenarios_attempted_score': user_instance.scenarios_attempted_score,
+            'competency_score': json.loads(user_instance.competency_score),
         }
 
         serializer_data = self.serializer_class(data, many=True).data
