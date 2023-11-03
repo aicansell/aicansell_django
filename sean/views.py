@@ -84,12 +84,12 @@ class ItemViewSet(LoggingMixin, ViewSet):
         user = self.request.user
 
 
-        if user.user_role == 'admin':
+        if user.user_role == 'admin' or user.user_role == 'superadmin':
             org_id = user.role.org
             item_data = Item.objects.filter(role__org=org_id)
             user_data = UserProfile.objects.filter(user__role__org=org_id)
-            org_role_names = Org_Roles.objects.filter(org=org_id).values_list('role__name', flat=True)
-           
+            org_role_names = Org_Roles.objects.filter(org=org_id).values_list('org_role_name', flat=True)
+
             # Initialize response dictionaries
             response = {
                 'org_word_count': sum(len(item.item_emotion.split(' ')) for item in item_data),
@@ -102,8 +102,8 @@ class ItemViewSet(LoggingMixin, ViewSet):
 
             # Calculate word count and scenarios attempted for each organization role
             for org_role in org_role_names:
-                users = user_data.filter(user__role__role__name__icontains=org_role)
-                roles_word_count[f"{org_id}_{org_role}_word_count"] = sum(len(item.item_emotion.split(' ')) for item in item_data.filter(role__role__name__icontains=org_role))
+                users = user_data.filter(user__role__org_role_name__icontains=org_role)
+                roles_word_count[f"{org_id}_{org_role}_word_count"] = sum(len(item.item_emotion.split(' ')) for item in item_data.filter(role__org_role_name__icontains=org_role))
                 roles_scenarios_attempted[f"{org_id}_{org_role}_scenarios_attempted"] = sum(user.scenarios_attempted for user in users)
                
             # Add role-specific counts to the response
@@ -154,6 +154,7 @@ class ItemViewSet(LoggingMixin, ViewSet):
 
         
         def update_competency_score(request, competencys, emotion_words):
+            print("\n\nStarting Thread: Update Competency")
             
             userprofile_instance = UserProfile.objects.get(user=request.user)
             
@@ -161,9 +162,8 @@ class ItemViewSet(LoggingMixin, ViewSet):
                 competency_score = json.loads(userprofile_instance.competency_score)
             except:
                 competency_score = {}
-
-            # Define the variables
-            new_competency_score = {}
+                
+            print(competency_score)
 
             # Loop through each competency
             for competency in competencys:
@@ -192,15 +192,17 @@ class ItemViewSet(LoggingMixin, ViewSet):
                         power_word_count += 1
                     elif word.text in negative_word_list:
                         negative_word_count += 1
-
-                # Update the competency_score
+                
                 competency_name = str(competency.competency_name)
-                existing_score = competency_score.get(competency_name, '')
-                new_score = f"{existing_score},{power_word_count - negative_word_count}"
-                new_competency_score[competency_name] = new_score
+                        
+                # Check if the key exists and update the value, or create it
+                if competency_name in competency_score:
+                    competency_score[competency_name] += ',' + str(power_word_count - negative_word_count)
+                else:
+                    competency_score[competency_name] = str(power_word_count - negative_word_count)
 
             # Update the competency_score in the user profile
-            userprofile_instance.competency_score = json.dumps(new_competency_score)
+            userprofile_instance.competency_score = json.dumps(competency_score)
             userprofile_instance.save()
         
         """Create or update an item with emotion analysis."""

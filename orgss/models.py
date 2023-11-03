@@ -25,7 +25,7 @@ class Org_Roles(models.Model):
     org = models.ForeignKey(Org, on_delete=models.CASCADE, default = 1, related_name='org1')
     #role = models.ForeignKey(Roles, on_delete=models.CASCADE, default = 1, related_name='roles12')
     #subrole = models.ForeignKey(Sub_Role, on_delete=models.CASCADE, default = 1, related_name='org1')
-    
+
 
 class Weightage(models.Model):
     org_role = models.ForeignKey(Org_Roles, on_delete=models.CASCADE)
