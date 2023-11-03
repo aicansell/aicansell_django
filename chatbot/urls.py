@@ -9,4 +9,5 @@ urlpatterns = [
     path('', views.chatresponse, name='chatresponse'),
     
   
+  
 ]
