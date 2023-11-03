@@ -88,7 +88,7 @@ class ItemViewSet(LoggingMixin, ViewSet):
             org_id = user.role.org
             item_data = Item.objects.filter(role__org=org_id)
             user_data = UserProfile.objects.filter(user__role__org=org_id)
-            org_role_names = Org_Roles.objects.filter(org=org_id).values_list('org__name', flat=True)
+            org_role_names = Org_Roles.objects.filter(org=org_id).values_list('org_role_name', flat=True)
 
             # Initialize response dictionaries
             response = {
