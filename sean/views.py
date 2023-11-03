@@ -88,7 +88,7 @@ class ItemViewSet(LoggingMixin, ViewSet):
             org_id = user.role.org
             item_data = Item.objects.filter(role__org=org_id)
             user_data = UserProfile.objects.filter(user__role__org=org_id)
-            org_role_names = Org_Roles.objects.filter(org=org_id).values_list('org__name', flat=True)
+            org_role_names = Org_Roles.objects.filter(org=org_id).values_list('org_role_name', flat=True)
 
             # Initialize response dictionaries
             response = {
@@ -102,8 +102,8 @@ class ItemViewSet(LoggingMixin, ViewSet):
 
             # Calculate word count and scenarios attempted for each organization role
             for org_role in org_role_names:
-                users = user_data.filter(user__role__org__name__icontains=org_role)
-                roles_word_count[f"{org_id}_{org_role}_word_count"] = sum(len(item.item_emotion.split(' ')) for item in item_data.filter(role__org__name__icontains=org_role))
+                users = user_data.filter(user__role__org_role_name__icontains=org_role)
+                roles_word_count[f"{org_id}_{org_role}_word_count"] = sum(len(item.item_emotion.split(' ')) for item in item_data.filter(role__org_role_name__icontains=org_role))
                 roles_scenarios_attempted[f"{org_id}_{org_role}_scenarios_attempted"] = sum(user.scenarios_attempted for user in users)
                
             # Add role-specific counts to the response
