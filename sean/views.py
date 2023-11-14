@@ -162,8 +162,6 @@ class ItemViewSet(LoggingMixin, ViewSet):
                 competency_score = json.loads(userprofile_instance.competency_score)
             except:
                 competency_score = {}
-                
-            print(competency_score)
 
             # Loop through each competency
             for competency in competencys:
@@ -198,6 +196,7 @@ class ItemViewSet(LoggingMixin, ViewSet):
                 # Check if the key exists and update the value, or create it
                 if competency_name in competency_score:
                     competency_score[competency_name] += ',' + str(power_word_count - negative_word_count)
+                    competency_score[competency_score].lstrip(',')
                 else:
                     competency_score[competency_name] = str(power_word_count - negative_word_count)
 
@@ -332,12 +331,19 @@ class ItemHandleViewSet(LoggingMixin, ViewSet):
         
         user_instance = UserProfile.objects.get(user=request.user)
         
+        compentecy_scores = json.loads(user_instance.competency_score)
+        final_compentecy_scores = {}
+
+        for compentecy, scores_str in compentecy_scores.items():
+            scores = [score for score in scores_str.split(',') if score != '']
+            final_compentecy_scores.update({f"{compentecy}_{index}": score for index, score in enumerate(scores)})
+        
         user_details = {
             'power_words_used': user_instance.user_powerwords,
             'week_words_used': user_instance.user_weakwords,
             'scenarios_attempted': user_instance.scenarios_attempted,
             'scenarios_attempted_score': user_instance.scenarios_attempted_score,
-            'competency_score': json.loads(user_instance.competency_score),
+            'competency_score': final_compentecy_scores,
         }
 
         serializer_data = self.serializer_class(data, many=True).data

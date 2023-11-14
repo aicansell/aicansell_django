@@ -16,7 +16,7 @@ class Sub_CompetencySerializer(serializers.ModelSerializer):
 class CompetencyListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Competency
-        fields = '__all__'
+        fields = ['competency_name']
 
 class Sub_CompetencySerializer(serializers.ModelSerializer):
     power_words = serializers.SerializerMethodField()

@@ -53,7 +53,7 @@ class ItemUserSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Item
-        fields = '__all__'
+        fields = ['id', 'item_name', 'item_answer', 'category', 'thumbnail', 'item_type', 'scenario_type', 'competencys',]
 
 class ItemEmotionSerializer(serializers.ModelSerializer):
     
