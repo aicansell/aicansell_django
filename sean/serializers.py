@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from .models import Item
 #from competency.models import Competency1
-from competency.serializers import CompetencySerializer
+from competency.serializers import CompetencySerializer, CompetencyListSerializer
 from competency.models import Competency
 
 
@@ -45,9 +45,15 @@ class ItemSerializer(serializers.ModelSerializer):
         fields = '__all__'   
         
 class ItemUserSerializer(serializers.ModelSerializer):
+    competencys = serializers.SerializerMethodField()
+    
+    def get_competencys(self, obj):
+        competencies = obj.competencys.all()
+        return CompetencyListSerializer(competencies, many=True).data
+    
     class Meta:
         model = Item
-        fields = '__all__'   
+        fields = '__all__'
 
 class ItemEmotionSerializer(serializers.ModelSerializer):
     

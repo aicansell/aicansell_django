@@ -13,6 +13,11 @@ class Sub_CompetencySerializer(serializers.ModelSerializer):
 
 """
 
+class CompetencyListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Competency
+        fields = '__all__'
+
 class Sub_CompetencySerializer(serializers.ModelSerializer):
     power_words = serializers.SerializerMethodField()
     negative_words = serializers.SerializerMethodField()
