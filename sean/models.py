@@ -64,8 +64,8 @@ class Item(models.Model):
     level = models.IntegerField(default=1)
     positive_traits = models.CharField(max_length=300, default=" ", blank=True)
     negative_traits = models.CharField(max_length=300, default=" ", blank = True)
-    user_powerwords = models.CharField(max_length=300, default="up")
-    user_weakwords = models.CharField(max_length=300, default="unp")
+    user_powerwords = models.CharField(max_length=2000, default="up")
+    user_weakwords = models.CharField(max_length=2000, default="unp")
     expert = models.FileField(upload_to='media', blank = True, null=True)
 
     def get_competencys_as_string(self):
