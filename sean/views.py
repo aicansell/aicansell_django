@@ -150,9 +150,7 @@ class ItemViewSet(LoggingMixin, ViewSet):
                     userprofile_instance.save()
             except Exception as e:
                 print("Got error|| While saving user profile")
-
-
-        
+      
         def update_competency_score(request, competencys, emotion_words):
             print("\n\nStarting Thread: Update Competency")
             
@@ -196,7 +194,7 @@ class ItemViewSet(LoggingMixin, ViewSet):
                 # Check if the key exists and update the value, or create it
                 if competency_name in competency_score:
                     competency_score[competency_name] += ',' + str(power_word_count - negative_word_count)
-                    competency_score[competency_score].lstrip(',')
+                    competency_score[competency_name] = competency_score[competency_name].lstrip(',')
                 else:
                     competency_score[competency_name] = str(power_word_count - negative_word_count)
 
@@ -236,8 +234,6 @@ class ItemViewSet(LoggingMixin, ViewSet):
                     
          # Tokenize the emotion string into words
         emotion_words = nlp(emotion_str)
-        for token in emotion_words:
-            print(token.text, end = '|')
                             
         update_thread = threading.Thread(
             target=update_competency_score,
