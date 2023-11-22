@@ -8,6 +8,7 @@ router.register('org', OrgViewSet, basename='org')
 router.register('org_roles', OrgRolesViewSet, basename='org_roles')
 router.register('weightage', WeightageViewSet, basename='weightage')
 
+
 urlpatterns = [
     path('', include(router.urls)),
 ]
