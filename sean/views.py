@@ -328,18 +328,13 @@ class ItemHandleViewSet(LoggingMixin, ViewSet):
         user_instance = UserProfile.objects.get(user=request.user)
         
         compentecy_scores = json.loads(user_instance.competency_score)
-        final_compentecy_scores = {}
-
-        for compentecy, scores_str in compentecy_scores.items():
-            scores = [score for score in scores_str.split(',') if score != '']
-            final_compentecy_scores.update({f"{compentecy}_{index}": score for index, score in enumerate(scores)})
         
         user_details = {
             'power_words_used': user_instance.user_powerwords,
             'week_words_used': user_instance.user_weakwords,
             'scenarios_attempted': user_instance.scenarios_attempted,
             'scenarios_attempted_score': user_instance.scenarios_attempted_score,
-            'competency_score': final_compentecy_scores,
+            'competency_score': compentecy_scores,
         }
 
         serializer_data = self.serializer_class(data, many=True).data
