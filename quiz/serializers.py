@@ -9,6 +9,7 @@ class QuizListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Quiz
         fields = ['id','item_name', 'option1', 'option2', 'option3', 'QuizAnswer_CHOICES']
+        
 
 
 class QuizResultSerializer(serializers.ModelSerializer):
