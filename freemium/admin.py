@@ -1,3 +1,6 @@
 from django.contrib import admin
+from freemium.models import Freemium, Subscription
 
-# Register your models here.
+
+admin.site.register(Freemium)
+admin.site.register(Subscription)
