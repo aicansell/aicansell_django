@@ -23,6 +23,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 env = environ.Env()
 environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
+current_dir = os.getcwd()
+PYTHONPATH="/{}/ice_breaker".format(current_dir)
+
 #environ.Env.read_env()
 
 def get_env_variable(var_name):

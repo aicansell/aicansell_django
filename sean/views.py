@@ -135,7 +135,7 @@ class ItemViewSet(LoggingMixin, ViewSet):
 
     def create(self, request):
         
-        def process_user_data(userprofile_instance, user_power_words, user_weak_words, score):
+        def process_user_data(userprofile_instance, user_power_words, user_weak_words, score, competencys, emotion_words):
             print("\n\nStarting Thread: UserProfile")
             userprofile_instance.scenarios_attempted += 1
             print(userprofile_instance.user_powerwords)
@@ -148,11 +148,7 @@ class ItemViewSet(LoggingMixin, ViewSet):
                 userprofile_instance.scenarios_attempted_score += str(score) + ','
             else:
                 userprofile_instance.scenarios_attempted_score = str(score) + ','
-            userprofile_instance.save()
             print("\n\nCompleted Thread: UserProfile")
-            
-      
-        def update_competency_score(userprofile_instance, competencys, emotion_words):
             print("\n\nStarting Thread: Update Competency")
             try:
                 competency_score = json.loads(userprofile_instance.competency_score)
@@ -234,14 +230,8 @@ class ItemViewSet(LoggingMixin, ViewSet):
                     
          # Tokenize the emotion string into words
         emotion_words = nlp(emotion_str)
+        user_text = emotion_words
                             
-        update_thread = threading.Thread(
-            target=update_competency_score,
-            args=(userprofile_instance, competencys, emotion_words)
-        )
-        update_thread.start()
-
-                   
         instance.item_emotion = instance.item_emotion + ',' + emotion_str
 
 
@@ -267,7 +257,7 @@ class ItemViewSet(LoggingMixin, ViewSet):
         
         processing_thread = threading.Thread(
         target=process_user_data,
-        args=(userprofile_instance, user_power_words, user_weak_words, score)
+        args=(userprofile_instance, user_power_words, user_weak_words, score, competencys, user_text)
         )
         processing_thread.start()
 
