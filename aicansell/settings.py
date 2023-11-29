@@ -72,6 +72,7 @@ INSTALLED_APPS = [
     'competency',
     'words',
     'orgss',
+    'freemium',
 
     'corsheaders',
     
