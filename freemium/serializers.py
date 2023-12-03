@@ -5,7 +5,7 @@ from freemium.models import Freemium, Subscription
 class FreemiumSerializer(serializers.ModelSerializer):
     class Meta:
         model = Freemium
-        fields = '__all__'
+        fields = ['id', 'name', 'description', 'amount', 'duration', 'access']
         
 class SubscriptionSerializer(serializers.ModelSerializer):
     service = serializers.SerializerMethodField()
