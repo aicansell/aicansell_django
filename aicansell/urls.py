@@ -43,6 +43,6 @@ urlpatterns = [
     path('refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('words/', include('words.urls')),
     path('freemium/', include('freemium.urls')),
-    
+    path('icebreaker/', include('icebreaker.urls')),
 
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
