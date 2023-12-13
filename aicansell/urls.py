@@ -44,5 +44,6 @@ urlpatterns = [
     path('words/', include('words.urls')),
     path('freemium/', include('freemium.urls')),
     path('icebreaker/', include('icebreaker.urls')),
+    path('scenarios/', include('scenarios.urls')),
 
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -78,6 +78,7 @@ INSTALLED_APPS = [
     'orgss',
     'freemium',
     'icebreaker',
+    'scenarios',
 ]
 
 MIDDLEWARE = [

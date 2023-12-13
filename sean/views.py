@@ -1,21 +1,25 @@
 from django.shortcuts import render, get_object_or_404
-from rest_framework.decorators import api_view, permission_classes
-from rest_framework.response import Response
-from .serializers import ItemListSerializer1, ItemEmotionSerializer, ItemRecommendSerializer,ItemSerializer, ItemLiSerializer, ItemUserSerializer
-from .models import Item
-from accounts.models import Account, UserProfile
-
-from rest_framework import status,viewsets, generics, filters
 from django.db.models import F
 from django.db import transaction
+from django.http import JsonResponse
+
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.response import Response
+from rest_framework import status,viewsets, generics, filters
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.parsers import JSONParser
 from rest_framework.viewsets import ViewSet
 from rest_framework_tracking.mixins import LoggingMixin
+from rest_framework.viewsets import ViewSet
+from rest_framework_tracking.mixins import LoggingMixin
+
+from .serializers import ItemListSerializer1, ItemEmotionSerializer, ItemRecommendSerializer,ItemSerializer, ItemLiSerializer, ItemUserSerializer
+from .models import Item
+from accounts.models import Account, UserProfile
+from orgss.models import Weightage, Org_Roles
 
 import string
 from collections import Counter
-from django.http import JsonResponse
 
 import speech_recognition as sr
 import json
@@ -23,12 +27,6 @@ import openai
 from decouple import config
 import speech_recognition as sr
 import pyttsx3
-
-
-from rest_framework.viewsets import ViewSet
-from rest_framework_tracking.mixins import LoggingMixin
-
-from orgss.models import Weightage, Org_Roles
 
 """
 import nltk

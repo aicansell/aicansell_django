@@ -24,3 +24,23 @@ class EmotionWordsSerializer(serializers.ModelSerializer):
     class Meta:
         model = EmotionWords
         fields = "__all__"        
+
+class PowerWordScenariosSerializer(serializers.ModelSerializer):
+    word = serializers.SerializerMethodField()
+    
+    def get_word(self, obj):
+        return obj.word.word_name
+    
+    class Meta:
+        model = PowerWords
+        fields = ['word']
+        
+class NegativeWordScenarioSerializer(serializers.ModelSerializer):
+    word = serializers.SerializerMethodField()
+    
+    def get_word(self, obj):
+        return obj.word.word_name
+    
+    class Meta:
+        model = NegativeWords
+        fields = ['word']
