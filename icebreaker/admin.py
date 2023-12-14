@@ -1,3 +1,6 @@
 from django.contrib import admin
 
-# Register your models here.
+from icebreaker.models import IceBreaker, IndividualInputScenarios
+
+admin.site.register(IceBreaker)
+admin.site.register(IndividualInputScenarios)
