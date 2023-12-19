@@ -27,3 +27,16 @@ class IceBreakerViewSet(LoggingMixin, ViewSet):
         queryset = self.get_queryset(self)
         serializer = IceBreakerSerializer(queryset, many=True)
         return Response(serializer.data)
+
+class IndividualInputScenariosViewSet(LoggingMixin, ViewSet):
+    @staticmethod
+    def get_object(pk):
+        return get_object_or_404(IndividualInputScenarios, pk=pk)
+    
+    @staticmethod
+    def get_queryset(self):
+        return IndividualInputScenarios.objects.all()
+    
+    def list(self, request, *args, **kwargs):
+        serializer = IndividualInputScenariosSerializer(self.get_queryset(), many=True)
+        return Response(serializer.data)
