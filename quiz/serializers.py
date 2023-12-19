@@ -12,6 +12,7 @@ class QuizListSerializer(serializers.ModelSerializer):
         
 
 
+
 class QuizResultSerializer(serializers.ModelSerializer):
     feedback1 = serializers.StringRelatedField()
     feedback2 = serializers.StringRelatedField()
