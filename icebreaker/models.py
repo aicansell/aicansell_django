@@ -9,7 +9,7 @@ class IceBreaker(models.Model):
     help_on = models.CharField(max_length=200, null=True, blank=True)
     come_across_as = models.CharField(max_length=200, null=True, blank=True)
     not_come_across_as = models.CharField(max_length=200, null=True, blank=True)
-    created_by = models.ForeignKey(Account, on_delete=models.CASCADE)
+    created_by = models.ForeignKey(Account, on_delete=models.CASCADE, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -25,7 +25,7 @@ class IndividualInputScenarios(models.Model):
     help_on = models.CharField(max_length=200, null=True, blank=True)
     come_across_as = models.CharField(max_length=200, null=True, blank=True)
     not_come_across_as = models.CharField(max_length=200, null=True, blank=True)
-    created_by = models.ForeignKey(Account, on_delete=models.CASCADE)
+    created_by = models.ForeignKey(Account, on_delete=models.CASCADE, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

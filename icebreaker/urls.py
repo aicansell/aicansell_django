@@ -2,12 +2,15 @@ from django.urls import path, include
 
 from rest_framework.routers import DefaultRouter
 
-from icebreaker.views import IceBreakerViewSet
+from icebreaker.views import IceBreakerViewSet, IndividualInputScenariosViewSet
 
-router = DefaultRouter()
+router1 = DefaultRouter()
+router2 = DefaultRouter()
 
-router.register('process', IceBreakerViewSet, basename='icebreaker')
+router1.register('', IceBreakerViewSet, basename='icebreaker')
+router2.register('', IndividualInputScenariosViewSet, basename='individualinputscenarios')
 
 urlpatterns = [
-    path('', include(router.urls)),
+    path('process/', include(router1.urls)),
+    path('individualinputscenarios/', include(router2.urls)),
 ]
