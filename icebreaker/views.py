@@ -28,6 +28,7 @@ class IceBreakerViewSet(LoggingMixin, ViewSet):
         serializer = IceBreakerSerializer(queryset, many=True)
         return Response(serializer.data)
 
+
 class IndividualInputScenariosViewSet(LoggingMixin, ViewSet):
     @staticmethod
     def get_object(pk):
