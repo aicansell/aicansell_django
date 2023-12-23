@@ -1,4 +1,4 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import get_object_or_404
 from rest_framework import status
 from rest_framework.viewsets import ViewSet
 from rest_framework.response import Response
@@ -26,4 +26,17 @@ class IceBreakerViewSet(LoggingMixin, ViewSet):
         print(summary_and_facts, interests, ice_breakers, profile_pic_url)
         queryset = self.get_queryset(self)
         serializer = IceBreakerSerializer(queryset, many=True)
+        return Response(serializer.data)
+
+class IndividualInputScenariosViewSet(LoggingMixin, ViewSet):
+    @staticmethod
+    def get_object(pk):
+        return get_object_or_404(IndividualInputScenarios, pk=pk)
+    
+    @staticmethod
+    def get_queryset():
+        return IndividualInputScenarios.objects.all()
+    
+    def list(self, request, *args, **kwargs):
+        serializer = IndividualInputScenariosSerializer(self.get_queryset(), many=True)
         return Response(serializer.data)
