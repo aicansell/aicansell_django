@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
 from scenarios.models import Scenarios
+from words.models import PowerWords, NegativeWords
 from words.serializers import PowerWordScenariosSerializer, NegativeWordScenarioSerializer
 
 class ScenariosSerializer(serializers.ModelSerializer):
@@ -38,4 +39,4 @@ class ScenariosWordsSerializer(serializers.ModelSerializer):
 class ScenariosCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Scenarios
-        fields = ['id', 'item_name', 'item_emotions', 'power_words', 'negative_words']
+        fields = ['id', 'item_name', 'power_words', 'negative_words']
