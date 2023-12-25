@@ -1,6 +1,5 @@
 from django.db import models
 
-# Create your models here.
 class Words(models.Model):
     def __str__(self):
         return self.word_name
@@ -8,20 +7,17 @@ class Words(models.Model):
     word_name = models.CharField(max_length=250)
 
     def save(self, *args, **kwargs):
-        # Convert the field to lowercase before saving
         self.word_name = self.word_name.lower()
         super(Words, self).save(*args, **kwargs)
 
 class PowerWords(models.Model):
     def __str__(self):
         return f'{self.word}'
-
     
     word = models.ForeignKey(Words, on_delete=models.CASCADE, default=1, related_name= 'pww')
     weight = models.IntegerField(default=1)
     sentence = models.CharField(max_length=250, default= "sentence")
     power_word_name = models.CharField(max_length=250, default="pw")
-    
 
 class NegativeWords(models.Model):
     def __str__(self):

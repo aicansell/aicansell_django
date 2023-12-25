@@ -2,12 +2,15 @@ from django.urls import path, include
 
 from rest_framework.routers import DefaultRouter
 
-from scenarios.views import ScenariosViewSet
+from scenarios.views import ScenariosViewSet, ScenariosProcessingViewSet
 
-router = DefaultRouter()
+ScenariosViewSetRouter = DefaultRouter()
+ScenariosProcessingViewSetRouter = DefaultRouter()
 
-router.register("", ScenariosViewSet, basename="scenarios")
+ScenariosViewSetRouter.register("", ScenariosViewSet, basename="scenarios")
+ScenariosProcessingViewSetRouter.register("", ScenariosProcessingViewSet, basename="scenarios_processing")
 
 urlpatterns = [
-    path("", include(router.urls)),
+    path("scenario/", include(ScenariosViewSetRouter.urls)),
+    path("scenario_processing/", include(ScenariosProcessingViewSetRouter.urls))
 ]
