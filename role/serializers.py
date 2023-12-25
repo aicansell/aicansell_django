@@ -7,6 +7,7 @@ class RoleSerializer(serializers.ModelSerializer):
         model = Roles
         fields = ['id', 'name']
         
+        
 class SubRoleSerializer(serializers.ModelSerializer):
     class Meta:
         model = Sub_Role
