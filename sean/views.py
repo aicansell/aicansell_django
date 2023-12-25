@@ -2,6 +2,8 @@ from django.shortcuts import render, get_object_or_404
 from django.db.models import F
 from django.db import transaction
 from django.http import JsonResponse
+from django.views.decorators.cache import cache_page
+from django.utils.decorators import method_decorator
 
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
@@ -28,25 +30,11 @@ from decouple import config
 import speech_recognition as sr
 import pyttsx3
 
-"""
-import nltk
-#nltk.download('stopwords')
-from nltk.corpus import stopwords
-from nltk.tokenize import word_tokenize"""
-
-
 import spacy
 import threading
 nlp = spacy.load('en_core_web_sm')
 
-
-
 from orgss.models import Weightage, Org_Roles
-
-
-import spacy
-nlp = spacy.load('en_core_web_sm')
-
 
 class ItemViewSet(LoggingMixin, ViewSet):
     serializer_class = ItemListSerializer1
@@ -54,33 +42,14 @@ class ItemViewSet(LoggingMixin, ViewSet):
 
     @staticmethod
     def get_object(pk):
-        """Get an Item object by its primary key."""
         return get_object_or_404(Item, id=pk)
 
     @staticmethod
     def get_queryset():
-        """Get all Item objects."""
         return Item.objects.all()
 
     def list(self, request):
-        """
-        List items based on user role.
-
-
-        This view lists items based on the user's role. For admin users, it calculates
-        word counts and scenarios attempted counts for each organization role and
-        provides a summary of counts for the entire organization.
-
-
-        Args:
-            request: The HTTP request object.
-
-
-        Returns:
-            Response: The HTTP response containing the calculated counts.
-        """
         user = self.request.user
-
 
         if user.user_role == 'admin' or user.user_role == 'superadmin':
             org_id = user.role.org
@@ -88,7 +57,6 @@ class ItemViewSet(LoggingMixin, ViewSet):
             user_data = UserProfile.objects.filter(user__role__org=org_id)
             org_role_names = Org_Roles.objects.filter(org=org_id).values_list('org_role_name', flat=True)
 
-            # Initialize response dictionaries
             response = {
                 'org_word_count': sum(len(item.item_emotion.split(' ')) for item in item_data),
                 'org_scenarios_attempted': sum(user.scenarios_attempted for user in user_data),
@@ -97,25 +65,19 @@ class ItemViewSet(LoggingMixin, ViewSet):
             roles_word_count = {}
             roles_scenarios_attempted = {}
 
-
-            # Calculate word count and scenarios attempted for each organization role
             for org_role in org_role_names:
                 users = user_data.filter(user__role__org_role_name__icontains=org_role)
                 roles_word_count[f"{org_id}_{org_role}_word_count"] = sum(len(item.item_emotion.split(' ')) for item in item_data.filter(role__org_role_name__icontains=org_role))
                 roles_scenarios_attempted[f"{org_id}_{org_role}_scenarios_attempted"] = sum(user.scenarios_attempted for user in users)
                
-            # Add role-specific counts to the response
             response["roles_word_count"] = roles_word_count
             response["roles_scenarios_attempted"] = roles_scenarios_attempted
            
-            # Calculate scenarios attempted for each user
             users_scenarios_attempted = {}
                
             for user in user_data:
                 users_scenarios_attempted[f"{user.user.username}_scenarios_attempted"] = user.scenarios_attempted
 
-
-            # Add user-specific counts to the response
             response["users_scenarios_attempted"] = users_scenarios_attempted
            
             return Response(response, status=status.HTTP_200_OK)
@@ -123,16 +85,15 @@ class ItemViewSet(LoggingMixin, ViewSet):
         return Response({"message": "You are not authorized to access these details"}, status=status.HTTP_401_UNAUTHORIZED)
        
     def retrieve(self, request, **kwargs):
-        """Retrieve a specific item by its primary key."""
         pk = kwargs.pop('pk')
         response = {
             'status': 'Success',
+            'message': 'Retrieved Successfully',
             'data': self.serializer_class(self.get_object(pk)).data
         }
         return Response(response, status=status.HTTP_200_OK)
 
     def create(self, request):
-        
         def process_user_data(userprofile_instance, user_power_words, user_weak_words, score, competencys, emotion_words):
             print("\n\nStarting Thread: UserProfile")
             userprofile_instance.scenarios_attempted += 1
@@ -296,7 +257,6 @@ class ItemViewSet(LoggingMixin, ViewSet):
         }
         return Response(response, status=status.HTTP_201_CREATED)
 
-
 class ItemHandleViewSet(LoggingMixin, ViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = ItemUserSerializer
@@ -309,6 +269,7 @@ class ItemHandleViewSet(LoggingMixin, ViewSet):
     def get_queryset():
         return Item.objects.all()
 
+    @method_decorator(cache_page(60 * 15))
     def list(self, request):
         data = Item.objects.filter(role=self.request.user.role).order_by('-id')
         
@@ -327,6 +288,7 @@ class ItemHandleViewSet(LoggingMixin, ViewSet):
         serializer_data = self.serializer_class(data, many=True).data
         response = {
             'status': 'Success',
+            'message': 'Retrieved Successfully',
             'data': serializer_data,
             'user_details': user_details
         }
@@ -336,6 +298,7 @@ class ItemHandleViewSet(LoggingMixin, ViewSet):
         pk = kwargs.pop('pk')
         response = {
             'status': 'Success',
+            'message': 'Retrieved Successfully',
             'data': self.serializer_class(self.get_object(pk)).data
         }
         return Response(response, status=status.HTTP_200_OK)
@@ -355,8 +318,7 @@ class ItemHandleViewSet(LoggingMixin, ViewSet):
             'competencys': request_data.get('competencys'),
             'level': request_data.get('level'),
             'user_powerwords': request_data.get('user_powerwords'),
-            'user_weakwords': request_data.get('user_weakwords'),
-            
+            'user_weakwords': request_data.get('user_weakwords'),    
         }
 
         serialized_data = self.serializer_class(data=data)
@@ -416,8 +378,6 @@ class ItemHandleViewSet(LoggingMixin, ViewSet):
 
         return Response(response, status=status.HTTP_204_NO_CONTENT)
        
-
-
 class ItemList(generics.ListAPIView):
     
     queryset = Item.objects.all()
@@ -548,8 +508,7 @@ def item_rec(request, pk):
         if item_result:
             return Response(serializer.data)
         else:
-            return Response(status=status.HTTP_404_NOT_FOUND)
-   
+            return Response(status=status.HTTP_404_NOT_FOUND)  
 
 @api_view(['PUT'])
 @permission_classes([IsAuthenticated])

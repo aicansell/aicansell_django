@@ -31,6 +31,72 @@ class IceBreakerViewSet(LoggingMixin, ViewSet):
         queryset = self.get_queryset(self)
         serializer = IceBreakerSerializer(queryset, many=True)
         return Response(serializer.data)
+    
+    def create(self, request):
+        request_data = {
+            'going_for': request.data.get('going_for'),
+            'with_who': request.data.get('with_who'),
+            'help_on': request.data.get('help_on'),
+            'come_across_as': request.data.get('come_across_as'),
+            'not_come_across_as': request.data.get('not_come_across_as'),
+            'created_by': request.user.id
+        }
+        
+        serializer = IceBreakerSerializer(data=request_data)
+        
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+            response = {
+                'status': 'Success',
+                'message': 'Created successfully',
+                'data': serializer.data
+            }
+            return Response(response, status=status.HTTP_201_CREATED)
+        response = {
+            'status': 'Failure',
+            'message': 'Failed to create',
+            'data': serializer.errors
+        }
+        return Response(response, status=status.HTTP_400_BAD_REQUEST)
+        
+    def update(self, request, pk=None):
+        instance = self.get_object(pk)
+        
+        request_data = {
+            'going_for': request.data.get('going_for', instance.going_for),
+            'with_who': request.data.get('with_who', instance.with_who),
+            'help_on': request.data.get('help_on', instance.help_on),
+            'come_across_as': request.data.get('come_across_as', instance.come_across_as),
+            'not_come_across_as': request.data.get('not_come_across_as', instance.not_come_across_as),
+        }
+        
+        serializer = IceBreakerSerializer(instance, data=request_data)
+        
+        if serializer.is_valid():
+            serializer.save()
+            response = {
+                'status': 'Success',
+                'message': 'Updated successfully',
+                'data': serializer.data
+            }
+            return Response(response, status=status.HTTP_200_OK)
+        
+        response = {
+            'status': 'Failure',
+            'message': 'Failed to update',
+            'data': serializer.errors
+        }
+        return Response(response, status=status.HTTP_400_BAD_REQUEST)
+    
+    def destroy(self, request, pk=None):
+        instance = self.get_object(pk)
+        instance.delete()
+        response = {
+            'status': 'Success',
+            'message': 'Deleted successfully'
+        }
+        
+        return Response(response, status=status.HTTP_204_NO_CONTENT)
 
 class IndividualInputScenariosViewSet(LoggingMixin, ViewSet):
     permission_classes = [IsAuthenticated]
