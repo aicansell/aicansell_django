@@ -22,19 +22,14 @@ from orgss.models import Weightage, Org_Roles
 
 import string
 from collections import Counter
-
 import speech_recognition as sr
 import json
-import openai
 from decouple import config
 import speech_recognition as sr
-import pyttsx3
-
 import spacy
 import threading
 nlp = spacy.load('en_core_web_sm')
 
-from orgss.models import Weightage, Org_Roles
 
 class ItemViewSet(LoggingMixin, ViewSet):
     serializer_class = ItemListSerializer1
@@ -97,8 +92,6 @@ class ItemViewSet(LoggingMixin, ViewSet):
         def process_user_data(userprofile_instance, user_power_words, user_weak_words, score, competencys, emotion_words):
             print("\n\nStarting Thread: UserProfile")
             userprofile_instance.scenarios_attempted += 1
-            print(userprofile_instance.user_powerwords)
-            print(userprofile_instance.user_weakwords)
             userprofile_instance.user_powerwords = (userprofile_instance.user_powerwords or '') + "," + ", ".join(user_power_words)
             userprofile_instance.user_weakwords = (userprofile_instance.user_weakwords or '') + "," + ", ".join(user_weak_words)
             userprofile_instance.user_powerwords = userprofile_instance.user_powerwords.strip(',')
@@ -114,18 +107,15 @@ class ItemViewSet(LoggingMixin, ViewSet):
             except:
                 competency_score = {}
 
-            # Loop through each competency
             for competency in competencys:
                 sub_competencies = competency.sub_competency.all()
                 power_word_list = []
                 negative_word_list = []
 
-                # Loop through each sub-competency and its power words
                 for sub_competency in sub_competencies:
                     power_words = sub_competency.power_words.all()
                     negative_words = sub_competency.negative_words.all()
 
-                    # Loop through each power word and its words
                     for power_word in power_words:
                         power_word_list.append(power_word.word.word_name.lower())
 
@@ -135,23 +125,18 @@ class ItemViewSet(LoggingMixin, ViewSet):
                 power_word_count = 0
                 negative_word_count = 0
                 
-                # Calculate power_word_count and negative_word_count based on emotion_words
-                for word in emotion_words:
-                    if word.text in power_word_list:
-                        power_word_count += 1
-                    elif word.text in negative_word_list:
-                        negative_word_count += 1
+                power_word_count = sum(1 for word in power_word_list if word in emotion_words)
+                negative_word_count = sum(1 for word in negative_word_list if word in emotion_words)
+
                 
                 competency_name = str(competency.competency_name)
                         
-                # Check if the key exists and update the value, or create it
                 if competency_name in competency_score:
                     competency_score[competency_name] += ',' + str(power_word_count - negative_word_count)
                     competency_score[competency_name] = competency_score[competency_name]
                 else:
                     competency_score[competency_name] = str(power_word_count - negative_word_count)
 
-            # Update the competency_score in the user profile
             userprofile_instance.competency_score = json.dumps(competency_score)
             userprofile_instance.save()
             print("\n\nCompleted Thread: Update Competency")
@@ -163,52 +148,40 @@ class ItemViewSet(LoggingMixin, ViewSet):
         emotion_str = request.data.get('item_emotion').lower()
 
         competencys = instance.competencys.all().prefetch_related(
-        'sub_competency__power_words__word',
-        'sub_competency__negative_words__word'
+            'sub_competency__power_words__word',
+            'sub_competency__negative_words__word'
         )
 
-        # Initialize an empty list to collect words
         power_word_list = []
         negative_word_list = []
         
-        # Loop through each competency and its sub-competencies
         for competency in competencys:
             sub_competencies = competency.sub_competency.all()
-
-            # Loop through each sub-competency and its power words
             for sub_competency in sub_competencies:
                 power_words = sub_competency.power_words.all()
                 negative_words = sub_competency.negative_words.all()
 
-                # Loop through each power word and its words
                 for power_word in power_words:
                     power_word_list.append(power_word.word.word_name.lower())
 
                 for negative_word in negative_words:
                     negative_word_list.append(negative_word.word.word_name.lower())
                     
-         # Tokenize the emotion string into words
-        emotion_words = nlp(emotion_str)
-        user_text = emotion_words
+        user_text = emotion_str
                             
         instance.item_emotion = instance.item_emotion + ',' + emotion_str
-
-
-        # Remove stop words
-        stop_words = spacy.lang.en.stop_words.STOP_WORDS
-        emotion_words = [word for word in emotion_words if word.text not in stop_words]
-        
 
         user_power_words = []
         user_weak_words = []
         
-        for token in emotion_words:
-            if token.text in power_word_list:
-                instance.user_powerwords = (instance.user_powerwords or '') + "," + token.text + ','
-                user_power_words.append(token.text.strip(","))
-            elif token.text in negative_word_list:
-                instance.user_weakwords = (instance.user_weakwords or '') + "," +token.text + ','
-                user_weak_words.append(token.text.strip(","))
+        for words in power_word_list:
+            if words in emotion_str:
+                user_power_words.append(words)
+                instance.user_powerwords = (instance.user_powerwords or '') + "," + words + ','
+        for words in negative_word_list:
+            if words in emotion_str:
+                user_weak_words.append(words)
+                instance.user_weakwords = (instance.user_weakwords or '') + "," + words + ','
 
         score = len(user_power_words) - len(user_weak_words)
 
@@ -243,8 +216,6 @@ class ItemViewSet(LoggingMixin, ViewSet):
             'power_word_list': power_word_list,
             'negative_word_list': negative_word_list,  
         }
-       
-
 
         serialized_data = self.serializer_class(instance=instance, data=data)
         serialized_data.is_valid(raise_exception=True)
