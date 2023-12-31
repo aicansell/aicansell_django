@@ -41,7 +41,7 @@ def register(request):
                 password = make_password(data['password']),
 
             )
-            return Response({'details':'User created'}, status=status.HTTP_201_CREATED)
+            return Response({'message':'User created'}, status=status.HTTP_201_CREATED)
 
         else:
             return Response({'error':'User already exists'}, status=status.HTTP_400_BAD_REQUEST)
@@ -93,7 +93,7 @@ def forgot_password(request):
         "info@aicansell.com",
         [data['email']]
     )
-    return Response({'details': 'Password reset email sent to {email}'. format(email=data['email']), "profile":serializer.data })
+    return Response({'message': 'Password reset email sent to {email}'. format(email=data['email']), "profile":serializer.data })
 
 
 
@@ -116,7 +116,7 @@ def reset_password(request,token):
     user.profile.save()
     user.save()
 
-    return Response({'details': 'Password has been reset'})
+    return Response({'message': 'Password has been reset'}, status=status.HTTP_200_OK)
 
 class UserInformationAPIVIew(APIView):
 
@@ -151,9 +151,9 @@ def confirm_email_view(request):
         user.is_email_confirmed = True
         user.save()
         data = {'is_email_confirmed': True}
-        return Response({'details': 'Email has been confirmed'}, status=status.HTTP_200_OK )
+        return Response({'message': 'Email has been confirmed'}, status=status.HTTP_200_OK )
        #return render(request, template_name='users/confirm_email_view.html', context=data)
     except EmailConfirmationToken.DoesNotExist:
         data = {'is_email_confirmed': False}
-        return Response({'details': 'Email has not been confirmed'} )
+        return Response({'message': 'Email has not been confirmed'} )
         #return render(request, template_name='users/confirm_email_view.html', context=data)

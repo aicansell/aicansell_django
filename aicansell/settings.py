@@ -67,6 +67,7 @@ INSTALLED_APPS = [
     'corsheaders',
     
     'accounts',
+    'users',
     'chatbot',
     'industry',
     'role',
@@ -92,15 +93,13 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-#EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_USE_TLS = True
 EMAIL_PORT = 587
 EMAIL_HOST_USER = get_env_variable('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = get_env_variable('EMAIL_HOST_PASSWORD')
-
-#EMAIL_USE_SSL = False
 
 
 
@@ -148,8 +147,6 @@ SIMPLE_JWT = {
     "AUTH_TOKEN_CLASSES": ("rest_framework_simplejwt.tokens.AccessToken",),
 }
 
-# Database
-# https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 DATABASES = {
         'default': {
@@ -162,8 +159,6 @@ DATABASES = {
         }
     }
 
-# Password validation
-# https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -181,8 +176,6 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
-# Internationalization
-# https://docs.djangoproject.com/en/4.2/topics/i18n/
 
 LANGUAGE_CODE = 'en-us'
 
@@ -193,8 +186,6 @@ USE_I18N = True
 USE_TZ = True
 
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 STATIC_URL = 'static/'
@@ -202,16 +193,6 @@ STATICFILES_DIRS = [
     'aicansell/static',
 ]
 
-
-# AWS_S3_CUSTOM_DOMAIN = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
-# AWS_S3_OBJECT_PARAMETERS = {
-#     'CacheControl': 'max-age=86400',
-# }
-# AWS_S3_FILE_OVERWRITE = False
-# AWS_LOCATION = 'static'
-
-
-# STATIC_URL = 'https://%s/%s/' % (AWS_S3_CUSTOM_DOMAIN, AWS_LOCATION)
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = 'media/'
@@ -222,7 +203,5 @@ AWS_STORAGE_BUCKET_NAME= get_env_variable("AWS_STORAGE_BUCKET_NAME")
 AWS_ACCESS_KEY_ID = get_env_variable("AWS_ACCESS_KEY_ID")
 AWS_SECRET_ACCESS_KEY = get_env_variable("AWS_SECRET_ACCESS_KEY")
 
-# Default primary key field type
-# https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
