@@ -139,7 +139,13 @@ class SendEmailConfirmationTokenAPIView(APIView):
         token = EmailConfirmationToken.objects.create(user=user)
         
         send_confirmation_email(email=user.email, token_id=token.pk, user_id=user.pk)
-        return Response(data=None, status=status.HTTP_201_CREATED)
+        
+        response = {
+            'status': 'success',
+            'message': 'Your confirmation Email was sent successfully',
+        }
+        
+        return Response(response, status=status.HTTP_201_CREATED)
 
 @api_view(['GET'])
 def confirm_email_view(request):
