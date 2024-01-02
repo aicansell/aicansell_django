@@ -36,7 +36,7 @@ def register(request):
             user = Account.objects.create(
                 first_name = data['first_name'],
                 last_name = data['last_name'],
-                username = data['email'],
+                username = data['username'],
                 email = data['email'],
                 password = make_password(data['password']),
 
