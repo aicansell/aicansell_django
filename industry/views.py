@@ -8,6 +8,7 @@ from rest_framework_tracking.mixins import LoggingMixin
 from industry.models import Industry
 from industry.serializers import IndustrySerializer
 
+
 class IndustryViewSet(LoggingMixin, ViewSet):
     serializer_class = IndustrySerializer
     
