@@ -29,14 +29,15 @@ def health_check(request):
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('', health_check),
     path('accounts/', include('accounts.urls')),
+    path('users/', include('users.urls')),
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('chatbot/', include('chatbot.urls')),
     path('quiz/', include('quiz.urls')),
     path('sean/', include('sean.urls')),
     path('industry/', include('industry.urls')),
-    path('', health_check),
     #path('', include('competency.urls')),
     #path('', include('words.urls')),
     path('', include('orgss.urls')),
