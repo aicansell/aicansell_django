@@ -7,13 +7,16 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework_tracking.mixins import LoggingMixin
 
 
-from icebreaker.models import IceBreaker, IndividualInputScenarios
+from icebreaker.models import IceBreaker, IndividualInputScenarios, IceBreakerData
 from icebreaker.serializers import IceBreakerSerializer, IndividualInputScenariosSerializer
 from icebreaker.ice_breaker import ice_break_with
 from scenarios.models import Scenarios
 from scenarios.serializers import ScenariosWordsSerializer
+from accounts.throttling import UserBasedAnonRateThrottle
 
 class IceBreakerViewSet(LoggingMixin, ViewSet):
+    throttle_classes = [UserBasedAnonRateThrottle]
+    
     @staticmethod
     def get_object(pk):
         return get_object_or_404(IceBreaker, pk=pk)
@@ -25,27 +28,41 @@ class IceBreakerViewSet(LoggingMixin, ViewSet):
     def list(self, request, *args, **kwargs):
         name = request.query_params.get('name')
         try:
-            summary_and_facts, interests, ice_breakers, profile_pic_url = ice_break_with(
-                name=name
-            )
+            instance = IceBreakerData.objects.get(username=name)
+            
             response = {
                 'status': 'Success',
                 'message': 'Analysis successfully',
-                'data': {
-                    'summary_and_facts': summary_and_facts,
-                    'interests': interests,
-                    'ice_breakers': ice_breakers,
-                    'profile_pic_url': profile_pic_url
-                }
+                'data': instance.process_data
             }
             
             return Response(response, status=status.HTTP_200_OK)
-        except:
-            response = {
-                'status': 'Failure',
-                'message': 'Failed to analyse, Try Again',
-            }
-            return Response(response, status=status.HTTP_400_BAD_REQUEST)
+        except IceBreakerData.DoesNotExist:
+            try:
+                summary_and_facts, interests, ice_breakers, profile_pic_url = ice_break_with(
+                    name=name
+                )
+                response = {
+                    'status': 'Success',
+                    'message': 'Analysis successfully',
+                    'data': {
+                        'summary_and_facts': summary_and_facts,
+                        'interests': interests,
+                        'ice_breakers': ice_breakers,
+                        'profile_pic_url': profile_pic_url
+                    }
+                }
+                
+                obj = IceBreakerData.objects.create(username=name, process_data=str(response['data']))
+                obj.save()
+                
+                return Response(response, status=status.HTTP_200_OK)
+            except:
+                response = {
+                    'status': 'Failure',
+                    'message': 'Failed to analyse, Try Again',
+                }
+                return Response(response, status=status.HTTP_400_BAD_REQUEST)
         
     
     def create(self, request):
@@ -55,8 +72,10 @@ class IceBreakerViewSet(LoggingMixin, ViewSet):
             'help_on': request.data.get('help_on'),
             'come_across_as': request.data.get('come_across_as'),
             'not_come_across_as': request.data.get('not_come_across_as'),
-            'created_by': request.user.id
         }
+        
+        if self.request.user.is_authenticated:
+            request_data['created_by'] = request.user.id
         
         serializer = IceBreakerSerializer(data=request_data)
         

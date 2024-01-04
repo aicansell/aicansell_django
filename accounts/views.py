@@ -18,11 +18,6 @@ from accounts.utils import send_confirmation_email
 from django.contrib.sites.shortcuts import get_current_site
 
 
-# accounts/views.py
-
-
-
-
 @api_view(['POST'])
 def register(request):
     data = request.data
