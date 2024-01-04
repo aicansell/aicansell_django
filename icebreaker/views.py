@@ -24,13 +24,29 @@ class IceBreakerViewSet(LoggingMixin, ViewSet):
     
     def list(self, request, *args, **kwargs):
         name = request.query_params.get('name')
-        # summary_and_facts, interests, ice_breakers, profile_pic_url = ice_break_with(
-        #     name=name
-        # )
-        print(ice_break_with(name=name))
-        queryset = self.get_queryset(self)
-        serializer = IceBreakerSerializer(queryset, many=True)
-        return Response(serializer.data)
+        try:
+            summary_and_facts, interests, ice_breakers, profile_pic_url = ice_break_with(
+                name=name
+            )
+            response = {
+                'status': 'Success',
+                'message': 'Analysis successfully',
+                'data': {
+                    'summary_and_facts': summary_and_facts,
+                    'interests': interests,
+                    'ice_breakers': ice_breakers,
+                    'profile_pic_url': profile_pic_url
+                }
+            }
+            
+            return Response(response, status=status.HTTP_200_OK)
+        except:
+            response = {
+                'status': 'Failure',
+                'message': 'Failed to analyse, Try Again',
+            }
+            return Response(response, status=status.HTTP_400_BAD_REQUEST)
+        
     
     def create(self, request):
         request_data = {
