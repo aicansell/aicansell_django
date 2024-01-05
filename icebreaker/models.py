@@ -5,7 +5,10 @@ from accounts.models import Account
 
 class IceBreakerData(models.Model):
     username = models.CharField(max_length=200, null=True, blank=True)
-    process_data = models.TextField()
+    summary_and_facts = models.TextField(null=True, blank=True)
+    interests = models.TextField(null=True, blank=True)
+    ice_breakers = models.TextField(null=True, blank=True)
+    profile_pic_url = models.TextField(null=True, blank=True)
     
     def __str__(self):
         return f"{self.username}"

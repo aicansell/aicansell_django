@@ -14,6 +14,8 @@ from scenarios.models import Scenarios
 from scenarios.serializers import ScenariosWordsSerializer
 from accounts.throttling import UserBasedAnonRateThrottle
 
+import ast
+
 class IceBreakerViewSet(LoggingMixin, ViewSet):
     throttle_classes = [UserBasedAnonRateThrottle]
     
@@ -30,10 +32,32 @@ class IceBreakerViewSet(LoggingMixin, ViewSet):
         try:
             instance = IceBreakerData.objects.get(username=name)
             
+            summary_and_facts = instance.summary_and_facts
+            interests = instance.interests
+            ice_breakers = instance.ice_breakers
+            
+            summary_start = summary_and_facts.find("summary='") + len("summary='")
+            summary_end = summary_and_facts.find("'", summary_start)
+            summary = summary_and_facts[summary_start:summary_end]
+
+            facts_start = summary_and_facts.find("facts=") + len("facts=")
+            facts_str = summary_and_facts[facts_start:]
+            facts = eval(facts_str)
+            
+            interests = interests.removeprefix("ice_breakers=")
+            ice_breakers = ice_breakers.removeprefix("ice_breakers=")
+            
             response = {
                 'status': 'Success',
                 'message': 'Analysis successfully',
-                'data': instance.process_data
+                'type': 'database',
+                'data': {
+                        'summary': summary,
+                        'facts': list(facts),
+                        'interests': ast.literal_eval(interests),
+                        'ice_breakers': ast.literal_eval(ice_breakers),
+                        'profile_pic_url': instance.profile_pic_url,
+                    }
             }
             
             return Response(response, status=status.HTTP_200_OK)
@@ -45,6 +69,7 @@ class IceBreakerViewSet(LoggingMixin, ViewSet):
                 response = {
                     'status': 'Success',
                     'message': 'Analysis successfully',
+                    'type': 'agent',
                     'data': {
                         'summary_and_facts': summary_and_facts,
                         'interests': interests,
@@ -53,14 +78,14 @@ class IceBreakerViewSet(LoggingMixin, ViewSet):
                     }
                 }
                 
-                obj = IceBreakerData.objects.create(username=name, process_data=str(response['data']))
+                obj = IceBreakerData.objects.create(username=name, summary_and_facts=summary_and_facts, interests=interests, ice_breakers=ice_breakers, profile_pic_url=profile_pic_url)
                 obj.save()
                 
                 return Response(response, status=status.HTTP_200_OK)
-            except:
+            except Exception as e:
                 response = {
                     'status': 'Failure',
-                    'message': 'Failed to analyse, Try Again',
+                    'message': f'Failed to analyse, Try Again Error : {e}',
                 }
                 return Response(response, status=status.HTTP_400_BAD_REQUEST)
         
