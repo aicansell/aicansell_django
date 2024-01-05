@@ -203,6 +203,9 @@ class IndividualInputScenariosViewSet(LoggingMixin, ViewSet):
         
         serializer = IndividualInputScenariosSerializer(data=request_data)
         
+        power_word_used = list(set(power_word_used))
+        negative_word_used = list(set(negative_word_used))
+        
         if serializer.is_valid():
             serializer.save()
             response = {
