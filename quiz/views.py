@@ -51,7 +51,6 @@ def tutorial_detail(request, pk):
         quiz_data = JSONParser().parse(request) 
         
        
-        
         serializer = QuizResultSerializer(quiz_result, data=quiz_data)
         if serializer.is_valid(): 
             
