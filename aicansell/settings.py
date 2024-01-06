@@ -135,7 +135,9 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
-    
+    'DEFAULT_THROTTLE_RATES': {
+        'anon': '2/day',
+    },
 }
 
 SIMPLE_JWT = {

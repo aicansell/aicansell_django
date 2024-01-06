@@ -3,6 +3,16 @@ from django.db import models
 from accounts.models import Account
 
 
+class IceBreakerData(models.Model):
+    username = models.CharField(max_length=200, null=True, blank=True)
+    summary_and_facts = models.TextField(null=True, blank=True)
+    interests = models.TextField(null=True, blank=True)
+    ice_breakers = models.TextField(null=True, blank=True)
+    profile_pic_url = models.TextField(null=True, blank=True)
+    
+    def __str__(self):
+        return f"{self.username}"
+
 class IceBreaker(models.Model):
     going_for = models.CharField(max_length=200, null=True, blank=True)
     with_who = models.CharField(max_length=200, null=True, blank=True)
@@ -13,7 +23,7 @@ class IceBreaker(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.created_by.first_name} - {self.going_for} - {self.with_who}"
+        return f"{self.going_for} - {self.with_who}"
 
     class Meta:
         verbose_name_plural = "IceBreakers"
