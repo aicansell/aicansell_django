@@ -80,6 +80,7 @@ INSTALLED_APPS = [
     'freemium',
     'icebreaker',
     'scenarios',
+    'sean_scenarios',
 ]
 
 MIDDLEWARE = [
