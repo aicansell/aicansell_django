@@ -1,5 +1,6 @@
 from rest_framework import serializers
 
+from competency.models import Competency
 from sean_scenarios.models import SeanScenarios, Situations, Interest, Tags
 from sean_scenarios.models import SeanScenariosSituations, SeanScenariosInterests, SeanScenariosTags
 
@@ -19,7 +20,7 @@ class TagsSerializer(serializers.ModelSerializer):
         fields = ['id', 'tag']
         
 class SeanScenariosSerializer(serializers.ModelSerializer):
-    competency = serializers.StringRelatedField(many=True)
+    competency = serializers.PrimaryKeyRelatedField(many=True, queryset=Competency.objects.all())
     
     class Meta:
         model = SeanScenarios
