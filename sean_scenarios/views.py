@@ -4,9 +4,12 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.viewsets import ViewSet
 
+from accounts.models import UserProfile
 from sean_scenarios.models import SeanScenarios, Situations, Tags, Interest
 from sean_scenarios.serializers import SeanScenariosSerializer, SituationsSerializer, TagsSerializer, InterestSerializer
 
+import json
+import threading
 
 class SituationsViewSet(ViewSet):
     @staticmethod
@@ -389,3 +392,133 @@ class SeanScenariosViewSet(ViewSet):
         }
         return Response(response, status=status.HTTP_200_OK)
 
+class SeanScenarioProcessingViewSet(ViewSet):
+    def list(self, request, *args, **kwargs):
+        def process_user_data(request, user_power_words, user_weak_words, score, competencys, scenario_answer):
+            print("\n\nStarting Thread: UserProfile")
+            if request.user.is_authenticated():
+                user_profile = UserProfile.objects.get(user=request.user)
+                if user_profile:
+                    user_profile.scenarios_attempted += 1
+                    user_profile.user_powerwords = (user_profile.user_powerwords or '') + "," + ", ".join(user_power_words)
+                    user_profile.user_weakwords = (user_profile.user_weakwords or '') + "," + ", ".join(user_weak_words)
+                    user_profile.user_powerwords = user_profile.user_powerwords.strip(',')
+                    user_profile.user_weakwords = user_profile.user_weakwords.strip(',')
+                    if user_profile.scenarios_attempted_score:
+                        user_profile.scenarios_attempted_score += str(score) + ','
+                    else:
+                        user_profile.scenarios_attempted_score = str(score) + ','
+                    print("\n\nCompleted Thread: UserProfile")
+                    print("\n\nStarting Thread: Update Competency")
+                    try:
+                        competency_score = json.loads(user_profile.competency_score)
+                    except:
+                        competency_score = {}
+
+                    for competency in competencys:
+                        sub_competencies = competency.sub_competency.all()
+                        power_word_list = []
+                        negative_word_list = []
+
+                        for sub_competency in sub_competencies:
+                            power_words = sub_competency.power_words.all()
+                            negative_words = sub_competency.negative_words.all()
+
+                            for power_word in power_words:
+                                power_word_list.append(power_word.word.word_name.lower())
+
+                            for negative_word in negative_words:
+                                negative_word_list.append(negative_word.word.word_name.lower())
+
+                        power_word_count = 0
+                        negative_word_count = 0
+                        
+                        power_word_count = sum(1 for word in power_word_list if word in scenario_answer)
+                        negative_word_count = sum(1 for word in negative_word_list if word in scenario_answer)
+
+                        
+                        competency_name = str(competency.competency_name)
+                                
+                        if competency_name in competency_score:
+                            competency_score[competency_name] += ',' + str(power_word_count - negative_word_count)
+                            competency_score[competency_name] = competency_score[competency_name]
+                        else:
+                            competency_score[competency_name] = str(power_word_count - negative_word_count)
+
+                    user_profile.competency_score = json.dumps(competency_score)
+                    user_profile.save()
+                    print("\n\nCompleted Thread: Update Competency")
+            else:
+                print("\n\nUser not authenticated")
+                print("\n\nCompleted Thread: Update Competency")
+                    
+        try:
+            instance = SeanScenarios.objects.get(id=request.query_params.get('id'))
+        except:
+            response = {
+                'status': "failed",
+                'message': 'SeanScenarios does not exist',
+            }
+            return Response(response, status=status.HTTP_400_BAD_REQUEST)
+        
+        scenario_answer = request.query_params.get('scenario_answer').lower()
+        
+        competencys = instance.competency.all().prefetch_related(
+            'sub_competency__power_words__word',
+            'sub_competency__negative_words__word',
+        )
+        
+        power_word_list = []
+        negative_word_list = []
+        
+        for competency in competencys:
+            sub_competencies = competency.sub_competency.all()
+            for sub_competency in sub_competencies:
+                power_words = sub_competency.power_words.all()
+                for power_word in power_words:
+                    power_word_list.append(power_word.word.word_name.lower())
+                negative_words = sub_competency.negative_words.all()
+                for negative_word in negative_words:
+                    negative_word_list.append(negative_word.word.word_name.lower())
+                    
+        user_scenario_answer = scenario_answer
+        
+        instance.scenario_answer = instance.scenario_answer + " " + scenario_answer
+        
+        user_power_words = []
+        user_weak_words = []
+        
+        for words in power_word_list:
+            if words in scenario_answer:
+                user_power_words.append(words)
+        for words in negative_word_list:
+            if words in scenario_answer:
+                user_weak_words.append(words)
+                
+        score = len(user_power_words) - len(user_weak_words)
+        
+        instance.scenario_answer_count += 1
+        
+        processing_thread = threading.Thread(
+            target=process_user_data,
+            args=(request, user_power_words, user_weak_words, score, competencys, user_scenario_answer)
+        )
+        processing_thread.start()
+        
+        instance.save()
+        
+        response = {
+            'status': "success",
+            'message': 'SeanScenarios processed successfully',
+            'data': {
+                'compentency_score': score,
+                'powerwords_detected': user_power_words,
+                'negativewords_detected': user_weak_words,
+                'powerwords_list': power_word_list,
+                'negativewords_list': negative_word_list,
+            }
+        }
+        
+        return Response(response, status=status.HTTP_200_OK)
+    
+    
