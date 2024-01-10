@@ -6,6 +6,7 @@ from rest_framework.viewsets import ViewSet
 
 from accounts.models import UserProfile
 from sean_scenarios.models import SeanScenarios, Situations, Tags, Interest
+from sean_scenarios.models import SeanScenariosInterests, SeanScenariosSituations, SeanScenariosTags
 from sean_scenarios.serializers import SeanScenariosSerializer, SituationsSerializer, TagsSerializer, InterestSerializer
 
 import json
@@ -21,7 +22,10 @@ class SituationsViewSet(ViewSet):
         return Situations.objects.all()
     
     def list(self, request):
+        situation = request.query_params.get('situation')
         queryset = self.get_queryset()
+        if situation:
+            queryset = queryset.filter(situation__icontains=situation)
         serializer = SituationsSerializer(queryset, many=True)
         response = {
             'status': "success",
@@ -105,7 +109,10 @@ class InterestViewSet(ViewSet):
         return Interest.objects.all()
     
     def list(self, request):
+        interest = request.query_params.get('interest')
         queryset = self.get_queryset()
+        if interest:
+            queryset = queryset.filter(interest__icontains=interest)
         serializer = InterestSerializer(queryset, many=True)
         response = {
             'status': "success",
@@ -189,7 +196,10 @@ class TagsViewSet(ViewSet):
         return Tags.objects.all()
     
     def list(self, request):
+        tag = request.query_params.get('tag')
         queryset = self.get_queryset()
+        if tag:
+            queryset = queryset.filter(tag__icontains=tag)
         serializer = TagsSerializer(queryset, many=True)
         response = {
             'status': "success",
@@ -273,7 +283,21 @@ class SeanScenariosViewSet(ViewSet):
         return SeanScenarios.objects.all()
     
     def list(self, request):
+        situation, interest = request.query_params.get('situation'), request.query_params.get('interest')
+        tag = request.query_params.get('tag')
         queryset = self.get_queryset()
+        
+        if situation or interest or tag:
+            if situation:
+                data = SeanScenariosSituations.objects.filter(situation__situation__icontains=situation)
+                queryset = [obj.scenario for obj in data]
+            if interest:
+                data = SeanScenariosInterests.objects.filter(interest__interest__icontains=interest)
+                queryset = [obj.scenario for obj in data]
+            if tag:
+                data = SeanScenariosTags.objects.filter(tag__tag__icontains=tag)
+                queryset = [obj.scenario for obj in data]
+        
         serializer = SeanScenariosSerializer(queryset, many=True)
         response = {
             'status': "success",
@@ -393,10 +417,10 @@ class SeanScenariosViewSet(ViewSet):
         return Response(response, status=status.HTTP_200_OK)
 
 class SeanScenarioProcessingViewSet(ViewSet):
-    def list(self, request, *args, **kwargs):
+    def list(self, request):
         def process_user_data(request, user_power_words, user_weak_words, score, competencys, scenario_answer):
             print("\n\nStarting Thread: UserProfile")
-            if request.user.is_authenticated():
+            if request.user.is_authenticated:
                 user_profile = UserProfile.objects.get(user=request.user)
                 if user_profile:
                     user_profile.scenarios_attempted += 1
@@ -450,8 +474,7 @@ class SeanScenarioProcessingViewSet(ViewSet):
                     print("\n\nCompleted Thread: Update Competency")
             else:
                 print("\n\nUser not authenticated")
-                print("\n\nCompleted Thread: Update Competency")
-                    
+                print("\n\nCompleted Thread: Update Competency")         
         try:
             instance = SeanScenarios.objects.get(id=request.query_params.get('id'))
         except:

@@ -18,9 +18,9 @@ SeanScenariosRouter.register('',SeanScenariosViewSet, basename='sean_scenarios')
 SeanScenarioProcessingRouter.register('', SeanScenarioProcessingViewSet, basename='sean_scenario_processing')
 
 urlpatterns = [
+    path('sean/', include(SeanScenariosRouter.urls)),
     path('situations/', include(SituationsRouter.urls)),
     path('interests/', include(InterestRouter.urls)),
     path('tags/', include(TagsRouter.urls)),
-    path('', include(SeanScenariosRouter.urls)),
-    path("processing/", include(SeanScenarioProcessingRouter.urls)),
+    path('processing/', include(SeanScenarioProcessingRouter.urls)),
 ]
