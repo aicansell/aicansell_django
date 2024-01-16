@@ -9,8 +9,12 @@ from sean_scenarios.models import SeanScenarios, Situations, Tags, Interest
 from sean_scenarios.models import SeanScenariosInterests, SeanScenariosSituations, SeanScenariosTags
 from sean_scenarios.serializers import SeanScenariosSerializer, SituationsSerializer, TagsSerializer, InterestSerializer
 
+from django.conf import settings
+from pathlib import Path
+
 import json
 import threading
+import pandas as pd
 
 class SituationsViewSet(ViewSet):
     @staticmethod
@@ -475,6 +479,23 @@ class SeanScenarioProcessingViewSet(ViewSet):
             else:
                 print("\n\nUser not authenticated")
                 print("\n\nCompleted Thread: Update Competency")         
+
+        def words_update(request, words):
+            print("Starting words update")
+            words = scenario_answer.split()
+
+            df = pd.DataFrame(words, columns=['Words'])
+            excel_file_path = Path('Word_Data.xlsx')
+            
+            if excel_file_path.exists():
+                existing_df = pd.read_excel(excel_file_path)
+                unique_words = set(existing_df['Words'])
+                new_words = [word for word in words if word not in unique_words]
+                new_df = pd.DataFrame(new_words, columns=['Words'])
+                df = pd.concat([existing_df, new_df], ignore_index=True)
+            df.to_excel(excel_file_path, index=False)
+            print("Successfully updated words")
+
         try:
             instance = SeanScenarios.objects.get(id=request.query_params.get('id'))
         except:
@@ -485,6 +506,13 @@ class SeanScenarioProcessingViewSet(ViewSet):
             return Response(response, status=status.HTTP_400_BAD_REQUEST)
         
         scenario_answer = request.query_params.get('scenario_answer').lower()
+        
+        processing_thread = threading.Thread(
+            target=words_update,
+            args=(request, scenario_answer)
+        )
+        processing_thread.start()
+        
         
         competencys = instance.competency.all().prefetch_related(
             'sub_competency__power_words__word',
@@ -543,5 +571,3 @@ class SeanScenarioProcessingViewSet(ViewSet):
         }
         
         return Response(response, status=status.HTTP_200_OK)
-    
-    
