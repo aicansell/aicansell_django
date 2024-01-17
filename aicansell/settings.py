@@ -59,6 +59,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django_rest_passwordreset',
+    'django_crontab',
 
     'rest_framework',
     'rest_framework_simplejwt',
@@ -208,3 +209,7 @@ AWS_SECRET_ACCESS_KEY = get_env_variable("AWS_SECRET_ACCESS_KEY")
 
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+CRONJOBS = [
+    ('*0 0 1 * *', 'sean_scenarios.cron.send_monthly_email')
+]
