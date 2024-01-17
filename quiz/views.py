@@ -59,7 +59,7 @@ def tutorial_detail(request, pk):
             return Response(serializer.data) 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST) 
  
-  
+
         
    #elif request.method == 'DELETE': 
     #    tutorial.delete() 
