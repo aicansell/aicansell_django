@@ -29,9 +29,8 @@ class IceBreakerViewSet(LoggingMixin, ViewSet):
     
     def list(self, request, *args, **kwargs):
         name = request.query_params.get('name')
-        try:
-            instance = IceBreakerData.objects.get(username=name)
-            
+        instance = IceBreakerData.objects.filter(username__icontains=name).first()
+        if instance:
             summary_and_facts = instance.summary_and_facts
             interests = instance.interests
             ice_breakers = instance.ice_breakers
@@ -61,7 +60,7 @@ class IceBreakerViewSet(LoggingMixin, ViewSet):
             }
             
             return Response(response, status=status.HTTP_200_OK)
-        except IceBreakerData.DoesNotExist:
+        else:
             try:
                 summary_and_facts, interests, ice_breakers, profile_pic_url = ice_break_with(
                     name=name
