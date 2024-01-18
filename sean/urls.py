@@ -1,24 +1,28 @@
 from django.urls import path, include, re_path
-from . import views
-from sean.views import ItemList
+
 from rest_framework.routers import DefaultRouter
 
+from sean.views import ItemList, item_result, item_rec
 from sean.views import ItemViewSet, ItemHandleViewSet
+from sean.views import ItemProcessingViewSet, ItemAnalysticsViewSet
 
-router = DefaultRouter()
-router.register('item', ItemViewSet, basename='item')
-router.register('itemhandle', ItemHandleViewSet, basename='itemhandle')
+ItemViewSetRouter = DefaultRouter()
+ItemHandleViewSetRouter = DefaultRouter()
+ItemProcessingViewSetRouter = DefaultRouter()
+ItemAnalysticsViewSetRouter = DefaultRouter()
 
+ItemViewSetRouter.register('', ItemViewSet, basename='item')
+ItemHandleViewSetRouter.register('', ItemHandleViewSet, basename='itemhandle')
+ItemProcessingViewSetRouter.register('', ItemProcessingViewSet, basename='itemprocessing')
+ItemAnalysticsViewSetRouter.register('', ItemAnalysticsViewSet, basename='itemanalystics')
 
 
 urlpatterns = [
-    #path('item_list/', views.item_list, name='item_list'),
-    #path('itemlist/', views.itemlist, name='itemlist'),
-    #path('item_result/', views.item_result, name='item_result'),
-    re_path(r'^api/item_results/(?P<pk>[0-9]+)$', views.item_result),
-    re_path(r'^api/item_rec/(?P<pk>[0-9]+)$', views.item_rec),
-    path('', include(router.urls)),
-
+    re_path(r'^api/item_results/(?P<pk>[0-9]+)$', item_result),
+    re_path(r'^api/item_rec/(?P<pk>[0-9]+)$', item_rec),
+    path('item/', include(ItemViewSetRouter.urls)),
+    path('itemhandle/', include(ItemHandleViewSetRouter.urls)),
+    path('itemprocessing/', include(ItemProcessingViewSetRouter.urls)),
+    path('itemanalystics/', include(ItemAnalysticsViewSetRouter.urls)),
     path('itemli/', ItemList.as_view(), name="Item_List")
-    
 ]
