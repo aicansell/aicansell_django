@@ -11,7 +11,6 @@ from sean_scenarios.serializers import SeanScenariosSerializer, SituationsSerial
 
 from django.conf import settings
 from pathlib import Path
-from sean_scenarios.cron import send_monthly_email
 
 import json
 import threading
@@ -201,7 +200,6 @@ class TagsViewSet(ViewSet):
         return Tags.objects.all()
     
     def list(self, request):
-        send_monthly_email()
         tag = request.query_params.get('tag')
         queryset = self.get_queryset()
         if tag:
