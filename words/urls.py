@@ -10,6 +10,7 @@ NegativeWordViewSetRouter = DefaultRouter()
 PowerWordViewSetRouter.register("", PowerWordsViewSet, basename="power_word")
 NegativeWordViewSetRouter.register("", NegativeWordsViewSet, basename="negative_word")
 
+
 urlpatterns = [
     path('bulk_create_word/', ProductView.as_view(), name='bulk-create'),
     path("power_words/", include(PowerWordViewSetRouter.urls), name='power_word'),
