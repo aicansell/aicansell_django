@@ -82,6 +82,7 @@ INSTALLED_APPS = [
     'icebreaker',
     'scenarios',
     'sean_scenarios',
+    'assessment',
 ]
 
 MIDDLEWARE = [

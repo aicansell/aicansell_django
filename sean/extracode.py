@@ -223,3 +223,13 @@ def create(self, request):
         }
         return Response(response, status=status.HTTP_201_CREATED)
 
+from django.db import models
+
+class Style(models.Model):
+    name = models.CharField(max_length=255)
+
+class Option(models.Model):
+    style = models.ForeignKey(Style, on_delete=models.CASCADE)
+    content = models.CharField(max_length=255)
+
+
