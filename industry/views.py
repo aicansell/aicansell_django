@@ -9,6 +9,7 @@ from industry.models import Industry
 from industry.serializers import IndustrySerializer
 
 
+
 class IndustryViewSet(LoggingMixin, ViewSet):
     serializer_class = IndustrySerializer
     
