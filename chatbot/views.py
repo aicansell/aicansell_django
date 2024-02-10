@@ -12,7 +12,6 @@ from rest_framework import status
 
 
 
-
 openai.api_key = config('api_key')
 
 
