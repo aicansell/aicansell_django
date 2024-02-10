@@ -1,6 +1,7 @@
 from django.shortcuts import get_object_or_404
 
 from rest_framework import status
+from rest_framework import pagination
 from rest_framework.viewsets import ViewSet
 from rest_framework.response import Response
 
@@ -8,20 +9,36 @@ from assessment.models import Situation, Style
 from assessment.models import Assessment1, Assessment2, Assessment3
 from assessment.serializers import Assessment1Serializer, Assessment2Serializer, Assessment3Serializer
 
+
+class AssessmentPagination(pagination.PageNumberPagination):
+    page_size = 12
+    page_size_query_param = 'page_size'
+    max_page_size = 100
+
 class Assessment1ViewSet(ViewSet):
+    pagination_class = AssessmentPagination
+    
     @staticmethod
     def get_queryset():
         return Assessment1.objects.all()
     
     def list(self, request):
         queryset = self.get_queryset()
-        serializer = Assessment1Serializer(queryset, many=True)
-        response = {
+        
+        paginator = self.pagination_class()
+        paginated_queryset = paginator.paginate_queryset(queryset, request)
+
+        serializer = Assessment1Serializer(paginated_queryset, many=True)
+        
+        response =  paginator.get_paginated_response(serializer.data)
+        
+        response_data = {
             'status': 'success',
             'message': 'Assessment1 list',
-            'data': serializer.data
+            'data': response.data
         }
-        return Response(response, status=status.HTTP_200_OK)
+
+        return Response(response_data, status=status.HTTP_200_OK)
 
 class Assessment1ProcessingViewSet(ViewSet):
     @staticmethod
@@ -54,19 +71,29 @@ class Assessment1ProcessingViewSet(ViewSet):
         return Response(response, status=status.HTTP_200_OK)
 
 class Assessment2ViewSet(ViewSet):
+    pagination_class = AssessmentPagination
+    
     @staticmethod
     def get_queryset():
         return Assessment2.objects.all()
     
     def list(self, request):
         queryset = self.get_queryset()
-        serializer = Assessment2Serializer(queryset, many=True)
-        response = {
+        
+        paginator = self.pagination_class()
+        paginated_queryset = paginator.paginate_queryset(queryset, request)
+
+        serializer = Assessment2Serializer(paginated_queryset, many=True)
+        
+        response =  paginator.get_paginated_response(serializer.data)
+        
+        response_data = {
             'status': 'success',
             'message': 'Assessment2 list',
-            'data': serializer.data
+            'data': response.data
         }
-        return Response(response, status=status.HTTP_200_OK)
+
+        return Response(response_data, status=status.HTTP_200_OK)
     
 class Assessment2ProcessingViewSet(ViewSet):
     @staticmethod
@@ -101,19 +128,29 @@ class Assessment2ProcessingViewSet(ViewSet):
         return Response(response, status=status.HTTP_200_OK)
     
 class Assessment3ViewSet(ViewSet):
+    pagination_class = AssessmentPagination
+    
     @staticmethod
     def get_queryset():
         return Assessment3.objects.all()
     
     def list(self, request):
         queryset = self.get_queryset()
-        serializer = Assessment3Serializer(queryset, many=True)
-        response = {
+        
+        paginator = self.pagination_class()
+        paginated_queryset = paginator.paginate_queryset(queryset, request)
+
+        serializer = Assessment3Serializer(paginated_queryset, many=True)
+        
+        response =  paginator.get_paginated_response(serializer.data)
+        
+        response_data = {
             'status': 'success',
             'message': 'Assessment3 list',
-            'data': serializer.data
+            'data': response.data
         }
-        return Response(response, status=status.HTTP_200_OK)
+
+        return Response(response_data, status=status.HTTP_200_OK)
 
 class Assessment3ProcessingViewSet(ViewSet):
     @staticmethod
