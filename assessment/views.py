@@ -170,7 +170,7 @@ class Assessment3ProcessingViewSet(ViewSet):
         elif len(ids)>=11 and len(ids)<=18:
             result = "You have moderately low self-esteem"
         elif len(ids)>=19 and len(ids)<=50:
-            resukt = "You have severely low self-esteem"
+            result = "You have severely low self-esteem"
         else:
             result = "Sorry, Unable to find, please try again."
             
