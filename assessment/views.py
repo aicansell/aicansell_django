@@ -4,11 +4,16 @@ from rest_framework import status
 from rest_framework import pagination
 from rest_framework.viewsets import ViewSet
 from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
 
 from assessment.models import Situation, Style
 from assessment.models import Assessment1, Assessment2, Assessment3
+from assessment.models import Assessment, AssessmentResult
 from assessment.serializers import Assessment1Serializer, Assessment2Serializer, Assessment3Serializer
 
+from datetime import datetime
+
+import threading
 
 class AssessmentPagination(pagination.PageNumberPagination):
     page_size = 12
@@ -16,6 +21,8 @@ class AssessmentPagination(pagination.PageNumberPagination):
     max_page_size = 100
 
 class Assessment1ViewSet(ViewSet):
+    permission_classes = [IsAuthenticated]
+    
     pagination_class = AssessmentPagination
     
     @staticmethod
@@ -23,7 +30,44 @@ class Assessment1ViewSet(ViewSet):
         return Assessment1.objects.all()
     
     def list(self, request):
-        queryset = self.get_queryset()
+        user = request.user
+        date_joined = user.date_joined
+        days_since_joined = (datetime.now() - date_joined).days
+        analytics_instance = AssessmentResult.objects.filter(user=user)
+        
+        access = ""
+        flag= False
+        
+        if days_since_joined <= 29:
+            access = "pre"
+            instance = analytics_instance.get(access=access)
+            if not instance:
+                flag= True
+            else:
+                flag= False
+        elif days_since_joined >= 30 and days_since_joined <= 59:
+            access = "mid"
+            instance = analytics_instance.get(access=access)
+            if not instance:
+                flag= True
+            else:
+                flag= False
+        elif days_since_joined >= 60:
+            access = "post"
+            instance = analytics_instance.get(access=access)
+            if not instance:
+                flag= True
+            else:
+                flag= False
+        
+        if not flag:
+            response = {
+                'status': 'success',
+                'message': f'Sorry, you have already taken the {access} assessment',
+            }
+            return Response(response, status=status.HTTP_200_OK)
+        
+        queryset = self.get_queryset(access__icontains=access)
         
         paginator = self.pagination_class()
         paginated_queryset = paginator.paginate_queryset(queryset, request)
@@ -35,6 +79,7 @@ class Assessment1ViewSet(ViewSet):
         response_data = {
             'status': 'success',
             'message': 'Assessment1 list',
+            'access': access,
             'data': response.data
         }
 
@@ -46,7 +91,26 @@ class Assessment1ProcessingViewSet(ViewSet):
         return Assessment1.objects.all()
     
     def list(self, request):
+        def updating_assessmentresult_score(request, access, result):
+            assessment_instance = Assessment.objects.get(name__icontains="assessment1")
+            if assessment_instance:
+                obj = AssessmentResult.objects.create(user=request.user, assessment=assessment_instance.id,
+                                                    phase=access, result=result)
+                obj.save()
+            else:
+                print("Assessment not found")
+        
         ids = request.query_params.get('ids', [])
+        access = request.query_params.get('access')
+        
+        instance = AssessmentResult.objects.get(user=request.user, access=access)
+        
+        if instance:
+            response = {
+                'status': 'success',
+                'message': f'Sorry, you have already taken the {access} assessment',
+            }
+            return Response(response, status=status.HTTP_200_OK)
         
         if isinstance(ids, str):
             ids = [int(id) for id in ids.split(',')]
@@ -62,6 +126,12 @@ class Assessment1ProcessingViewSet(ViewSet):
             result['max_situation'] = max_situation
         
         result['situations'] = res
+        
+        processing_thread = threading.Thread(
+            target=updating_assessmentresult_score,
+            args=(request, access, result)
+        )
+        processing_thread.start()
 
         response = {
             'status': 'success',
