@@ -2,15 +2,11 @@ from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.dispatch import receiver
 from django.db.models.signals import post_save
-#from role.models import Role, Sub_Role
-#from organisation.models import Org, Org_Roles
-from orgss.models import Org, Org_Roles
+
+from orgss.models import SubOrg, Role
 
 from uuid import uuid4
 
-
-
-# Create your models here.
 class MyAccountManager(BaseUserManager):
     def create_user(self, first_name, last_name, email, username, password=None):
         if not email:
@@ -84,8 +80,7 @@ class Account(AbstractBaseUser):
 
     is_email_confirmed = models.BooleanField(default=False)
 
-    role = models.ForeignKey(Org_Roles, on_delete=models.CASCADE, default= 1)
-
+    role = models.ForeignKey(Role, on_delete=models.CASCADE, null=True, blank=True)
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username', 'first_name', 'last_name']

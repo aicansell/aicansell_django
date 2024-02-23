@@ -1,11 +1,7 @@
 from django.contrib import admin
-from .models import Org, Org_Roles, Weightage
+from orgss.models import Org, SubOrg, Role, Weightage
 
-# Register your models here.
 admin.site.register(Org)
-
-admin.site.register(Org_Roles)
-
+admin.site.register(SubOrg)
+admin.site.register(Role)
 admin.site.register(Weightage)
-
-#admin.site.register(Role_Scenario)
