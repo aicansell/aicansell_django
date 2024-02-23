@@ -1,9 +1,7 @@
 from django.db import models
-from orgss.models import Org, Org_Roles
+from orgss.models import Org
 
 
-
-# Create your models here.
 class Option(models.Model):
     def __str__(self):
         return self.option_text
@@ -62,4 +60,3 @@ class Quiz_Roles(models.Model):
     quiz_orgname = models.CharField(max_length= 500)
     quizquestion_name = models.ForeignKey(Quiz, on_delete=models.CASCADE, default=1, related_name='quiz')
     quiz_org_name = models.ForeignKey(Org, on_delete=models.CASCADE, related_name='org4')
-    quiz_org_role = models.ForeignKey(Org_Roles, on_delete=models.CASCADE, related_name='role4')

@@ -18,7 +18,7 @@ from rest_framework_tracking.mixins import LoggingMixin
 from .serializers import ItemListSerializer1, ItemEmotionSerializer, ItemRecommendSerializer,ItemSerializer, ItemLiSerializer, ItemUserSerializer
 from .models import Item
 from accounts.models import Account, UserProfile
-from orgss.models import Weightage, Org_Roles
+from orgss.models import Weightage
 
 import string
 from collections import Counter
@@ -50,7 +50,6 @@ class ItemViewSet(LoggingMixin, ViewSet):
             org_id = user.role.org
             item_data = Item.objects.filter(role__org=org_id)
             user_data = UserProfile.objects.filter(user__role__org=org_id)
-            org_role_names = Org_Roles.objects.filter(org=org_id).values_list('org_role_name', flat=True)
 
             response = {
                 'org_word_count': sum(len(item.item_emotion.split(' ')) for item in item_data),
@@ -121,79 +120,6 @@ class ItemHandleViewSet(LoggingMixin, ViewSet):
         }
         return Response(response, status=status.HTTP_200_OK)
 
-    def create(self, request):
-        request_data = self.request.data
-        data = {
-            'item_name': request_data.get('item_name'),
-            'item_emotion': request_data.get('item_emotion'),
-            'item_answercount': request_data.get('item_answercount'),
-            'category': request_data.get('category'),
-            'thumbnail': request_data.get('thumbnail'),
-            'item_gender': request_data.get('item_gender'),
-            'item_type': request_data.get('item_type'),
-            'role': request_data.get('role'),
-            'coming_across_as': request_data.get('coming_across_as'),
-            'competencys': request_data.get('competencys'),
-            'level': request_data.get('level'),
-            'user_powerwords': request_data.get('user_powerwords'),
-            'user_weakwords': request_data.get('user_weakwords'),    
-        }
-
-        serialized_data = self.serializer_class(data=data)
-        serialized_data.is_valid(raise_exception=True)
-        serialized_data.save()
-        response = {
-            'status': 'Success',
-            'data': serialized_data.data,
-            'message': 'Item was successfully created.'
-        }
-        return Response(response, status=status.HTTP_201_CREATED)
-
-    def update(self, request, **kwargs):
-        instance = self.get_object(kwargs.pop('pk'))
-        request_data = self.request.data
-
-        data = {
-            'item_name': request_data.get('item_name', instance.item_name),
-            #'item_description': request_data.get('item_description', instance.item_description),
-            #'item_answer': request_data.get('item_answer', instance.item_answer),
-            'item_emotion': request_data.get('item_emotion', instance.item_emotion),
-            'item_answercount': request_data.get('item_answercount', instance.item_answercount),
-            'category': request_data.get('category', instance.category),
-            'thumbnail': request_data.get('thumbnail', instance.thumbnail),
-            'item_gender': request_data.get('item_gender', instance.item_gender),
-            'item_type': request_data.get('item_type', instance.item_type),
-            'role': request_data.get('role', instance.role_id),
-            'coming_across_as': request_data.get('coming_across_as', instance.coming_across_as),
-            'competencys': request_data.get('competencys', instance.competencys),
-            'level': request_data.get('level', instance.level),
-            #'positive_traits': request_data.get('positive_traits', instance.positive_traits),
-            #'negative_traits': request_data.get('negative_traits', instance.negative_traits),
-            'user_powerwords': request_data.get('user_powerwords', instance.user_powerwords),
-            'user_weakwords': request_data.get('user_weakwords', instance.user_weakwords),
-            #'expert': request_data.get('expert', instance.expert),
-        }
-
-        serialized_data = self.serializer_class(instance=instance, data=data)
-        serialized_data.is_valid(raise_exception=True)
-        serialized_data.save()
-        response = {
-            'status': 'Success',
-            'data': serialized_data.data,
-            'message': 'Item was successfully updated.'
-        }
-        return Response(response, status=status.HTTP_200_OK)
-
-    def destroy(self, request, **kwargs):
-        instance = self.get_object(kwargs.pop('pk'))
-        instance.delete()
-
-        response = {
-            'data': '',
-            'message': "Successfully deleted Item"
-        }
-
-        return Response(response, status=status.HTTP_204_NO_CONTENT)
        
 class ItemProcessingViewSet(LoggingMixin, ViewSet):
     permission_classes = [IsAuthenticated]

@@ -8,7 +8,6 @@ from rest_framework.permissions import IsAuthenticated
 
 from assessment.models import Situation, Style
 from assessment.models import Assessment1, Assessment2, Assessment3
-from assessment.models import Assessment, AssessmentResult
 from assessment.serializers import Assessment1Serializer, Assessment2Serializer, Assessment3Serializer
 
 from datetime import datetime
@@ -30,44 +29,7 @@ class Assessment1ViewSet(ViewSet):
         return Assessment1.objects.all()
     
     def list(self, request):
-        user = request.user
-        date_joined = user.date_joined
-        days_since_joined = (datetime.now() - date_joined).days
-        analytics_instance = AssessmentResult.objects.filter(user=user)
-        
-        access = ""
-        flag= False
-        
-        if days_since_joined <= 29:
-            access = "pre"
-            instance = analytics_instance.get(access=access)
-            if not instance:
-                flag= True
-            else:
-                flag= False
-        elif days_since_joined >= 30 and days_since_joined <= 59:
-            access = "mid"
-            instance = analytics_instance.get(access=access)
-            if not instance:
-                flag= True
-            else:
-                flag= False
-        elif days_since_joined >= 60:
-            access = "post"
-            instance = analytics_instance.get(access=access)
-            if not instance:
-                flag= True
-            else:
-                flag= False
-        
-        if not flag:
-            response = {
-                'status': 'success',
-                'message': f'Sorry, you have already taken the {access} assessment',
-            }
-            return Response(response, status=status.HTTP_200_OK)
-        
-        queryset = self.get_queryset(access__icontains=access)
+        queryset = self.get_queryset()
         
         paginator = self.pagination_class()
         paginated_queryset = paginator.paginate_queryset(queryset, request)
@@ -91,26 +53,7 @@ class Assessment1ProcessingViewSet(ViewSet):
         return Assessment1.objects.all()
     
     def list(self, request):
-        def updating_assessmentresult_score(request, access, result):
-            assessment_instance = Assessment.objects.get(name__icontains="assessment1")
-            if assessment_instance:
-                obj = AssessmentResult.objects.create(user=request.user, assessment=assessment_instance.id,
-                                                    phase=access, result=result)
-                obj.save()
-            else:
-                print("Assessment not found")
-        
         ids = request.query_params.get('ids', [])
-        access = request.query_params.get('access')
-        
-        instance = AssessmentResult.objects.get(user=request.user, access=access)
-        
-        if instance:
-            response = {
-                'status': 'success',
-                'message': f'Sorry, you have already taken the {access} assessment',
-            }
-            return Response(response, status=status.HTTP_200_OK)
         
         if isinstance(ids, str):
             ids = [int(id) for id in ids.split(',')]
@@ -127,11 +70,6 @@ class Assessment1ProcessingViewSet(ViewSet):
         
         result['situations'] = res
         
-        processing_thread = threading.Thread(
-            target=updating_assessmentresult_score,
-            args=(request, access, result)
-        )
-        processing_thread.start()
 
         response = {
             'status': 'success',
