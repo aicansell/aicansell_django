@@ -1,13 +1,15 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 
-from orgss.views import OrgViewSet, OrgRolesViewSet, WeightageViewSet
+from orgss.views import OrgViewSet, SubOrgViewSet
 
-router = DefaultRouter()
-router.register('org', OrgViewSet, basename='org')
-router.register('org_roles', OrgRolesViewSet, basename='org_roles')
-router.register('weightage', WeightageViewSet, basename='weightage')
+OrgViewSetRouter = DefaultRouter()
+SubOrgViewSetRouter = DefaultRouter()
+
+OrgViewSetRouter.register('', OrgViewSet, basename='org')
+SubOrgViewSetRouter.register('', SubOrgViewSet, basename='suborg')
 
 urlpatterns = [
-    path('', include(router.urls)),
+    path('org', include(OrgViewSetRouter.urls)),
+    path('suborg', include(SubOrgViewSetRouter.urls)),
 ]

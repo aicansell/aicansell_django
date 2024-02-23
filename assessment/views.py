@@ -4,11 +4,15 @@ from rest_framework import status
 from rest_framework import pagination
 from rest_framework.viewsets import ViewSet
 from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
 
 from assessment.models import Situation, Style
 from assessment.models import Assessment1, Assessment2, Assessment3
 from assessment.serializers import Assessment1Serializer, Assessment2Serializer, Assessment3Serializer
 
+from datetime import datetime
+
+import threading
 
 class AssessmentPagination(pagination.PageNumberPagination):
     page_size = 12
@@ -16,6 +20,8 @@ class AssessmentPagination(pagination.PageNumberPagination):
     max_page_size = 100
 
 class Assessment1ViewSet(ViewSet):
+    permission_classes = [IsAuthenticated]
+    
     pagination_class = AssessmentPagination
     
     @staticmethod
@@ -35,6 +41,7 @@ class Assessment1ViewSet(ViewSet):
         response_data = {
             'status': 'success',
             'message': 'Assessment1 list',
+            'access': access,
             'data': response.data
         }
 
@@ -62,6 +69,7 @@ class Assessment1ProcessingViewSet(ViewSet):
             result['max_situation'] = max_situation
         
         result['situations'] = res
+        
 
         response = {
             'status': 'success',

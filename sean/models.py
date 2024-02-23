@@ -1,15 +1,7 @@
 from django.db import models
-from role.models import Roles, Sub_Role
-#from organisation.models import Org_Roles
-from orgss.models import Org_Roles
-from competency.models import Competency, Sub_Competency
-from words.models import Words
 
-from accounts.models import Account
-from accounts.models import Account
-
-
-# Create your models here.
+from competency.models import Competency
+from orgss.models import Role
 
 
 class Item(models.Model):
@@ -54,13 +46,11 @@ class Item(models.Model):
         
     ]
     scenario_type = models.CharField(max_length= 16, choices = Scenario_Type_CHOICES, default= Scenario_Type1)
-    role = models.ForeignKey(Org_Roles, on_delete=models.CASCADE, default=1)
     coming_across_as = models.CharField(max_length=250, null=True, blank=True)
     
     
     competencys = models.ManyToManyField(Competency, blank=True)
-    #competency_power_words = models.ManyToManyField(PowerWords, blank=True)
-    #competency_weak_words = models.ManyToManyField(NegativeWords, blank=True)
+    role = models.ForeignKey(Role, on_delete=models.CASCADE, related_name='role', null=True, blank=True)
     level = models.IntegerField(default=1)
     positive_traits = models.CharField(max_length=300, default=" ", blank=True)
     negative_traits = models.CharField(max_length=300, default=" ", blank = True)
