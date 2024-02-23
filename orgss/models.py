@@ -1,27 +1,33 @@
 from django.db import models
-from industry.models import Industry
 
+from industry.models import Industry
 from competency.models import Competency
 
 class Org(models.Model):
+    name = models.CharField(max_length=250, null=True, blank=True)
+    description = models.CharField(max_length=500, blank=True, null=True)
+    industry = models.ForeignKey(Industry, on_delete=models.CASCADE, related_name='industry', null=True, blank=True)
+    
+    def __str__(self):
+        return self.name
+
+class SubOrg(models.Model):
     def __str__(self):
         return self.name
 
     name = models.CharField(max_length=250)
     description = models.CharField(max_length=500, blank=True, null=True)
-    industry = models.ForeignKey(Industry, on_delete=models.CASCADE, related_name='industry', default = 1)
+    org = models.ForeignKey(Org, on_delete=models.CASCADE, related_name='org', null=True, blank=True)
 
-
-class Org_Roles(models.Model):
+class Role(models.Model):
     def __str__(self):
-        return self.org_role_name
+        return self.name
 
-    org_role_name = models.CharField(max_length=250, blank=True, null=True)
-    org = models.ForeignKey(Org, on_delete=models.CASCADE, default = 1, related_name='org')
-
+    name = models.CharField(max_length=250)
+    suborg = models.ForeignKey(SubOrg, on_delete=models.CASCADE, related_name='suborgrole', null=True, blank=True)
 
 class Weightage(models.Model):
-    org_role = models.ForeignKey(Org_Roles, on_delete=models.CASCADE)
+    suborg = models.ForeignKey(SubOrg, on_delete=models.CASCADE, related_name='suborg', null=True, blank=True)
     competency = models.ForeignKey(Competency, on_delete=models.CASCADE, default=1, related_name= 'rolecompetency')
     weightage = models.IntegerField(default=1)
     
