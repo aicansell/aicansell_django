@@ -8,7 +8,7 @@ class ItemLiSerializer(serializers.ModelSerializer):
     suborg = serializers.StringRelatedField()
     class Meta:
         model = Item
-        fields = ['id','item_name', 'thumbnail', 'category', 'scenario_type', 'item_gender', 'role', 'item_type', 'level']
+        fields = ['id','item_name', 'thumbnail', 'category', 'scenario_type', 'item_gender', 'role', 'item_type', 'level', 'suborg']
 
 class ItemListSerializer1(serializers.ModelSerializer):
     class Meta:
