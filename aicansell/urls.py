@@ -43,7 +43,6 @@ urlpatterns = [
     path('', include('orgss.urls')),
     path('refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('words/', include('words.urls')),
-    path('freemium/', include('freemium.urls')),
     path('icebreaker/', include('icebreaker.urls')),
     path('scenarios/', include('scenarios.urls')),
     path('seanscenarios/', include('sean_scenarios.urls')),

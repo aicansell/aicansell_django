@@ -7,6 +7,7 @@ from rest_framework_tracking.mixins import LoggingMixin
 from rest_framework.permissions import IsAuthenticated
 
 from users.serializers import UsersListSerializer, UsersSerializer
+from users.serializers import UserCreateSerializer
 from accounts.models import Account
 
 class UsersViewSet(LoggingMixin, ViewSet):
@@ -20,6 +21,41 @@ class UsersViewSet(LoggingMixin, ViewSet):
     def get_queryset():
         return Account.objects.all()
     
+    def create(self, request):
+        if request.user.user_role not in ['admin', 'super_admin']:
+            response = {
+                'status': "failed",
+                'message': "You are not authorized to view this page",
+            }
+            return Response(response, status=status.HTTP_401_UNAUTHORIZED)
+        
+        request_data  = {
+            'first_name': request.data.get('first_name', "default"),
+            'last_name': request.data.get('last_name', "default"),
+            'email': request.data.get('email'),
+            'username': request.data.get('username', "default"),
+            'user_role': request.data.get('user_role', None),
+            'role': request.data.get('role', None),
+            'org': request.data.get('org', None),
+        }
+        
+        print(request_data)
+        
+        serializer = UserCreateSerializer(data=request_data)
+        if serializer.is_valid():
+            serializer.save()
+            response = {
+                'status': "success",
+                'message': "User created successfully",
+                'data': serializer.data,
+            }
+            return Response(response, status=status.HTTP_201_CREATED)
+        response = {
+            'status': "failed",
+            'message': "User creation failed",
+            'data': serializer.errors,
+        }
+        return Response(response, status=status.HTTP_400_BAD_REQUEST)
     
     def list(self, request):
         if request.user.user_role not in ['admin', 'super_admin']:
@@ -73,7 +109,9 @@ class UsersViewSet(LoggingMixin, ViewSet):
             'username': request.data.get('username', user.username),
             'user_role': request.data.get('user_role', user.user_role),
             'is_email_confirmed': request.data.get('is_email_confirmed', user.is_email_confirmed),
-            'role': request.data.get('role', user.role.id),
+            'role': request.data.get('role', user.role.id if user.role else None),
+            'org': request.data.get('org', user.org.id if user.org else None),
+            'active': request.data.get('active', user.is_active),
         }
         
         serializer = UsersSerializer(user, data=request_data, partial=True)
@@ -107,4 +145,3 @@ class UsersViewSet(LoggingMixin, ViewSet):
             'message': "User deleted successfully",
         }
         return Response(response, status=status.HTTP_204_NO_CONTENT)
-    

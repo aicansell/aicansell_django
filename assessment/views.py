@@ -6,186 +6,383 @@ from rest_framework.viewsets import ViewSet
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 
-from assessment.models import Situation, Style
-from assessment.models import Assessment1, Assessment2, Assessment3
-from assessment.serializers import Assessment1Serializer, Assessment2Serializer, Assessment3Serializer
+from assessment.models import Question, Option, AssessmentType
+from assessment.models import Assessment, AssessmentResult
+from assessment.serializers import QuestionSerializer, OptionSerializer, OptionListSerializer
+from assessment.serializers import AssessmentSerializer, AssessmentResultSerializer, AssessmentTypeSerializer
 
 from datetime import datetime
 
 import threading
 
-class AssessmentPagination(pagination.PageNumberPagination):
-    page_size = 12
-    page_size_query_param = 'page_size'
-    max_page_size = 100
-
-class Assessment1ViewSet(ViewSet):
+class QuestionViewSet(ViewSet):
     permission_classes = [IsAuthenticated]
     
-    pagination_class = AssessmentPagination
-    
     @staticmethod
     def get_queryset():
-        return Assessment1.objects.all()
+        return Question.objects.all()
+    
+    @staticmethod
+    def get_object(pk=None):
+        return get_object_or_404(Question, pk=pk)
     
     def list(self, request):
         queryset = self.get_queryset()
-        
-        paginator = self.pagination_class()
-        paginated_queryset = paginator.paginate_queryset(queryset, request)
-
-        serializer = Assessment1Serializer(paginated_queryset, many=True)
-        
-        response =  paginator.get_paginated_response(serializer.data)
-        
-        response_data = {
-            'status': 'success',
-            'message': 'Assessment1 list',
-            'access': access,
-            'data': response.data
-        }
-
-        return Response(response_data, status=status.HTTP_200_OK)
-
-class Assessment1ProcessingViewSet(ViewSet):
-    @staticmethod
-    def get_queryset():
-        return Assessment1.objects.all()
-    
-    def list(self, request):
-        ids = request.query_params.get('ids', [])
-        
-        if isinstance(ids, str):
-            ids = [int(id) for id in ids.split(',')]
-        
-        res, result  = {}, {}
-            
-        for id in ids:
-            instance = Situation.objects.get(id=id)
-            res[str(instance.style.name)] = 1 + res.get(str(instance.style.name), 0)
-            
-        if len(res)>0:
-            max_situation = max(res, key=lambda k: res[k])
-            result['max_situation'] = max_situation
-        
-        result['situations'] = res
-        
-
+        serializer = QuestionSerializer(queryset, many=True)
         response = {
             'status': 'success',
-            'message': 'Assessment1 processing list',
-            'data': result
+            'message': 'Questions list',
+            'data': serializer.data
         }
         return Response(response, status=status.HTTP_200_OK)
 
-class Assessment2ViewSet(ViewSet):
-    pagination_class = AssessmentPagination
+    def retrieve(self, request, pk=None):
+        instance = self.get_object(pk)
+        serializer = QuestionSerializer(instance)
+        response = {
+            'status': 'success',
+            'message': 'Question details',
+            'data': serializer.data
+        }
+        return Response(response, status=status.HTTP_200_OK)
     
+    def create(self, request):
+        serializer = QuestionSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            response = {
+                'status': 'success',
+                'message': 'Question created',
+                'data': serializer.data
+            }
+            return Response(response, status=status.HTTP_201_CREATED)
+        response = {
+            'status': 'error',
+            'message': 'Invalid data',
+            'data': serializer.errors
+        }
+        return Response(response, status=status.HTTP_400_BAD_REQUEST)
+
+    def update(self, request, pk=None):
+        instance = self.get_object(pk)
+        serializer = QuestionSerializer(instance, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            response = {
+                'status': 'success',
+                'message': 'Question updated',
+                'data': serializer.data
+            }
+            return Response(response, status=status.HTTP_200_OK)
+        response = {
+            'status': 'error',
+            'message': 'Invalid data',
+            'data': serializer.errors
+        }
+        return Response(response, status=status.HTTP_400_BAD_REQUEST)
+
+    def destroy(self, request, pk=None):
+        instance = self.get_object(pk)
+        instance.delete()
+        response = {
+            'status': 'success',
+            'message': 'Question deleted',
+            'data': None
+        }
+        return Response(response, status=status.HTTP_204_NO_CONTENT)
+
+class OptionViewSet(ViewSet):
     @staticmethod
     def get_queryset():
-        return Assessment2.objects.all()
+        return Option.objects.all()
+    
+    @staticmethod
+    def get_object(pk=None):
+        return get_object_or_404(Option, pk=pk)
     
     def list(self, request):
         queryset = self.get_queryset()
-        
-        paginator = self.pagination_class()
-        paginated_queryset = paginator.paginate_queryset(queryset, request)
-
-        serializer = Assessment2Serializer(paginated_queryset, many=True)
-        
-        response =  paginator.get_paginated_response(serializer.data)
-        
-        response_data = {
-            'status': 'success',
-            'message': 'Assessment2 list',
-            'data': response.data
-        }
-
-        return Response(response_data, status=status.HTTP_200_OK)
-    
-class Assessment2ProcessingViewSet(ViewSet):
-    @staticmethod
-    def get_queryset():
-        return Assessment2.objects.all()
-    
-    def list(self, request):
-        ids = self.request.query_params.get('ids', [])
-        
-        if isinstance(ids, str):
-            ids = [int(id) for id in ids.split(',')]
-        
-        res, result = {}, {}
-        
-        for id in ids:
-            instance = Situation.objects.get(id=id)
-            res[str(instance.style.name)] = 1 + res.get(str(instance.style.name), 0)
-        
-        if len(res)>0:
-            max_situation = max(res, key=lambda k: res[k])
-            msg = Style.objects.filter(name__icontains=max_situation).first()
-            result['max_situation'] = max_situation
-            result['message'] = msg.msg
-            
-        result['situations'] = res
-        
+        serializer = OptionListSerializer(queryset, many=True)
         response = {
             'status': 'success',
-            'message': 'Assessment2 processing list',
-            'data': result
+            'message': 'Options list',
+            'data': serializer.data
         }
         return Response(response, status=status.HTTP_200_OK)
     
-class Assessment3ViewSet(ViewSet):
-    pagination_class = AssessmentPagination
+    def retrieve(self, request, pk=None):
+        instance = self.get_object(pk)
+        serializer = OptionListSerializer(instance)
+        response = {
+            'status': 'success',
+            'message': 'Option details',
+            'data': serializer.data
+        }
+        return Response(response, status=status.HTTP_200_OK)
     
+    def create(self, request):
+        serializer = OptionSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            response = {
+                'status': 'success',
+                'message': 'Option created',
+                'data': serializer.data
+            }
+            return Response(response, status=status.HTTP_201_CREATED)
+        response = {
+            'status': 'error',
+            'message': 'Invalid data',
+            'data': serializer.errors
+        }
+        return Response(response, status=status.HTTP_400_BAD_REQUEST)
+    
+    def update(self, request, pk=None):
+        instance = self.get_object(pk)
+        serializer = OptionSerializer(instance, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            response = {
+                'status': 'success',
+                'message': 'Option updated',
+                'data': serializer.data
+            }
+            return Response(response, status=status.HTTP_200_OK)
+        response = {
+            'status': 'error',
+            'message': 'Invalid data',
+            'data': serializer.errors
+        }
+        return Response(response, status=status.HTTP_400_BAD_REQUEST)
+    
+    def destroy(self, request, pk=None):
+        instance = self.get_object(pk)
+        instance.delete()
+        response = {
+            'status': 'success',
+            'message': 'Option deleted',
+            'data': None
+        }
+        return Response(response, status=status.HTTP_204_NO_CONTENT)
+
+class AssessmentTypeViewSet(ViewSet):
     @staticmethod
     def get_queryset():
-        return Assessment3.objects.all()
+        return AssessmentType.objects.all()
+    
+    @staticmethod
+    def get_object(pk=None):
+        return get_object_or_404(AssessmentType, pk=pk)
     
     def list(self, request):
         queryset = self.get_queryset()
-        
-        paginator = self.pagination_class()
-        paginated_queryset = paginator.paginate_queryset(queryset, request)
-
-        serializer = Assessment3Serializer(paginated_queryset, many=True)
-        
-        response =  paginator.get_paginated_response(serializer.data)
-        
-        response_data = {
-            'status': 'success',
-            'message': 'Assessment3 list',
-            'data': response.data
-        }
-
-        return Response(response_data, status=status.HTTP_200_OK)
-
-class Assessment3ProcessingViewSet(ViewSet):
-    @staticmethod
-    def get_queryset():
-        return Assessment3.objects.all()
-    
-    def list(self, request):
-        ids = self.request.query_params.get('ids', [])
-        
-        if isinstance(ids, str):
-            ids = [int(id) for id in ids.split(',')]
-            
-        if len(ids)>=0 and len(ids)<=4:
-            result = "You have failry good self-esteem"
-        elif len(ids)>=5 and len(ids)<=10:
-            result = "You have mild low self-esteem"
-        elif len(ids)>=11 and len(ids)<=18:
-            result = "You have moderately low self-esteem"
-        elif len(ids)>=19 and len(ids)<=50:
-            result = "You have severely low self-esteem"
-        else:
-            result = "Sorry, Unable to find, please try again."
-            
+        serializer = AssessmentTypeSerializer(queryset, many=True)
         response = {
             'status': 'success',
-            'message': 'Assessment3 processing list',
-            'data': result
+            'message': 'Assessment types list',
+            'data': serializer.data
         }
-        
         return Response(response, status=status.HTTP_200_OK)
+    
+    def retrieve(self, request, pk=None):
+        instance = self.get_object(pk)
+        serializer = AssessmentTypeSerializer(instance)
+        response = {
+            'status': 'success',
+            'message': 'Assessment type details',
+            'data': serializer.data
+        }
+        return Response(response, status=status.HTTP_200_OK)
+    
+    def create(self, request):
+        serializer = AssessmentTypeSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            response = {
+                'status': 'success',
+                'message': 'Assessment type created',
+                'data': serializer.data
+            }
+            return Response(response, status=status.HTTP_201_CREATED)
+        response = {
+            'status': 'error',
+            'message': 'Invalid data',
+            'data': serializer.errors
+        }
+        return Response(response, status=status.HTTP_400_BAD_REQUEST)
+    
+    def update(self, request, pk=None):
+        instance = self.get_object(pk)
+        serializer = AssessmentTypeSerializer(instance, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            response = {
+                'status': 'success',
+                'message': 'Assessment type updated',
+                'data': serializer.data
+            }
+            return Response(response, status=status.HTTP_200_OK)
+        response = {
+            'status': 'error',
+            'message': 'Invalid data',
+            'data': serializer.errors
+        }
+        return Response(response, status=status.HTTP_400_BAD_REQUEST)
+    
+    def destroy(self, request, pk=None):
+        instance = self.get_object(pk)
+        instance.delete()
+        response = {
+            'status': 'success',
+            'message': 'Assessment type deleted',
+            'data': None
+        }
+        return Response(response, status=status.HTTP_204_NO_CONTENT)
+
+class AssessmentViewSet(ViewSet):
+    @staticmethod
+    def get_queryset():
+        return Assessment.objects.all()
+    
+    @staticmethod
+    def get_object(pk=None):
+        return get_object_or_404(Assessment, pk=pk)
+    
+    def list(self, request):
+        queryset = self.get_queryset()
+        serializer = AssessmentSerializer(queryset, many=True)
+        response = {
+            'status': 'success',
+            'message': 'Assessments list',
+            'data': serializer.data
+        }
+        return Response(response, status=status.HTTP_200_OK)
+    
+    def retrieve(self, request, pk=None):
+        instance = self.get_object(pk)
+        serializer = AssessmentSerializer(instance)
+        response = {
+            'status': 'success',
+            'message': 'Assessment details',
+            'data': serializer.data
+        }
+        return Response(response, status=status.HTTP_200_OK)
+    
+    def create(self, request):
+        serializer = AssessmentSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            response = {
+                'status': 'success',
+                'message': 'Assessment created',
+                'data': serializer.data
+            }
+            return Response(response, status=status.HTTP_201_CREATED)
+        response = {
+            'status': 'error',
+            'message': 'Invalid data',
+            'data': serializer.errors
+        }
+        return Response(response, status=status.HTTP_400_BAD_REQUEST)
+    
+    def update(self, request, pk=None):
+        instance = self.get_object(pk)
+        serializer = AssessmentSerializer(instance, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            response = {
+                'status': 'success',
+                'message': 'Assessment updated',
+                'data': serializer.data
+            }
+            return Response(response, status=status.HTTP_200_OK)
+        response = {
+            'status': 'error',
+            'message': 'Invalid data',
+            'data': serializer.errors
+        }
+        return Response(response, status=status.HTTP_400_BAD_REQUEST)
+    
+    def destroy(self, request, pk=None):
+        instance = self.get_object(pk)
+        instance.delete()
+        response = {
+            'status': 'success',
+            'message': 'Assessment deleted',
+            'data': None
+        }
+        return Response(response, status=status.HTTP_204_NO_CONTENT)
+
+class AssessmentResultViewSet(ViewSet):
+    @staticmethod
+    def get_queryset():
+        return AssessmentResult.objects.all()
+    
+    @staticmethod
+    def get_object(pk=None):
+        return get_object_or_404(AssessmentResult, pk=pk)
+    
+    def list(self, request):
+        queryset = self.get_queryset()
+        serializer = AssessmentResultSerializer(queryset, many=True)
+        response = {
+            'status': 'success',
+            'message': 'Assessment results list',
+            'data': serializer.data
+        }
+        return Response(response, status=status.HTTP_200_OK)
+    
+    def retrieve(self, request, pk=None):
+        instance = self.get_object(pk)
+        serializer = AssessmentResultSerializer(instance)
+        response = {
+            'status': 'success',
+            'message': 'Assessment result details',
+            'data': serializer.data
+        }
+        return Response(response, status=status.HTTP_200_OK)
+    
+    def create(self, request):
+        serializer = AssessmentResultSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            response = {
+                'status': 'success',
+                'message': 'Assessment result created',
+                'data': serializer.data
+            }
+            return Response(response, status=status.HTTP_201_CREATED)
+        response = {
+            'status': 'error',
+            'message': 'Invalid data',
+            'data': serializer.errors
+        }
+        return Response(response, status=status.HTTP_400_BAD_REQUEST)
+    
+    def update(self, request, pk=None):
+        instance = self.get_object(pk)
+        serializer = AssessmentResultSerializer(instance, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            response = {
+                'status': 'success',
+                'message': 'Assessment result updated',
+                'data': serializer.data
+            }
+            return Response(response, status=status.HTTP_200_OK)
+        response = {
+            'status': 'error',
+            'message': 'Invalid data',
+            'data': serializer.errors
+        }
+        return Response(response, status=status.HTTP_400_BAD_REQUEST)
+    
+    def destroy(self, request, pk=None):
+        instance = self.get_object(pk)
+        instance.delete()
+        response = {
+            'status': 'success',
+            'message': 'Assessment result deleted',
+            'data': None
+        }
+        return Response(response, status=status.HTTP_204_NO_CONTENT)

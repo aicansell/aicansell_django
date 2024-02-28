@@ -3,7 +3,7 @@ from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.dispatch import receiver
 from django.db.models.signals import post_save
 
-from orgss.models import SubOrg, Role
+from orgss.models import Org, Role
 
 from uuid import uuid4
 
@@ -79,8 +79,10 @@ class Account(AbstractBaseUser):
     user_role = models.CharField(max_length=20, choices=USER_ROLES, default='user')
 
     is_email_confirmed = models.BooleanField(default=False)
+    active = models.BooleanField(default=True)
 
     role = models.ForeignKey(Role, on_delete=models.CASCADE, null=True, blank=True)
+    org = models.ForeignKey(Org, on_delete=models.CASCADE, null=True, blank=True)
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username', 'first_name', 'last_name']
