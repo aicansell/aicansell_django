@@ -8,6 +8,8 @@ from rest_framework.permissions import IsAuthenticated
 
 from users.serializers import UsersListSerializer, UsersSerializer
 from users.serializers import UserCreateSerializer
+from users.serializers import UserSubOrgSerializer, UserMappingSerializer
+from users.models import UserSubOrgs, UserMapping
 from accounts.models import Account
 
 class UsersViewSet(LoggingMixin, ViewSet):
@@ -145,3 +147,83 @@ class UsersViewSet(LoggingMixin, ViewSet):
             'message': "User deleted successfully",
         }
         return Response(response, status=status.HTTP_204_NO_CONTENT)
+
+class UserSubOrgViewSet(LoggingMixin, ViewSet):
+    @staticmethod
+    def get_object(pk=None):
+        return get_object_or_404(UserSubOrgs, pk=pk)
+    
+    @staticmethod
+    def get_queryset():
+        return UserSubOrgs.objects.all()
+    
+    def create(self, request):
+        request_data  = {
+            'user': request.data.get('user', None),
+            'suborg': request.data.get('suborg', None),
+        }
+        
+        try:
+            instance = UserSubOrgs.objects.get(user=request_data['user'], suborg=request_data['suborg'])
+        except UserSubOrgs.DoesNotExist:
+            serializer = UserSubOrgSerializer(data=request_data)
+            if serializer.is_valid():
+                serializer.save()
+                response = {
+                    'status': "success",
+                    'message': "User sub org created successfully",
+                    'data': serializer.data,
+                }
+                return Response(response, status=status.HTTP_201_CREATED)
+        if instance:
+            response = {
+                'status': "failed",
+                'message': "User suborg mapping already exists",
+            }
+            return Response(response, status=status.HTTP_400_BAD_REQUEST)
+        response = {
+            'status': "failed",
+            'message': "User sub org creation failed",
+            'data': serializer.errors,
+        }
+        return Response(response, status=status.HTTP_400_BAD_REQUEST)
+
+class UserMappingViewSet(LoggingMixin, ViewSet):
+    @staticmethod
+    def get_object(pk=None):
+        return get_object_or_404(UserMapping, pk=pk)
+    
+    @staticmethod
+    def get_queryset():
+        return UserMapping.objects.all()
+    
+    def create(self, request):
+        request_data  = {
+            'admin': request.data.get('admin', None),
+            'user': request.data.get('user', None),
+        }
+        
+        try:
+            instance = UserMapping.objects.get(admin=request_data['admin'], user=request_data['user'])
+        except UserMapping.DoesNotExist:
+            serializer = UserMappingSerializer(data=request_data)
+            if serializer.is_valid():
+                serializer.save()
+                response = {
+                    'status': "success",
+                    'message': "User mapping created successfully",
+                    'data': serializer.data,
+                }
+                return Response(response, status=status.HTTP_201_CREATED)
+        if instance:
+            response = {
+                'status': "failed",
+                'message': "User mapping already exists",
+            }
+            return Response(response, status=status.HTTP_400_BAD_REQUEST)
+        response = {
+            'status': "failed",
+            'message': "User mapping creation failed",
+            'data': serializer.errors,
+        }
+        return Response(response, status=stat.HTTP_400_BAD_REQUEST)

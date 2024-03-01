@@ -4,6 +4,7 @@ from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 
 from accounts.models import Account
+from users.models import UserSubOrgs, UserMapping
 
 class UsersListSerializer(serializers.ModelSerializer):
     role = serializers.SerializerMethodField()
@@ -48,3 +49,41 @@ class UserCreateSerializer(serializers.ModelSerializer):
         user.set_password("aicansell@123")
         user.save()
         return user
+
+class UserSubOrgSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserSubOrgs
+        fields = ['id', 'user', 'suborg']
+
+class UserSubOrgListSerializer(serializers.ModelSerializer):
+    user = serializers.SerializerMethodField()
+    sub_org = serializers.SerializerMethodField()
+    
+    def get_user(self, obj):
+        return getattr(obj.user, 'username', None)
+    
+    def get_sub_org(self, obj):
+        return getattr(obj.sub_org, 'name', None)
+    
+    class Meta:
+        model = UserSubOrgs
+        fields = ['id', 'user', 'suborg']
+
+class UserMappingSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserMapping
+        fields = ['id', 'user', 'admin']
+
+class UserMappingListSerializer(serializers.ModelSerializer):
+    user = serializers.SerializerMethodField()
+    admin = serializers.SerializerMethodField()
+    
+    def get_user(self, obj):
+        return getattr(obj.user, 'username', None)
+    
+    def get_admin(self, obj):
+        return getattr(obj.admin, 'username', None)
+    
+    class Meta:
+        model = UserMapping
+        fields = ['id', 'user', 'admin']
