@@ -1,10 +1,10 @@
 from django.contrib import admin
 
-from assessment.models import Style, Situation
-from assessment.models import Assessment1, Assessment2, Assessment3
+from assessment.models import Question, Option, AssessmentType
+from assessment.models import Assessment, AssessmentResult
 
-admin.site.register(Style)
-admin.site.register(Situation)
-admin.site.register(Assessment1)
-admin.site.register(Assessment2)
-admin.site.register(Assessment3)
+admin.site.register(Question)
+admin.site.register(Option)
+admin.site.register(AssessmentType)
+admin.site.register(Assessment)
+admin.site.register(AssessmentResult)

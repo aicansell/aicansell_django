@@ -1,35 +1,39 @@
 from rest_framework import serializers
 
-from assessment.models import Style, Situation
-from assessment.models import Assessment1, Assessment2, Assessment3
+from assessment.models import Question, Option, AssessmentType
+from assessment.models import Assessment, AssessmentResult
 
-class StyleSerializer(serializers.ModelSerializer):
+class QuestionSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Style
-        fields = ['id', 'name']
+        model = Question
+        fields = ['id', 'question', 'level', 'timer']
         
-class SituationListSerializer(serializers.ModelSerializer):
+class OptionSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Situation
-        fields = ['id', 'name']
+        model = Option
+        fields = ['id', 'question', 'option', 'is_correct']
+        
+class OptionListSerializer(serializers.ModelSerializer):
+    question = serializers.SerializerMethodField()
     
-class Assessment1Serializer(serializers.ModelSerializer):
-    optionA = SituationListSerializer()
-    optionB = SituationListSerializer()
+    def get_question(self, obj):
+        return obj.question.question
     
     class Meta:
-        model = Assessment1
-        fields = ['optionA', 'optionB']
+        model = Option
+        fields = ['id', 'question', 'option', 'is_correct']
+    
+class AssessmentTypeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AssessmentType
+        fields = ['id', 'name', 'suborg', 'passing_criteria', 'positive_marks', 'negative_marks', 'time', 'trigger_point', 'refresher_days']
 
-class Assessment2Serializer(serializers.ModelSerializer):
-    optionA = SituationListSerializer()
-    optionB = SituationListSerializer()
-    
+class AssessmentSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Assessment2
-        fields = ['optionA', 'optionB']
+        model = Assessment
+        fields = ['id', 'assessment_type', 'questions', 'access']
 
-class Assessment3Serializer(serializers.ModelSerializer):
+class AssessmentResultSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Assessment3
-        fields = ['id', 'choice']
+        model = AssessmentResult
+        fields = ['id', 'user', 'assessment', 'phase', 'result']

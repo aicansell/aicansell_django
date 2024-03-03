@@ -1,37 +1,73 @@
 from django.db import models
 
 from accounts.models import Account
+from orgss.models import SubOrg
 
-class Style(models.Model):
+class Question(models.Model):
+    LEVEL = (
+        ('easy', 'Easy'),
+        ('hard', 'Hard'),
+        ('difficult', 'Difficult'),
+    )
+    
+    question = models.CharField(max_length=500)
+    level = models.CharField(max_length=30, choices=LEVEL, default=None)
+    timer = models.IntegerField(null=True, blank=True)
+    
+    def __str__(self):
+        return f"{self.question}-{self.level}"
+
+class Option(models.Model):
+    question = models.ForeignKey(Question, on_delete=models.CASCADE)
+    option = models.CharField(max_length=500)
+    is_correct = models.BooleanField(default=False)
+    
+    def __str__(self):
+        return f"{self.question.question[:100]}-{self.option}-{self.is_correct}"
+
+class AssessmentType(models.Model):
+    TIGGER_POINT = (
+        ('days', 'DAYS'),
+        ('perentage', 'PERCENTAGE'),
+    )
+    
     name = models.CharField(max_length=100)
-    msg = models.TextField(null=True, blank=True)
+    suborg = models.ForeignKey(SubOrg, on_delete=models.CASCADE)
+    passing_criteria = models.IntegerField(default=60)
+    positive_marks = models.IntegerField(null=True, blank=True)
+    negative_marks = models.IntegerField(null=True, blank=True)
+    time = models.IntegerField(null=True, blank=True)
+    trigger_point = models.CharField(max_length=30, choices=TIGGER_POINT, default=None)
+    refresher_days = models.IntegerField(null=True, blank=True)
     
     def __str__(self):
-        return self.name
-    
-class Situation(models.Model):
-    name = models.CharField(max_length=500)
-    style = models.ForeignKey(Style, on_delete=models.CASCADE)
-    
-    def __str__(self):
-        return self.name
-    
-class Assessment1(models.Model):
-    optionA = models.ForeignKey(Situation, on_delete=models.CASCADE, related_name='optionA')
-    optionB = models.ForeignKey(Situation, on_delete=models.CASCADE, related_name='optionB')
-    
-    def __str__(self):
-        return f'{self.optionA.name} {self.optionB.name}'
+        return f"{self.name}-{self.suborg.name}"
 
-class Assessment2(models.Model):
-    optionA = models.ForeignKey(Situation, on_delete=models.CASCADE, related_name='optionA2')
-    optionB = models.ForeignKey(Situation, on_delete=models.CASCADE, related_name='optionB2')
+class Assessment(models.Model):
+    ACCESS = (
+        ('pre', 'PRE CHOICE'),
+        ('mid', 'MID CHOICE'),
+        ('post', 'POST CHOICE'),
+    )
+    
+    assessment_type = models.ForeignKey(AssessmentType, on_delete=models.CASCADE)
+    questions = models.ManyToManyField(Question)
+    access = models.CharField(max_length=30, choices=ACCESS, default=None)
     
     def __str__(self):
-        return f'{self.optionA.name} {self.optionB.name}'
+        return f"{self.assessment_type.name}-{self.access}"
 
-class Assessment3(models.Model):
-    choice = models.CharField(max_length=500)
+class AssessmentResult(models.Model):
+    ACCESS = (
+        ('pre', 'PRE CHOICE'),
+        ('mid', 'MID CHOICE'),
+        ('post', 'POST CHOICE'),
+    )
+    
+    user = models.ForeignKey(Account, on_delete=models.CASCADE)
+    assessment = models.ForeignKey(Assessment, on_delete=models.CASCADE)
+    phase = models.CharField(max_length=30, choices=ACCESS, default=None)
+    result = models.IntegerField()
     
     def __str__(self):
-        return self.choice[:200]
+        return f"{self.user.first_name}-{self.assessment.assessment_type.name}-{self.phase}-{self.result}"
