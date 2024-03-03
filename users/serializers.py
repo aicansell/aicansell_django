@@ -5,6 +5,8 @@ from rest_framework.validators import UniqueValidator
 
 from accounts.models import Account
 from users.models import UserSubOrgs, UserMapping
+from users.models import UserRights, UserRightsMapping
+from constants import DEFAULT_PASSWORD
 
 class UsersListSerializer(serializers.ModelSerializer):
     role = serializers.SerializerMethodField()
@@ -46,7 +48,7 @@ class UserCreateSerializer(serializers.ModelSerializer):
             active = True,
         )
         
-        user.set_password("aicansell@123")
+        user.set_password(DEFAULT_PASSWORD)
         user.save()
         return user
 
@@ -87,3 +89,28 @@ class UserMappingListSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserMapping
         fields = ['id', 'user', 'admin']
+
+class UserRightSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserRights
+        fields = ['id', 'name']
+
+class UserRightsMappingSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserRightsMapping
+        fields = ['id', 'user', 'right']
+
+class UserRightsMappingSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserRightsMapping
+        fields = ['id', 'user', 'right']
+
+class UserRightsMappingListSerializer(serializers.ModelSerializer):
+    right = serializers.SerializerMethodField()
+    
+    def get_right(self, obj):
+        return getattr(obj.right, 'name', None)
+    
+    class Meta:
+        model = UserRightsMapping
+        fields = ['id', 'right']

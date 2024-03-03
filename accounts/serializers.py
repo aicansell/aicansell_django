@@ -1,7 +1,23 @@
 from rest_framework import serializers
-from .models import Account, Profile
+from accounts.models import Account, Profile
 from django.contrib.auth.models import User
 
+class LoginSerializer(serializers.ModelSerializer):
+    role = serializers.SerializerMethodField()
+    org = serializers.SerializerMethodField()
+    
+    def get_role(self, obj):
+        return getattr(obj.role, 'name', None)
+    
+    def get_org(self, obj):
+        return getattr(obj.org, 'name', None)
+    
+    class Meta:
+        model = Account
+        exclude = (
+            'password', 'last_login', 'is_active', 'is_staff', 'date_joined',
+            'is_admin', 'is_superadmin', 
+        )
 
 class SignUpSerializer(serializers.ModelSerializer):
     class Meta:

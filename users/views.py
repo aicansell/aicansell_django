@@ -7,9 +7,10 @@ from rest_framework_tracking.mixins import LoggingMixin
 from rest_framework.permissions import IsAuthenticated
 
 from users.serializers import UsersListSerializer, UsersSerializer
-from users.serializers import UserCreateSerializer
+from users.serializers import UserCreateSerializer, UserRightSerializer
 from users.serializers import UserSubOrgSerializer, UserMappingSerializer
-from users.models import UserSubOrgs, UserMapping
+from users.serializers import UserRightsMappingSerializer, UserRightsMappingListSerializer
+from users.models import UserSubOrgs, UserMapping, UserRights, UserRightsMapping
 from accounts.models import Account
 
 class UsersViewSet(LoggingMixin, ViewSet):
@@ -227,3 +228,170 @@ class UserMappingViewSet(LoggingMixin, ViewSet):
             'data': serializer.errors,
         }
         return Response(response, status=stat.HTTP_400_BAD_REQUEST)
+
+class UserRightViewSet(LoggingMixin, ViewSet):
+    @staticmethod
+    def get_object(pk=None):
+        return get_object_or_404(UserRights, pk=pk)
+    
+    @staticmethod
+    def get_queryset():
+        return UserRights.objects.all()
+    
+    def list(self, request):
+        serializer = UserRightSerializer(self.get_queryset(), many=True)
+        response = {
+            'status': "success",
+            'message': "List of user rights",
+            'data': serializer.data,
+        }
+        return Response(response, status=status.HTTP_200_OK)
+    
+    def retrieve(self, request, pk=None):
+        user_right = self.get_object(pk)
+        serializer = UserRightSerializer(user_right)
+        response = {
+            'status': "success",
+            'message': "User right details",
+            'data': serializer.data,
+        }
+        return Response(response, status=status.HTTP_200_OK)
+    
+    def create(self, request):
+        request_data = {
+            'name': request.data.get('name', None),
+        }
+        
+        serializer = UserRightSerializer(data=request_data)
+        
+        if serializer.is_valid():
+            serializer.save()
+            response = {
+                'status': "success",
+                'message': "User right created successfully",
+                'data': serializer.data,
+            }
+            return Response(response, status=status.HTTP_201_CREATED)
+        response = {
+            'status': "failed",
+            'message': "User right creation failed",
+            'data': serializer.errors,
+        }
+        return Response(response, status=status.HTTP_400_BAD_REQUEST)
+    
+    def update(self, request, pk=None):
+        user_right = self.get_object(pk)
+        request_data = {
+            'name': request.data.get('name', user_right.name),
+        }
+        
+        serializer = UserRightSerializer(user_right, data=request_data, partial=True)
+        
+        if serializer.is_valid():
+            serializer.save()
+            response = {
+                'status': "success",
+                'message': "User right updated successfully",
+                'data': serializer.data,
+            }
+            return Response(response, status=status.HTTP_200_OK)
+        response = {
+            'status': "failed",
+            'message': "User right update failed",
+            'data': serializer.errors,
+        }
+        return Response(response, status=status.HTTP_400_BAD_REQUEST)
+    
+    def destroy(self, request, pk=None):
+        user_right = self.get_object(pk)
+        user_right.delete()
+        response = {
+            'status': "success",
+            'message': "User right deleted successfully",
+        }
+        return Response(response, status=status.HTTP_204_NO_CONTENT)
+
+class UserRightsMappingViewSet(LoggingMixin, ViewSet):
+    @staticmethod
+    def get_object(pk=None):
+        return get_object_or_404(UserRightsMapping, pk=pk)
+    
+    @staticmethod
+    def get_queryset():
+        return UserRightsMapping.objects.all()
+    
+    def list(self, request):
+        user_id = request.query_params.get('user', None)
+        
+        rights = self.get_queryset().filter(user=user_id)
+        serializer = UserRightsMappingListSerializer(rights, many=True)
+        response = {
+            'status': "success",
+            'message': "List of user right mappings",
+            'data': serializer.data,
+        }
+        return Response(response, status=status.HTTP_200_OK)
+    
+    def create(self, request):
+        request_data  = {
+            'user': request.data.get('user', None),
+            'right': request.data.get('right', None),
+        }
+        
+        try:
+            instance = UserRightsMapping.objects.get(user=request_data['user'], right=request_data['right'])
+        except UserRightsMapping.DoesNotExist:
+            serializer = UserRightsMappingSerializer(data=request_data)
+            if serializer.is_valid():
+                serializer.save()
+                response = {
+                    'status': "success",
+                    'message': "User right mapping created successfully",
+                    'data': serializer.data,
+                }
+                return Response(response, status=status.HTTP_201_CREATED)
+        if instance:
+            response = {
+                'status': "failed",
+                'message': "User right mapping already exists",
+            }
+            return Response(response, status=status.HTTP_400_BAD_REQUEST)
+        response = {
+            'status': "failed",
+            'message': "User right mapping creation failed",
+            'data': serializer.errors,
+        }
+        return Response(response, status=status.HTTP_400_BAD_REQUEST)
+    
+    def update(self, request, pk=None):
+        user_right_mapping = self.get_object(pk)
+        request_data  = {
+            'user': request.data.get('user', user_right_mapping.user.id),
+            'right': request.data.get('right', user_right_mapping.right.id),
+        }
+        
+        serializer = UserRightsMappingSerializer(user_right_mapping, data=request_data, partial=True)
+        
+        if serializer.is_valid():
+            serializer.save()
+            response = {
+                'status': "success",
+                'message': "User right mapping updated successfully",
+                'data': serializer.data,
+            }
+            return Response(response, status=status.HTTP_200_OK)
+        response = {
+            'status': "failed",
+            'message': "User right mapping update failed",
+            'data': serializer.errors,
+        }
+        return Response(response, status=status.HTTP_400_BAD_REQUEST)
+    
+    def destroy(self, request, pk=None):
+        user_right_mapping = self.get_object(pk)
+        user_right_mapping.delete()
+        response = {
+            'status': "success",
+            'message': "User right mapping deleted successfully",
+        }
+        return Response(response, status=status.HTTP_204_NO_CONTENT)
