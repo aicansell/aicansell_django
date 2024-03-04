@@ -1,19 +1,21 @@
 from django.shortcuts import render, get_object_or_404
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
-from .serializers import SignUpSerializer, UserSerializer, profileSerializer
-from .models import Account, Profile, EmailConfirmationToken
+from accounts.serializers import SignUpSerializer, UserSerializer, profileSerializer
+from accounts.models import Account, Profile, EmailConfirmationToken
 from django.contrib.auth.hashers import make_password
 from rest_framework import status
 from django.contrib.auth.models import User
 from rest_framework.permissions import IsAuthenticated
 from django.utils.crypto import get_random_string
+from rest_framework_simplejwt.tokens import RefreshToken
 
 from django.core.mail import send_mail, EmailMessage
 from datetime import datetime, timedelta
 
 from rest_framework.views import APIView
 from accounts.utils import send_confirmation_email
+from accounts.serializers import LoginSerializer
 
 from django.contrib.sites.shortcuts import get_current_site
 
@@ -44,8 +46,6 @@ def register(request):
     else:
         return Response(serializer.errors)
 
-
-
 @api_view(['GET']) 
 @permission_classes([IsAuthenticated])
 def current_user(request):
@@ -58,9 +58,6 @@ def get_current_host(request):
     protocol = request.is_secure() and 'https' or 'http'
     host = request.get_host()
     return "{protocol}://{host}/".format(protocol=protocol, host=host)
-
-
-
 
 @api_view(['POST']) 
 def forgot_password(request):
@@ -90,8 +87,6 @@ def forgot_password(request):
     )
     return Response({'message': 'Password reset email sent to {email}'. format(email=data['email']), "profile":serializer.data })
 
-
-
 @api_view(['POST']) 
 def reset_password(request,token):
 
@@ -114,9 +109,7 @@ def reset_password(request,token):
     return Response({'message': 'Password has been reset'}, status=status.HTTP_200_OK)
 
 class UserInformationAPIVIew(APIView):
-
     permission_classes = [IsAuthenticated,]
-
     def get(self, request):
         user = request.user
         email = user.email
@@ -158,3 +151,80 @@ def confirm_email_view(request):
         data = {'is_email_confirmed': False}
         return Response({'message': 'Email has not been confirmed'} )
         #return render(request, template_name='users/confirm_email_view.html', context=data)
+
+class LoginViewSet(APIView):
+    def post(self, request):
+        email = request.data.get('email')
+        username = request.data.get('username')
+        password = request.data.get('password')
+        
+        if email and password:
+            try:
+                user = Account.objects.get(email=email)
+            except Account.DoesNotExist:
+                response = {
+                    'status': 'failed',
+                    'message': 'User does not exist'
+                }
+                return Response(response, status=status.HTTP_404_NOT_FOUND)
+            if user and user.check_password(password) and user.active == True:
+                refresh = RefreshToken.for_user(user)
+                user_data = LoginSerializer(user).data
+                
+                response = {
+                    'status': 'success',
+                    'message': 'User logged in successfully',
+                    'data': {
+                        'refresh': str(refresh),
+                        'access': str(refresh.access_token),
+                        'user': user_data,
+                    }
+                }
+                
+                return Response(response, status=status.HTTP_200_OK)
+            else:
+                response = {
+                    'status': 'failed',
+                    'message': 'Your Account has been deactivated. Please contact the admin for assistance.'
+                }
+                
+                return Response(response, status=status.HTTP_400_BAD_REQUEST)
+        
+        elif username and password:
+            try:
+                user = Account.objects.get(username=username)
+            except Account.DoesNotExist:
+                response = {
+                    'status': 'failed',
+                    'message': 'User does not exist'
+                }
+                return Response(response, status=status.HTTP_404_NOT_FOUND)
+            
+            if user and user.check_password(password) and user.active == True:
+                refresh = RefreshToken.for_user(user)
+                user_data = LoginSerializer(user).data
+                
+                response = {
+                    'status': 'success',
+                    'message': 'User logged in successfully',
+                    'data': {
+                        'refresh': str(refresh),
+                        'access': str(refresh.access_token),
+                        'user': user_data,
+                    }
+                }
+                
+                return Response(response, status=status.HTTP_200_OK)
+            else:
+                response = {
+                    'status': 'failed',
+                    'message': 'Your Account has been deactivated. Please contact the admin for assistance.'
+                }
+                
+                return Response(response, status=status.HTTP_400_BAD_REQUEST)
+        response  = {
+            'status': 'failed',
+            'message': 'Please provide both username/email and password'
+        }
+        
+        return Response(response, status=status.HTTP_400_BAD_REQUEST)

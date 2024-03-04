@@ -50,7 +50,7 @@ class Item(models.Model):
     
     
     competencys = models.ManyToManyField(Competency, blank=True)
-    role = models.ForeignKey(Role, on_delete=models.CASCADE, related_name='role', null=True, blank=True)
+    role = models.ForeignKey(Role, on_delete=models.CASCADE, related_name='seanrole', null=True, blank=True)
     level = models.IntegerField(default=1)
     positive_traits = models.CharField(max_length=300, default=" ", blank=True)
     negative_traits = models.CharField(max_length=300, default=" ", blank = True)

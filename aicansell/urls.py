@@ -23,6 +23,7 @@ from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
 )
+from accounts.views import LoginViewSet
 
 def health_check(request):
     return HttpResponse('HEALTHY')
@@ -32,18 +33,16 @@ urlpatterns = [
     path('', health_check),
     path('accounts/', include('accounts.urls')),
     path('users/', include('users.urls')),
-    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    #path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/token/', LoginViewSet.as_view(), name='token_obtain_pair'),
     path('refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('chatbot/', include('chatbot.urls')),
     path('quiz/', include('quiz.urls')),
     path('sean/', include('sean.urls')),
     path('industry/', include('industry.urls')),
-    #path('', include('competency.urls')),
-    #path('', include('words.urls')),
     path('', include('orgss.urls')),
     path('refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('words/', include('words.urls')),
-    path('freemium/', include('freemium.urls')),
     path('icebreaker/', include('icebreaker.urls')),
     path('scenarios/', include('scenarios.urls')),
     path('seanscenarios/', include('sean_scenarios.urls')),

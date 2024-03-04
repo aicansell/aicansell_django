@@ -78,7 +78,7 @@ INSTALLED_APPS = [
     'competency',
     'words',
     'orgss',
-    'freemium',
+    #'freemium',
     'icebreaker',
     'scenarios',
     'sean_scenarios',
