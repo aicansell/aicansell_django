@@ -1,11 +1,18 @@
 from langchain.prompts import PromptTemplate
-from langchain.chat_models import ChatOpenAI
+#from langchain.chat_models import ChatOpenAI
+from langchain_community.chat_models import ChatOpenAI
 from langchain.chains import LLMChain
+from langchain_openai import ChatOpenAI
 
 from icebreaker.output_parsers import summary_parser, ice_breaker_parser, topics_of_interest_parser
+from decouple import config
+import openai
 
-llm = ChatOpenAI(temperature=0, model_name="gpt-3.5-turbo")
-llm_creative = ChatOpenAI(temperature=1, model_name="gpt-3.5-turbo")
+
+openai.api_key = config('api_key')
+
+llm = ChatOpenAI(openai_api_key="api_key", temperature=0, model_name="gpt-3.5-turbo")
+llm_creative = ChatOpenAI(openai_api_key="api_key", temperature=1, model_name="gpt-3.5-turbo")
 
 
 def get_summary_chain() -> LLMChain:
@@ -28,6 +35,7 @@ def get_summary_chain() -> LLMChain:
         template=summary_template,
         partial_variables={
             "format_instructions": summary_parser.get_format_instructions()
+            
         },
     )
 
@@ -80,3 +88,4 @@ def get_ice_breaker_chain() -> LLMChain:
     )
 
     return LLMChain(llm=llm_creative, prompt=ice_breaker_prompt_template)
+ 

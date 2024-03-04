@@ -1,7 +1,7 @@
 from typing import List
 
 from langchain.output_parsers import PydanticOutputParser
-from pydantic import BaseModel, Field
+from pydantic.v1 import BaseModel, Field
 
 
 class Summary(BaseModel):
@@ -30,4 +30,4 @@ class TopicOfInterest(BaseModel):
 
 summary_parser = PydanticOutputParser(pydantic_object=Summary)
 ice_breaker_parser = PydanticOutputParser(pydantic_object=IceBreaker)
-topics_of_interest_parser = PydanticOutputParser(pydantic_object=IceBreaker)
+topics_of_interest_parser = PydanticOutputParser(pydantic_object=TopicOfInterest)  # Corrected line
