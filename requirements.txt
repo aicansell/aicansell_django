@@ -70,13 +70,11 @@ psycopg2-binary==2.9.9
 pydantic==2.6.3
 pydantic_core==2.16.3
 PyJWT==2.8.0
-pypiwin32==223
 python-dateutil==2.9.0.post0
 python-decouple==3.8
 python-environ==0.4.54
 pyttsx3==2.90
 pytz==2024.1
-pywin32==306
 PyYAML==6.0.1
 regex==2023.12.25
 requests==2.31.0
