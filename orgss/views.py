@@ -117,8 +117,7 @@ class SubOrgViewSet(LoggingMixin, ViewSet):
         return Response(response, status=status.HTTP_200_OK)
     
     
-    def retrieve(self, request, **kwargs):
-        pk = kwargs.pop('pk')
+    def retrieve(self, request, pk=None):
         response = {
             'status': 'Success',
             'message': 'SubOrg has been successfully retrieved.',

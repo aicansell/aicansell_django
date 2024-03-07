@@ -20,7 +20,7 @@ class IndustryViewSet(LoggingMixin, ViewSet):
         return Industry.objects.all()
     
     def list(self, request):
-        serializer_data = self.serializer_class(self.get_queryset(), many=True).data
+        serializer_data = IndustrySerializer(self.get_queryset(), many=True).data
         response = {
             'status': 'Success',
             'message': "Industry has been successfully retrieved.",
@@ -33,7 +33,7 @@ class IndustryViewSet(LoggingMixin, ViewSet):
         response = {
             'status': 'Success',
             'message': 'Industry has been successfully retrieved.',
-            'data': self.serializer_class(self.get_object(pk)).data
+            'data': IndustrySerializer(self.get_object(pk)).data
         }
         return Response(response, status=status.HTTP_200_OK)
     

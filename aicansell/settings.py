@@ -78,11 +78,12 @@ INSTALLED_APPS = [
     'competency',
     'words',
     'orgss',
-    #'freemium',
     'icebreaker',
     'scenarios',
     'sean_scenarios',
     'assessment',
+    'learningcourse',
+    'series',
 ]
 
 MIDDLEWARE = [

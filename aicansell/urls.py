@@ -33,7 +33,6 @@ urlpatterns = [
     path('', health_check),
     path('accounts/', include('accounts.urls')),
     path('users/', include('users.urls')),
-    #path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/', LoginViewSet.as_view(), name='token_obtain_pair'),
     path('refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('chatbot/', include('chatbot.urls')),
@@ -47,5 +46,8 @@ urlpatterns = [
     path('scenarios/', include('scenarios.urls')),
     path('seanscenarios/', include('sean_scenarios.urls')),
     path('assessment/', include('assessment.urls')),
+    path('orgss/', include('orgss.urls')),
+    path('learningcourse/', include('learningcourse.urls')),
+    path('series/', include('series.urls')),
 
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

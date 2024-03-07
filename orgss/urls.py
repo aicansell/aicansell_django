@@ -10,6 +10,6 @@ OrgViewSetRouter.register('', OrgViewSet, basename='org')
 SubOrgViewSetRouter.register('', SubOrgViewSet, basename='suborg')
 
 urlpatterns = [
-    path('org', include(OrgViewSetRouter.urls)),
-    path('suborg', include(SubOrgViewSetRouter.urls)),
+    path('org/', include(OrgViewSetRouter.urls)),
+    path('suborg/', include(SubOrgViewSetRouter.urls)),
 ]
