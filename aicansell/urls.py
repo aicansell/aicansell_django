@@ -45,9 +45,9 @@ urlpatterns = [
     path('icebreaker/', include('icebreaker.urls')),
     path('scenarios/', include('scenarios.urls')),
     path('seanscenarios/', include('sean_scenarios.urls')),
-    path('assessment/', include('assessment.urls')),
+    path('assessments/', include('assessments.urls')),
     path('orgss/', include('orgss.urls')),
     path('learningcourse/', include('learningcourse.urls')),
-    path('series/', include('series.urls')),
+    #path('series/', include('series.urls')),
 
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
