@@ -33,16 +33,14 @@ class UsersViewSet(LoggingMixin, ViewSet):
             return Response(response, status=status.HTTP_401_UNAUTHORIZED)
         
         request_data  = {
-            'first_name': request.data.get('first_name', "default"),
-            'last_name': request.data.get('last_name', "default"),
+            'first_name': request.data.get('first_name'),
+            'last_name': request.data.get('last_name'),
             'email': request.data.get('email'),
-            'username': request.data.get('username', "default"),
             'user_role': request.data.get('user_role', None),
             'role': request.data.get('role', None),
-            'org': request.data.get('org', None),
         }
         
-        print(request_data)
+        request_data['org'] = request.user.org.id if request.user.org else None
         
         serializer = UserCreateSerializer(data=request_data)
         if serializer.is_valid():

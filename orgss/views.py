@@ -6,9 +6,10 @@ from rest_framework.response import Response
 from rest_framework.viewsets import ViewSet
 from rest_framework_tracking.mixins import LoggingMixin
 
-from orgss.models import Org, SubOrg
+from orgss.models import Org, SubOrg, Role
 from orgss.serilaizers import OrgSerializer, OrgListSerializer
 from orgss.serilaizers import SubOrgSerializer, SubOrgListSerializer
+from orgss.serilaizers import RoleSerializer, RoleListSerializer
 
 class OrgViewSet(LoggingMixin, ViewSet):
     @staticmethod
@@ -184,3 +185,88 @@ class SubOrgViewSet(LoggingMixin, ViewSet):
             'message': "Successfully deleted SubOrg"
         }
         return Response(response, status=status.HTTP_204_NO_CONTENT)
+
+class RoleViewSet(LoggingMixin, ViewSet):
+    @staticmethod
+    def get_object(pk=None):
+        return get_object_or_404(Role, id=pk)
+
+    @staticmethod
+    def get_queryset():
+        return Role.objects.all()
+
+    def list(self, request):
+        serialized_data = RoleListSerializer(self.get_queryset(), many=True).data
+        response = {
+            'status': 'Success',
+            'message': "Roles has been successfully retrieved.",
+            'data': serialized_data,
+        }
+        return Response(response, status=status.HTTP_200_OK)
+    
+    
+    def retrieve(self, request, pk=None):
+        response = {
+            'status': 'Success',
+            'message': 'Role has been successfully retrieved.',
+            'data': RoleListSerializer(self.get_object(pk)).data
+        }
+        return Response(response, status=status.HTTP_200_OK)
+    
+    
+    def create(self, request):
+        request_data = self.request.data
+        data = {
+            'name': request_data.get('name'),
+            'suborg': request_data.get('suborg'),
+        }
+        
+        serializer = RoleSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            response = {
+                'status': 'Success',
+                'data': serializer.data,
+                'message': 'Role was successfully created.'
+            }
+            return Response(response, status=status.HTTP_201_CREATED)
+        response = {
+            'status': 'Failed',
+            'message': serializer.errors,
+        }
+        return Response(response, status=status.HTTP_400_BAD_REQUEST)
+
+
+    def update(self, request, **kwargs):
+        instance = self.get_object(kwargs.pop('pk'))
+        request_data = self.request.data
+        
+        data = {
+            'name': request_data.get('name', instance.name),
+            'suborg': request_data.get('suborg', instance.suborg.id),
+        }
+        
+        serializer = RoleSerializer(instance, data=data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            response = {
+                'status': 'Success',
+                'data': serializer.data,
+                'message': 'Role was successfully updated.'
+            }
+            return Response(response, status=status.HTTP_200_OK)
+        response = {
+            'status': 'Failed',
+            'message': serializer.errors,
+        }
+        return Response(response, status=status.HTTP_400_BAD_REQUEST)
+    
+    def destroy(self, request, **kwargs):
+        instance = self.get_object(kwargs.pop('pk'))
+        instance.delete()
+
+        response = {
+            'status': 'Success',
+            'message': "Successfully deleted Role"
+        }
+        return Response(response, status=status.HTTP_200_OK)

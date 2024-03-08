@@ -2,7 +2,7 @@ from rest_framework import serializers
 
 from industry.models import Industry
 from industry.serializers import IndustrySerializer
-from orgss.models import Org, SubOrg
+from orgss.models import Org, SubOrg, Role
 
 class OrgSerializer(serializers.ModelSerializer):
     class Meta:
@@ -30,8 +30,24 @@ class SubOrgListSerializer(serializers.ModelSerializer):
     
     def get_org(self, obj):
         instance = Org.objects.get(id=obj.org.id)
-        return OrgSerializer(instance).data
+        return OrgListSerializer(instance).data
     
     class Meta:
         model = SubOrg
         fields = ['id', 'name', 'description', 'org']
+
+class RoleSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Role
+        fields = ['id', 'name', 'suborg']
+        
+class RoleListSerializer(serializers.ModelSerializer):
+    suborg = serializers.SerializerMethodField()
+    
+    def get_suborg(self, obj):
+        instance = SubOrg.objects.get(id=obj.suborg.id)
+        return SubOrgListSerializer(instance).data
+    
+    class Meta:
+        model = Role
+        fields = ['id', 'name', 'suborg']
