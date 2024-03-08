@@ -8,9 +8,16 @@ from users.models import UserSubOrgs, UserMapping
 from users.models import UserRights, UserRightsMapping
 from constants import DEFAULT_PASSWORD
 
+import random
+
 class UsersListSerializer(serializers.ModelSerializer):
+    access = serializers.SerializerMethodField()
     role = serializers.SerializerMethodField()
     org = serializers.SerializerMethodField()
+    
+    def get_access(self, obj):
+        access = UserRightsMapping.objects.filter(user__email=obj.email).values_list('right__name', flat=True)
+        return list(access)
     
     def get_role(self, obj):
         return getattr(obj.role, 'name', None)
@@ -20,7 +27,8 @@ class UsersListSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Account
-        fields = ['id', 'first_name', 'last_name', 'email', 'username', 'user_role', 'is_email_confirmed', 'role', 'org', 'active']
+        fields = ['id', 'first_name', 'last_name', 'email', 'username', 'user_role', 
+                  'is_email_confirmed', 'role', 'org', 'active', 'access']
 
 class UsersSerializer(serializers.ModelSerializer):
     class Meta:
@@ -30,15 +38,16 @@ class UsersSerializer(serializers.ModelSerializer):
 class UserCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Account
-        fields = ['first_name', 'last_name', 'email', 'username', 'user_role', 'role', 'org', 'active']
+        fields = ['first_name', 'last_name', 'email', 'user_role', 'role', 'org']
         extra_kwargs = {
             'email': {'required': True, 'validators': [UniqueValidator(queryset=Account.objects.all())]},
         }
 
     def create(self, validated_data):
         user_role = validated_data.get('user_role', 'user')
+        username = validated_data['first_name'] + validated_data['last_name'] + str(random.randint(1,9999))
         user = Account.objects.create(
-            username = validated_data.get('username'),
+            username = username,
             email = validated_data['email'],
             first_name = validated_data.get('first_name'),
             last_name = validated_data.get('last_name'),
