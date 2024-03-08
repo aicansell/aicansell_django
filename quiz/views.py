@@ -12,7 +12,6 @@ from rest_framework.parsers import JSONParser
 from django.views.decorators.csrf import csrf_exempt
 
 
-
 # Create your views here.
 
 #listing quiz question 
