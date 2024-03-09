@@ -2,8 +2,8 @@ from django.urls import path, include
 
 from rest_framework.routers import DefaultRouter
 
-from assessment.views import QuestionViewSet, OptionViewSet, AssessmentTypeViewSet
-from assessment.views import AssessmentViewSet, AssessmentResultViewSet
+from assessments.views import QuestionViewSet, OptionViewSet, AssessmentTypeViewSet
+from assessments.views import AssessmentViewSet, AssessmentResultViewSet
 
 QuestionViewSetRouter = DefaultRouter()
 OptionViewSetRouter = DefaultRouter()

@@ -81,7 +81,7 @@ INSTALLED_APPS = [
     'icebreaker',
     'scenarios',
     'sean_scenarios',
-    'assessment',
+    'assessments',
     'learningcourse',
     'series',
 ]

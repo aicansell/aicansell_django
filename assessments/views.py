@@ -6,10 +6,10 @@ from rest_framework.viewsets import ViewSet
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 
-from assessment.models import Question, Option, AssessmentType
-from assessment.models import Assessment, AssessmentResult
-from assessment.serializers import QuestionSerializer, OptionSerializer, OptionListSerializer
-from assessment.serializers import AssessmentSerializer, AssessmentResultSerializer, AssessmentTypeSerializer
+from assessments.models import Question, Option, AssessmentType
+from assessments.models import Assessment, AssessmentResult
+from assessments.serializers import QuestionSerializer, OptionSerializer, OptionListSerializer
+from assessments.serializers import AssessmentSerializer, AssessmentResultSerializer, AssessmentTypeSerializer
 
 from datetime import datetime
 

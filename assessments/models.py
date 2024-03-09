@@ -10,16 +10,16 @@ class Question(models.Model):
         ('difficult', 'Difficult'),
     )
     
-    question = models.CharField(max_length=500)
-    level = models.CharField(max_length=30, choices=LEVEL, default=None)
+    question = models.CharField(max_length=200)
+    level = models.CharField(max_length=30, choices=LEVEL, default='easy')
     timer = models.IntegerField(null=True, blank=True)
     
     def __str__(self):
         return f"{self.question}-{self.level}"
 
 class Option(models.Model):
-    question = models.ForeignKey(Question, on_delete=models.CASCADE)
-    option = models.CharField(max_length=500)
+    question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name='options')
+    option = models.CharField(max_length=200)
     is_correct = models.BooleanField(default=False)
     
     def __str__(self):
