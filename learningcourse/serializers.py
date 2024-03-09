@@ -9,13 +9,24 @@ class LearningCourseSerializer(serializers.ModelSerializer):
         
 class LearningCourseListSerializer(serializers.ModelSerializer):
     sub_org = serializers.SerializerMethodField()
+    video = serializers.SerializerMethodField()
+    document = serializers.SerializerMethodField()
     
     def get_sub_org(self, obj):
         return obj.sub_org.name
     
+    def get_video(self, obj):
+        data = LearningCourseVideo.objects.filter(course=obj)
+        return LearningCourseVideoListSerializer(data, many=True).data
+    
+    def get_document(self, obj):
+        data = LearningCourseDocument.objects.filter(course=obj)
+        return LearningCourseDocumentListSerializer(data, many=True).data
+    
     class Meta:
         model = LearningCourse
-        fields = ["id", "name", "description", "thumbnail", "sub_org"]
+        fields = ["id", "name", "description", "thumbnail", "sub_org",
+                  "video", "document"]
         
 class LearningCourseVideoSerializer(serializers.ModelSerializer):
     class Meta:

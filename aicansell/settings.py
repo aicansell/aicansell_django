@@ -84,6 +84,7 @@ INSTALLED_APPS = [
     'assessments',
     'learningcourse',
     'series',
+    'assign',
 ]
 
 MIDDLEWARE = [
