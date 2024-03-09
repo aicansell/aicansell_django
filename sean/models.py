@@ -52,11 +52,11 @@ class Item(models.Model):
     competencys = models.ManyToManyField(Competency, blank=True)
     role = models.ForeignKey(Role, on_delete=models.CASCADE, related_name='seanrole', null=True, blank=True)
     level = models.IntegerField(default=1)
-    positive_traits = models.CharField(max_length=300, default=" ", blank=True)
-    negative_traits = models.CharField(max_length=300, default=" ", blank = True)
+    positive_traits = models.CharField(max_length=300, default="", blank=True)
+    negative_traits = models.CharField(max_length=300, default="", blank = True)
     user_powerwords = models.TextField(default="")
     user_weakwords = models.TextField(default="")
-    expert = models.FileField(upload_to='media', blank = True, null=True)
+    expert = models.FileField(upload_to='media/item/expert', blank = True, null=True)
 
     def get_competencys_as_string(self):
         return ', '.join(self.competencys.values_list('competency_name', flat=True))
