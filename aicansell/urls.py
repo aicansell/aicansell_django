@@ -48,6 +48,7 @@ urlpatterns = [
     path('assessments/', include('assessments.urls')),
     path('orgss/', include('orgss.urls')),
     path('learningcourse/', include('learningcourse.urls')),
-    #path('series/', include('series.urls')),
+    path('series/', include('series.urls')),
+    path('assign/', include('assign.urls')),
 
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

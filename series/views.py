@@ -7,6 +7,7 @@ from rest_framework.viewsets import ViewSet
 from series.models import Series, Seasons
 from series.serializers import SeriesSerializer, SeriesListSerializer
 from series.serializers import SeasonsSerializer, SeasonsListSerializer
+from series.serializers import SeasonsListAssignSerializer
 
 class SeriesViewSet(ViewSet):
     @staticmethod
@@ -93,7 +94,7 @@ class SeasonsViewSet(ViewSet):
     
     def list(self, request):
         queryset = self.get_queryset()
-        serializer = SeasonsListSerializer(queryset, many=True)
+        serializer = SeasonsListAssignSerializer(queryset, many=True)
         response = {
             "status": "success",
             "message": "Seasons list",
@@ -103,7 +104,7 @@ class SeasonsViewSet(ViewSet):
     
     def retrieve(self, request, pk=None):
         instance = self.get_object(pk)
-        serializer = SeasonsListSerializer(instance)
+        serializer = SeasonsListAssignSerializer(instance)
         response = {
             "status": "success",
             "message": "Seasons detail",
