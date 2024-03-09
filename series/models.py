@@ -1,7 +1,7 @@
 from django.db import models
 
 from orgss.models import SubOrg
-from assessment.models import AssessmentType
+from assessments.models import AssessmentType
 from sean.models import Item
 from learningcourse.models import LearningCourse
 
