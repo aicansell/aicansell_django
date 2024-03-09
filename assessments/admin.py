@@ -1,7 +1,7 @@
 from django.contrib import admin
 
-from assessment.models import Question, Option, AssessmentType
-from assessment.models import Assessment, AssessmentResult
+from assessments.models import Question, Option, AssessmentType
+from assessments.models import Assessment, AssessmentResult
 
 admin.site.register(Question)
 admin.site.register(Option)
