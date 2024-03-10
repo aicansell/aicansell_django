@@ -3,13 +3,17 @@ from django.shortcuts import get_object_or_404
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.viewsets import ViewSet
+from rest_framework.permissions import IsAuthenticated
 
 from series.models import Series, Seasons
+from assign.models import SeriesAssignUser
 from series.serializers import SeriesSerializer, SeriesListSerializer
 from series.serializers import SeasonsSerializer, SeasonsListSerializer
 from series.serializers import SeasonsListAssignSerializer
 
 class SeriesViewSet(ViewSet):
+    permission_classes = [IsAuthenticated]
+    
     @staticmethod
     def get_object(pk=None):
         return get_object_or_404(Series, pk=pk)
@@ -19,7 +23,10 @@ class SeriesViewSet(ViewSet):
         return Series.objects.all()
     
     def list(self, request):
-        queryset = self.get_queryset()
+        series_assigned_ids = SeriesAssignUser.objects.filter(user=request.user).values_list('series__id', flat=True)
+
+        queryset = self.get_queryset().filter(sub_org__org=request.user.org).exclude(id__in=series_assigned_ids)
+        
         serializer = SeriesListSerializer(queryset, many=True)
         response = {
             "status": "success",
