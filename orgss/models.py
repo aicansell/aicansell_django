@@ -13,7 +13,7 @@ class Org(models.Model):
 
 class SubOrg(models.Model):
     def __str__(self):
-        return self.name
+        return f"{self.name} - {self.org.name}"
 
     name = models.CharField(max_length=250)
     description = models.CharField(max_length=500, blank=True, null=True)
@@ -21,7 +21,7 @@ class SubOrg(models.Model):
 
 class Role(models.Model):
     def __str__(self):
-        return self.name
+        return f"{self.name} - {self.suborg.name} - {self.suborg.org.name}"
 
     name = models.CharField(max_length=250)
     suborg = models.ForeignKey(SubOrg, on_delete=models.CASCADE, related_name='suborgrole', null=True, blank=True)
