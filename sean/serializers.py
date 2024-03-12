@@ -13,7 +13,7 @@ class ItemLiSerializer(serializers.ModelSerializer):
 class ItemListSerializer1(serializers.ModelSerializer):
     class Meta:
         model = Item
-        fields = ['id', 'item_emotion', 'coming_across_as']
+        fields = ['id', 'item_emotion','coming_across_as']
 
 class ItemSerializer(serializers.ModelSerializer):
     competencys = CompetencySerializer(many=True)
@@ -37,7 +37,7 @@ class ItemUserSerializer(serializers.ModelSerializer):
 class ItemEmotionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Item
-        fields = [ 'item_answer', 'coming_across_as', 'positive_traits', 'negative_traits']
+        fields = [ 'item_answer', 'coming_across_as']
         
 class ItemRecommendSerializer(serializers.ModelSerializer):
     competencys = CompetencySerializer(many=True)
