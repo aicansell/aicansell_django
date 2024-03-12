@@ -13,7 +13,7 @@ class ItemLiSerializer(serializers.ModelSerializer):
 class ItemListSerializer1(serializers.ModelSerializer):
     class Meta:
         model = Item
-        fields = ['id', 'item_emotion','user_powerwords', 'user_weakwords', 'coming_across_as']
+        fields = ['id', 'item_emotion', 'coming_across_as']
 
 class ItemSerializer(serializers.ModelSerializer):
     competencys = CompetencySerializer(many=True)

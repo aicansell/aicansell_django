@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
 from assign.models import SeriesAssignUser
+from assign.models import AssessmentProgress, ItemProgress
 from series.serializers import SeriesListSerializer
 
 class SeriesAssignUserSerializer(serializers.ModelSerializer):
@@ -21,3 +22,13 @@ class SeriesAssignUserListSerializer(serializers.ModelSerializer):
     class Meta:
         model = SeriesAssignUser
         fields = ["id", "user", "series", "is_completed", "progress"]
+
+class AssessmentProgressSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AssessmentProgress
+        fields = ["user", "assessment_season", "is_completed"]
+        
+class ItemProgressSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ItemProgress
+        fields = ["user", "item_season", "is_completed"]

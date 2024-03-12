@@ -119,7 +119,6 @@ class ItemHandleViewSet(LoggingMixin, ViewSet):
             'data': self.serializer_class(self.get_object(pk)).data
         }
         return Response(response, status=status.HTTP_200_OK)
-
        
 class ItemProcessingViewSet(LoggingMixin, ViewSet):
     permission_classes = [IsAuthenticated]
@@ -218,11 +217,9 @@ class ItemProcessingViewSet(LoggingMixin, ViewSet):
         for words in power_word_list:
             if words in emotion_str:
                 user_power_words.append(words)
-                instance.user_powerwords = (instance.user_powerwords or '') + "," + words + ','
         for words in negative_word_list:
             if words in emotion_str:
                 user_weak_words.append(words)
-                instance.user_weakwords = (instance.user_weakwords or '') + "," + words + ','
         
         score = len(user_power_words) - len(user_weak_words)
 
