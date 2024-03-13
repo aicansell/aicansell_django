@@ -12,6 +12,8 @@ from assign.serializers import AssessmentProgressSerializer, ItemProgressSeriali
 from series.models import Seasons, AssessmentSeason, ItemSeason, Series
 
 class SeriesAssignUserViewSet(ViewSet):
+    permission_classes = [IsAuthenticated]
+    
     @staticmethod
     def get_object(pk=None):
         return get_object_or_404(SeriesAssignUser, pk=pk)
@@ -21,7 +23,7 @@ class SeriesAssignUserViewSet(ViewSet):
         return SeriesAssignUser.objects.all()
     
     def list(self, request):
-        queryset = self.get_queryset()
+        queryset = self.get_queryset().filter(user=request.user)
         serializer = SeriesAssignUserListSerializer(queryset, many=True)
         response = {
             "status": "success",
@@ -114,7 +116,25 @@ class AssessmentProgressViewSet(ViewSet):
         return Response(response, status=status.HTTP_200_OK)
     
     def create(self, request):
-        serializer = AssessmentProgressSerializer(data=request.data)
+        request_data = {
+            'user': request.data.get('user', request.user.id),
+            'assessment_season': request.data.get('assessment_season'),
+            'is_completed': request.data.get('is_completed', True),
+        }
+        
+        assessment_found = AssessmentSeason.objects.filter(
+            id=request_data["assessment_season"],
+            season__series__seriesassignuser__user_id=request_data["user"]
+        ).exists()
+
+        if not assessment_found:
+            response = {
+                'status': 'error',
+                'message': 'This assessment is not assigned to you',
+            }
+            return Response(response, status=status.HTTP_200_OK)
+        
+        serializer = AssessmentProgressSerializer(data=request_data)
         if serializer.is_valid():
             serializer.save()
             response = {
@@ -187,7 +207,25 @@ class ItemProgressViewSet(ViewSet):
         return Response(response, status=status.HTTP_200_OK)
     
     def create(self, request):
-        serializer = ItemProgressSerializer(data=request.data)
+        request_data = {
+            'user': request.data.get('user', request.user.id),
+            'item_season': request.data.get('item_season'),
+            'is_completed': request.data.get('is_completed', True),
+        }
+        
+        item_found = ItemSeason.objects.filter(
+            id=request_data["item_season"],
+            season__series__seriesassignuser__user_id=request_data["user"]
+        ).exists()
+
+        if not item_found:
+            response = {
+                'status': 'error',
+                'message': 'This item is not assigned to you',
+            }
+            return Response(response, status=status.HTTP_200_OK)
+        
+        serializer = ItemProgressSerializer(data=request_data)
         if serializer.is_valid():
             serializer.save()
             response = {
