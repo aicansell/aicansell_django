@@ -14,7 +14,6 @@ from django.views.decorators.csrf import csrf_exempt
 
 # Create your views here.
 
-
 #listing quiz question 
 
 @api_view(['GET']) 
