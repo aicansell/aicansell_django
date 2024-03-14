@@ -17,7 +17,7 @@ ProgressCheckViewSetRouter.register("", ProgressCheckViewSet, basename="progress
 
 urlpatterns = [
     path("series/", include(SeriesAssignUserViewSetRouter.urls)),
-    path("assessmentprogresss/", include(AssessmentProgressViewSetRouter.urls)),
+    path("assessmentprogress/", include(AssessmentProgressViewSetRouter.urls)),
     path("itemprogress/", include(ItemProgressViewSetRouter.urls)),
     path("progresscheck/", include(ProgressCheckViewSetRouter.urls)),
 ]
