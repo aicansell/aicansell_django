@@ -19,6 +19,7 @@ from .serializers import ItemListSerializer1, ItemEmotionSerializer, ItemRecomme
 from .models import Item
 from accounts.models import Account, UserProfile
 from orgss.models import Weightage
+from assessments.models import AssessmentResult
 
 import string
 from collections import Counter
@@ -282,6 +283,10 @@ class ItemAnalysticsViewSet(LoggingMixin, ViewSet):
     
     def list(self, request):
         user_instance = UserProfile.objects.get(user=request.user)
+        try:
+            assessments_result = AssessmentResult.objects.filter(user=request.user)
+        except AssessmentResult.DoesNotExist:
+            assessments_result = None
         
         user_details = {
             'power_words_used': user_instance.user_powerwords,
@@ -289,6 +294,7 @@ class ItemAnalysticsViewSet(LoggingMixin, ViewSet):
             'scenarios_attempted': user_instance.scenarios_attempted,
             'scenarios_attempted_score': user_instance.scenarios_attempted_score,
             'competency_score': json.loads(user_instance.competency_score) if user_instance.competency_score else {},
+            'assessments_attempted': assessments_result.count() if assessments_result else 0,
         }
         
         response = {
