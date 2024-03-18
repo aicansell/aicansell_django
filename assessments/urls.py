@@ -21,6 +21,6 @@ urlpatterns = [
     path('question/', include(QuestionViewSetRouter.urls)),
     path('option/', include(OptionViewSetRouter.urls)),
     path('assessmenttype/', include(AssessmentTypeViewSetRouter.urls)),
-    path('assessment', include(AssessmentViewSetRouter.urls)),
-    path('assessmentresult', include(AssessmentResultViewSetRouter.urls)),
+    path('assessment/', include(AssessmentViewSetRouter.urls)),
+    path('assessmentresult/', include(AssessmentResultViewSetRouter.urls)),
 ]
