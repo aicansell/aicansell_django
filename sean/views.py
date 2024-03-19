@@ -18,8 +18,9 @@ from rest_framework_tracking.mixins import LoggingMixin
 from .serializers import ItemListSerializer1, ItemEmotionSerializer, ItemRecommendSerializer,ItemSerializer, ItemLiSerializer, ItemUserSerializer
 from .models import Item
 from accounts.models import Account, UserProfile
-from orgss.models import Weightage
+from orgss.models import Role
 from assessments.models import AssessmentResult
+from assign.models import SeriesAssignUser
 
 import string
 from collections import Counter
@@ -47,34 +48,24 @@ class ItemViewSet(LoggingMixin, ViewSet):
     def list(self, request):
         user = self.request.user
 
-        if user.user_role == 'admin' or user.user_role == 'superadmin':
-            org_id = user.role.org
-            item_data = Item.objects.filter(role__org=org_id)
-            user_data = UserProfile.objects.filter(user__role__org=org_id)
-
+        if user.user_role == 'admin' or user.user_role == 'super_admin':
+            org = user.org
+            
+            org_roles = Role.objects.filter(suborg__org=org)
+            
+            items_data = Item.objects.filter(role__in=org_roles)
+            
+            competency_list = [
+                {'id': instance.id, 'competency_name': instance.competency_name}
+                for item in items_data
+                for instance in item.competencys.all()
+            ]
+            
             response = {
-                'org_word_count': sum(len(item.item_emotion.split(' ')) for item in item_data),
-                'org_scenarios_attempted': sum(user.scenarios_attempted for user in user_data),
+                'status': 'Success',
+                'message': 'Retrieved Successfully',
+                'competency_list': competency_list
             }
-           
-            roles_word_count = {}
-            roles_scenarios_attempted = {}
-
-            for org_role in org_role_names:
-                users = user_data.filter(user__role__org_role_name__icontains=org_role)
-                roles_word_count[f"{org_id}_{org_role}_word_count"] = sum(len(item.item_emotion.split(' ')) for item in item_data.filter(role__org_role_name__icontains=org_role))
-                roles_scenarios_attempted[f"{org_id}_{org_role}_scenarios_attempted"] = sum(user.scenarios_attempted for user in users)
-               
-            response["roles_word_count"] = roles_word_count
-            response["roles_scenarios_attempted"] = roles_scenarios_attempted
-           
-            users_scenarios_attempted = {}
-               
-            for user in user_data:
-                users_scenarios_attempted[f"{user.user.username}_scenarios_attempted"] = user.scenarios_attempted
-
-            response["users_scenarios_attempted"] = users_scenarios_attempted
-           
             return Response(response, status=status.HTTP_200_OK)
        
         return Response({"message": "You are not authorized to access these details"}, status=status.HTTP_401_UNAUTHORIZED)
@@ -282,11 +273,30 @@ class ItemAnalysticsViewSet(LoggingMixin, ViewSet):
     permission_classes = [IsAuthenticated]
     
     def list(self, request):
-        user_instance = UserProfile.objects.get(user=request.user)
+        user_id = request.query_params.get("user_id")
+        if not user_id:
+            return Response({"status": "error", "message": "User ID is required"}, status=status.HTTP_400_BAD_REQUEST)
+        user_instance = UserProfile.objects.get(user__id=user_id)
         try:
             assessments_result = AssessmentResult.objects.filter(user=request.user)
         except AssessmentResult.DoesNotExist:
             assessments_result = None
+        
+        series_assigned_data = SeriesAssignUser.objects.filter(user__id=user_id)
+        series_progress = {}
+        for series_assign in series_assigned_data:
+            series_progress[series_assign.series.name] = series_assign.progress
+            
+        strong_competency = []
+        weak_competency = []
+        
+        if user_instance.competency_score:
+            for compentency, score in json.loads(user_instance.competency_score).items():
+                score = sum([int(x) for x in score.split(',')])
+                if score > 0:
+                    strong_competency.append({'competency': compentency, 'score': score})
+                elif score < 0:
+                    weak_competency.append({'competency': compentency, 'score': score})
         
         user_details = {
             'power_words_used': user_instance.user_powerwords,
@@ -294,7 +304,10 @@ class ItemAnalysticsViewSet(LoggingMixin, ViewSet):
             'scenarios_attempted': user_instance.scenarios_attempted,
             'scenarios_attempted_score': user_instance.scenarios_attempted_score,
             'competency_score': json.loads(user_instance.competency_score) if user_instance.competency_score else {},
+            'strong_competency': strong_competency,
+            'weak_competency': weak_competency,
             'assessments_attempted': assessments_result.count() if assessments_result else 0,
+            'series_progress': series_progress
         }
         
         response = {
