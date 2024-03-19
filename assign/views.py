@@ -10,6 +10,8 @@ from assign.models import SeriesAssignUser, AssessmentProgress, ItemProgress
 from assign.serializers import SeriesAssignUserSerializer, SeriesAssignUserListSerializer
 from assign.serializers import AssessmentProgressSerializer, ItemProgressSerializer
 from series.models import Seasons, AssessmentSeason, ItemSeason, Series
+from orgss.models import Role
+from accounts.models import Account
 
 class SeriesAssignUserViewSet(ViewSet):
     permission_classes = [IsAuthenticated]
@@ -300,9 +302,47 @@ class ProgressCheckViewSet(ViewSet):
 
         series_progress = sum(season["progress"] for season in seasons_progress.values()) / len(seasons) if seasons else 0
         seasons_progress["series_progress"] = series_progress
+        
+        series_instance = SeriesAssignUser.objects.get(series=series, user=request.user)
+        series_instance.progress = series_progress
+        if series_progress == 100:
+            series_instance.is_completed = True
+        series_instance.save()
         response = {
             "status": "success",
             "message": "Progress Check",
             "data": seasons_progress
+        }
+        return Response(response, status=status.HTTP_200_OK)
+
+class AssignSeriesByRoleViewSet(ViewSet):
+    def create(self, request):
+        request_data = {
+            'series_id': request.data.get('series_id'),
+            'role_id': request.data.get('role_id'),
+        }
+        
+        if not request.data.get('series_id'):
+            return Response({"status": "error", "message": "Series ID is required"}, status=status.HTTP_400_BAD_REQUEST)
+        if not request.data.get('role_id'):
+            return Response({"status": "error", "message": "Role ID is required"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        users = Account.objects.filter(role__id=request_data["role_id"])
+        
+        if users:
+            for user in users:
+                try:
+                    SeriesAssignUser.objects.create(user=user, series_id=request_data["series_id"])
+                except:
+                    pass
+            
+            response = {
+                "status": "success",
+                "message": "Series Assigned to Role"
+            }
+            return Response(response, status=status.HTTP_200_OK)
+        response = {
+            "status": "error",
+            "message": "No users found with this role"
         }
         return Response(response, status=status.HTTP_200_OK)

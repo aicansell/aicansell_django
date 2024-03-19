@@ -84,7 +84,7 @@ class UsersViewSet(LoggingMixin, ViewSet):
             return Response(response, status=status.HTTP_401_UNAUTHORIZED)
         
         user = self.get_object(pk)
-        serializer = UsersSerializer(user)
+        serializer = UsersListSerializer(user)
         response = {
             'status': "success",
             'message': "User details",

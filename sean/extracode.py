@@ -82,7 +82,35 @@ transcript = openai.Audio.transcribe("whisper-1", audio_file)
 print(transcript['text'])
 
 """
-  
+
+            # item_data = Item.objects.filter(role__org=org_id)
+            # user_data = UserProfile.objects.filter(user__role__org=org_id)
+
+            # response = {
+            #     'org_word_count': sum(len(item.item_emotion.split(' ')) for item in item_data),
+            #     'org_scenarios_attempted': sum(user.scenarios_attempted for user in user_data),
+            # }
+
+            # roles_word_count = {}
+            # roles_scenarios_attempted = {}
+
+            # for org_role in org_role_names:
+            #     users = user_data.filter(user__role__org_role_name__icontains=org_role)
+            #     roles_word_count[f"{org_id}_{org_role}_word_count"] = sum(len(item.item_emotion.split(' ')) for item in item_data.filter(role__org_role_name__icontains=org_role))
+            #     roles_scenarios_attempted[f"{org_id}_{org_role}_scenarios_attempted"] = sum(user.scenarios_attempted for user in users)
+               
+            # response["roles_word_count"] = roles_word_count
+            # response["roles_scenarios_attempted"] = roles_scenarios_attempted
+           
+            # users_scenarios_attempted = {}
+               
+            # for user in user_data:
+            #     users_scenarios_attempted[f"{user.user.username}_scenarios_attempted"] = user.scenarios_attempted
+
+            # response["users_scenarios_attempted"] = users_scenarios_attempted
+           
+            # return Response(response, status=status.HTTP_200_OK)
+
 def create(self, request):
         def process_user_data(userprofile_instance, user_power_words, user_weak_words, score, competencys, emotion_words):
             print("\n\nStarting Thread: UserProfile")

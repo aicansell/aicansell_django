@@ -187,6 +187,8 @@ class SubOrgViewSet(LoggingMixin, ViewSet):
         return Response(response, status=status.HTTP_204_NO_CONTENT)
 
 class RoleViewSet(LoggingMixin, ViewSet):
+    permission_classes = [IsAuthenticated]
+    
     @staticmethod
     def get_object(pk=None):
         return get_object_or_404(Role, id=pk)
@@ -196,7 +198,8 @@ class RoleViewSet(LoggingMixin, ViewSet):
         return Role.objects.all()
 
     def list(self, request):
-        serialized_data = RoleListSerializer(self.get_queryset(), many=True).data
+        roles_data = self.get_queryset().filter(suborg__org=request.user.org)
+        serialized_data = RoleListSerializer(roles_data, many=True).data
         response = {
             'status': 'Success',
             'message': "Roles has been successfully retrieved.",
