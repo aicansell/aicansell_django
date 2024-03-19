@@ -18,7 +18,7 @@ class UserMapping(models.Model):
         return self.superadmin.username + ' - ' + self.admin.username
 
 class UserRights(models.Model):
-    name = models.CharField(max_length=100)
+    rights = models.CharField(max_length=100)
     
     def __str__(self):
         return self.rights
