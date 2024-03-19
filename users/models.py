@@ -25,7 +25,8 @@ class UserRights(models.Model):
 
 class UserRightsMapping(models.Model):
     user = models.ForeignKey(Account, on_delete=models.SET_NULL, null=True, related_name='userright')
-    rights = models.ForeignKey(UserRights, on_delete=models.SET_NULL, null=True, related_name='rightuser')
+    rights_name = models.ForeignKey(UserRights, on_delete=models.SET_NULL, null=True, related_name='rightuser')
     
     def __str__(self):
-        return self.user.username + ' - ' + self.rights
+        #return self.user.username + ' - ' + self.rights_name
+        return self.user.username
