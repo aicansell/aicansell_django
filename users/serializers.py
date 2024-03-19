@@ -107,12 +107,12 @@ class UserRightSerializer(serializers.ModelSerializer):
 class UserRightsMappingSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserRightsMapping
-        fields = ['id', 'user', 'right']
+        fields = ['id', 'user', 'rights_name']
 
 class UserRightsMappingSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserRightsMapping
-        fields = ['id', 'user', 'right']
+        fields = ['id', 'user', 'rights_name']
 
 class UserRightsMappingListSerializer(serializers.ModelSerializer):
     right = serializers.SerializerMethodField()
@@ -122,4 +122,4 @@ class UserRightsMappingListSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = UserRightsMapping
-        fields = ['id', 'right']
+        fields = ['id', 'rights_name']
