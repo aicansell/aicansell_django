@@ -18,14 +18,14 @@ class UserMapping(models.Model):
         return self.superadmin.username + ' - ' + self.admin.username
 
 class UserRights(models.Model):
-    rights = models.CharField(max_length=100)
+    right = models.CharField(max_length=100)
     
     def __str__(self):
-        return self.rights
+        return self.right
 
 class UserRightsMapping(models.Model):
     user = models.ForeignKey(Account, on_delete=models.SET_NULL, null=True, related_name='userright')
-    rights_name = models.ForeignKey(UserRights, on_delete=models.SET_NULL, null=True, related_name='rightuser')
+    right = models.ForeignKey(UserRights, on_delete=models.SET_NULL, null=True, related_name='rightuser')
     
     def __str__(self):
         #return self.user.username + ' - ' + self.rights_name
