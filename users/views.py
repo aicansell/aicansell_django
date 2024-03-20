@@ -331,35 +331,43 @@ class UserRightsMappingViewSet(LoggingMixin, ViewSet):
         return Response(response, status=status.HTTP_200_OK)
     
     def create(self, request):
-        request_data  = {
-            'user': request.data.get('user', None),
-            'right': request.data.get('right', None),
-        }
-        
+        user_id = request.data.get('user')
+        right_id = request.data.get('right')
+
+        if user_id is None or right_id is None:
+            response = {
+                'status': 'failed',
+                'message': 'User ID and Right ID are required fields.',
+            }
+            return Response(response, status=status.HTTP_400_BAD_REQUEST)
+
         try:
-            instance = UserRightsMapping.objects.get(user=request_data['user'], right=request_data['right'])
+            instance = UserRightsMapping.objects.get(user__id=user_id, right__id=right_id)
+            response = {
+                'status': 'failed',
+                'message': 'User right mapping already exists',
+            }
+            return Response(response, status=status.HTTP_400_BAD_REQUEST)
         except UserRightsMapping.DoesNotExist:
+            request_data = {
+                'user': user_id,
+                'right': right_id,
+            }
             serializer = UserRightsMappingSerializer(data=request_data)
             if serializer.is_valid():
                 serializer.save()
                 response = {
-                    'status': "success",
-                    'message': "User right mapping created successfully",
+                    'status': 'success',
+                    'message': 'User right mapping created successfully',
                     'data': serializer.data,
                 }
                 return Response(response, status=status.HTTP_201_CREATED)
-        if instance:
             response = {
-                'status': "failed",
-                'message': "User right mapping already exists",
+                'status': 'failed',
+                'message': 'User right mapping creation failed',
+                'data': serializer.errors,
             }
             return Response(response, status=status.HTTP_400_BAD_REQUEST)
-        response = {
-            'status': "failed",
-            'message': "User right mapping creation failed",
-            'data': serializer.errors,
-        }
-        return Response(response, status=status.HTTP_400_BAD_REQUEST)
     
     def update(self, request, pk=None):
         user_right_mapping = self.get_object(pk)

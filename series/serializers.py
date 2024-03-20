@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from series.models import Series, Seasons
+from series.models import Series, Seasons, SeasonLota
 from series.models import AssessmentSeason, ItemSeason, LearningCourseSeason
 from assessments.serializers import AssessmentTypeSerializer
 from sean.serializers import ItemUserSerializer
@@ -41,7 +41,17 @@ class SeasonsListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Seasons
         fields = ["id", "name", "description", "thumbnail", "series"]
+
+class SeasonLotaSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SeasonLota
+        fields = ["name", "image", "season"]
         
+class SeasonLotaListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SeasonLota
+        fields = ["id", "name", "image"]
+
 class AssessmentSeasonListAssignSerializer(serializers.ModelSerializer):
     assessment = serializers.SerializerMethodField()
     
@@ -77,6 +87,7 @@ class SeasonsListAssignSerializer(serializers.ModelSerializer):
     assessment = serializers.SerializerMethodField()
     item = serializers.SerializerMethodField()
     learning_course = serializers.SerializerMethodField()
+    seasonlota = serializers.SerializerMethodField()
     
     def get_series(self, obj):
         return obj.series.name
@@ -93,7 +104,11 @@ class SeasonsListAssignSerializer(serializers.ModelSerializer):
         data = LearningCourseSeason.objects.filter(season=obj)
         return LearningCourseListAssignSerializer(data, many=True).data
     
+    def get_seasonlota(self, obj):
+        data = SeasonLota.objects.filter(season=obj)
+        return SeasonLotaListSerializer(data, many=True).data
+    
     class Meta:
         model = Seasons
         fields = ["id", "name", "description", "thumbnail", "series",
-                  "assessment", "item", "learning_course"]
+                  "assessment", "item", "learning_course", "seasonlota"]
