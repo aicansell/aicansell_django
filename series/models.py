@@ -23,6 +23,14 @@ class Seasons(models.Model):
     def __str__(self):
         return f"{self.name} - {self.series.name}"
 
+class SeasonLota(models.Model):
+    season = models.ForeignKey(Seasons, on_delete=models.CASCADE)
+    name = models.CharField(max_length=300)
+    image = models.FileField(upload_to="media/seasons/lota", null=True, blank=True)
+    
+    def __str__(self):
+        return f"{self.season.name} - {self.name}"
+
 class AssessmentSeason(models.Model):
     season = models.ForeignKey(Seasons, on_delete=models.CASCADE)
     assessment = models.ForeignKey(AssessmentType, on_delete=models.CASCADE)
