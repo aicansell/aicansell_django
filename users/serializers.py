@@ -123,3 +123,4 @@ class UserRightsMappingListSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserRightsMapping
         fields = ['id', 'right']
+
