@@ -2,6 +2,7 @@ from django.db import models
 
 from competency.models import Competency
 from orgss.models import Role
+from accounts.models import Account
 
 
 class Item(models.Model):
@@ -43,6 +44,15 @@ class Item(models.Model):
 
     def get_competencys_as_string(self):
         return ', '.join(self.competencys.values_list('competency_name', flat=True))
+
+class ItemResult(models.Model):
+    user = models.ForeignKey(Account, on_delete=models.CASCADE)
+    item = models.ForeignKey(Item, on_delete=models.CASCADE)
+    created_at = models.DateField(auto_now_add=True)
+    score = models.IntegerField(default=0)
+    
+    def __str__(self):
+        return f"{self.user.username} - {self.created_at} - {self.score}"
 
 
 class Suggestion(models.Model):
