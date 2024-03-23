@@ -16,8 +16,9 @@ class UsersListSerializer(serializers.ModelSerializer):
     org = serializers.SerializerMethodField()
     
     def get_access(self, obj):
-        access = UserRightsMapping.objects.filter(user__email=obj.email).values_list('right__name', flat=True)
-        return list(access)
+        access = UserRightsMapping.objects.filter(user__email=obj.email).values('id', 'right__name')
+        return [{'id': item['id'], 'name': item['right__name']} for item in access]
+
     
     def get_role(self, obj):
         return getattr(obj.role, 'name', None)
@@ -118,7 +119,10 @@ class UserRightsMappingListSerializer(serializers.ModelSerializer):
     right = serializers.SerializerMethodField()
     
     def get_right(self, obj):
-        return getattr(obj.right, 'name', None)
+        return {
+            'id': getattr(obj.right, 'id', None),
+            'name': getattr(obj.right, 'name', None)
+        }
     
     class Meta:
         model = UserRightsMapping

@@ -1,7 +1,9 @@
 from django.contrib import admin
-from .models import Item, Suggestion
-# Register your models here.
+
+from sean.models import Item, Suggestion, ItemResult
+
 
 
 admin.site.register(Item)
 admin.site.register(Suggestion)
+admin.site.register(ItemResult)
