@@ -6,6 +6,7 @@ from rest_framework.viewsets import ViewSet
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 
+from SaaS.permissions import SaaSAccessPermissionAssessment
 from assessments.models import Question, Option, AssessmentType
 from assessments.models import Assessment, AssessmentResult
 from assessments.serializers import QuestionSerializer, OptionSerializer, OptionListSerializer
@@ -314,6 +315,8 @@ class AssessmentViewSet(ViewSet):
         return Response(response, status=status.HTTP_204_NO_CONTENT)
 
 class AssessmentResultViewSet(ViewSet):
+    permission_classes = [IsAuthenticated, SaaSAccessPermissionAssessment]
+    
     @staticmethod
     def get_queryset():
         return AssessmentResult.objects.all()

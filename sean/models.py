@@ -4,7 +4,6 @@ from competency.models import Competency
 from orgss.models import Role
 from accounts.models import Account
 
-
 class Item(models.Model):
     def __str__(self):
         return self.item_name
@@ -53,7 +52,6 @@ class ItemResult(models.Model):
     
     def __str__(self):
         return f"{self.user.username} - {self.created_at} - {self.score}"
-
 
 class Suggestion(models.Model):
     def __str__(self):
