@@ -15,18 +15,20 @@ from rest_framework_tracking.mixins import LoggingMixin
 from rest_framework.viewsets import ViewSet
 from rest_framework_tracking.mixins import LoggingMixin
 
-from .serializers import ItemListSerializer1, ItemEmotionSerializer, ItemRecommendSerializer,ItemSerializer, ItemLiSerializer, ItemUserSerializer
-from .models import Item
+from sean.serializers import ItemListSerializer1, ItemEmotionSerializer, ItemRecommendSerializer,ItemSerializer, ItemLiSerializer, ItemUserSerializer
+from sean.models import Item, ItemResult
 from accounts.models import Account, UserProfile
 from orgss.models import Role
 from assessments.models import AssessmentResult
 from assign.models import SeriesAssignUser
+from SaaS.permissions import SaaSAccessPermissionItem
 
 import string
 from collections import Counter
 import speech_recognition as sr
 import json
 from decouple import config
+from datetime import datetime
 import speech_recognition as sr
 import spacy
 import threading
@@ -113,7 +115,7 @@ class ItemHandleViewSet(LoggingMixin, ViewSet):
         return Response(response, status=status.HTTP_200_OK)
        
 class ItemProcessingViewSet(LoggingMixin, ViewSet):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, SaaSAccessPermissionItem]
     serializer_class = ItemListSerializer1
     
     def list(self, request):
@@ -178,7 +180,6 @@ class ItemProcessingViewSet(LoggingMixin, ViewSet):
             return Response(response, status=status.HTTP_404_NOT_FOUND)
         
         userprofile_instance = UserProfile.objects.get(user=request.user)
-        
         emotion_str = request.query_params.get('item_emotion').lower()
         
         competencys = instance.competencys.all().prefetch_related(
@@ -214,9 +215,7 @@ class ItemProcessingViewSet(LoggingMixin, ViewSet):
                 user_weak_words.append(words)
         
         score = len(user_power_words) - len(user_weak_words)
-
         instance.item_answercount += 1
-        
         processing_thread = threading.Thread(
             target=process_user_data,
             args=(userprofile_instance, user_power_words, user_weak_words, score, competencys, emotion_str)
@@ -240,6 +239,14 @@ class ItemProcessingViewSet(LoggingMixin, ViewSet):
             'power_word_list': power_word_list,
             'negative_word_list': negative_word_list,
         }
+        
+        itemresult = ItemResult.objects.create(
+                user=request.user, 
+                item=instance,
+                created_at=datetime.now(),
+                score=score
+            )
+        itemresult.save()
         
         serialized_data = self.serializer_class(instance=instance, data=data)
         serialized_data.is_valid(raise_exception=True)
