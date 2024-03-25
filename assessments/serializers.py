@@ -31,33 +31,30 @@ class OptionListSerializer(serializers.ModelSerializer):
         fields = ['option', 'is_correct']
     
 class AssessmentTypeSerializer(serializers.ModelSerializer):
-    questions = serializers.SerializerMethodField()
-    
-    def get_questions(self, obj):
-        questions_data = Assessment.objects.filter(assessment_type=obj)
-        serializer = AssessmentListSerializer(questions_data, many=True)
-        return serializer.data
-    
     class Meta:
         model = AssessmentType
         fields = ['id', 'name', 'suborg', 'passing_criteria', 'positive_marks', 'negative_marks', 
-                  'time', 'trigger_point', 'refresher_days', 'questions']
+                  'time', 'trigger_point', 'refresher_days']
 
 class AssessmentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Assessment
-        fields = ['id', 'assessment_type', 'questions', 'access']
+        fields = ['id', 'assessment_type', 'questions', 'access', 'is_live', 'is_approved']
         
 class AssessmentListSerializer(serializers.ModelSerializer):
     questions = serializers.SerializerMethodField()
+    assessment_type = serializers.SerializerMethodField()
     
     def get_questions(self, obj):
         questions_data = QuestionListSerializer(obj.questions, many=True)
         return questions_data.data
     
+    def get_assessment_type(self, obj):
+        return AssessmentTypeSerializer(obj.assessment_type).data
+    
     class Meta:
         model = Assessment
-        fields = ['questions', 'access']
+        fields = ['id', 'questions', 'access', 'assessment_type', 'is_live', 'is_approved']
 
 class AssessmentResultSerializer(serializers.ModelSerializer):
     class Meta:

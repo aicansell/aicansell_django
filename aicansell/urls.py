@@ -50,5 +50,6 @@ urlpatterns = [
     path('learningcourse/', include('learningcourse.urls')),
     path('series/', include('series.urls')),
     path('assign/', include('assign.urls')),
+    path('saas/', include('SaaS.urls')),
 
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

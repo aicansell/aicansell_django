@@ -40,6 +40,8 @@ class Item(models.Model):
     role = models.ForeignKey(Role, on_delete=models.CASCADE, related_name='seanrole', null=True, blank=True)
     level = models.IntegerField(default=1)
     expert = models.FileField(upload_to='media/item/expert', blank = True, null=True)
+    is_approved = models.BooleanField(default=False)
+    is_live = models.BooleanField(default=False)
 
     def get_competencys_as_string(self):
         return ', '.join(self.competencys.values_list('competency_name', flat=True))
