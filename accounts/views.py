@@ -19,7 +19,6 @@ from accounts.serializers import LoginSerializer
 
 from django.contrib.sites.shortcuts import get_current_site
 
-
 @api_view(['POST'])
 def register(request):
     data = request.data
@@ -89,7 +88,6 @@ def forgot_password(request):
 
 @api_view(['POST']) 
 def reset_password(request,token):
-
     data = request.data
     user = get_object_or_404(Account, profile__reset_password_token = token)
 
@@ -118,9 +116,7 @@ class UserInformationAPIVIew(APIView):
         return Response(data=payload, status=status.HTTP_200_OK)
 
 class SendEmailConfirmationTokenAPIView(APIView):
-
     permission_classes = [IsAuthenticated,]
-
     def post(self, request, format=None):
 
         user = request.user
