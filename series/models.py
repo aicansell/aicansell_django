@@ -1,7 +1,7 @@
 from django.db import models
 
 from orgss.models import SubOrg
-from assessments.models import AssessmentType
+from assessments.models import Assessment
 from sean.models import Item
 from learningcourse.models import LearningCourse
 
@@ -33,7 +33,7 @@ class SeasonLota(models.Model):
 
 class AssessmentSeason(models.Model):
     season = models.ForeignKey(Seasons, on_delete=models.CASCADE)
-    assessment = models.ForeignKey(AssessmentType, on_delete=models.CASCADE)
+    assessments = models.ForeignKey(Assessment, on_delete=models.CASCADE, null=True, blank=True)
     
     def __str__(self):
         return f"{self.season.name} - {self.assessment.name}"

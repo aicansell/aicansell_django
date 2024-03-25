@@ -22,6 +22,7 @@ from orgss.models import Role
 from assessments.models import AssessmentResult
 from assign.models import SeriesAssignUser
 from SaaS.permissions import SaaSAccessPermissionItem
+from users.models import UserRightsMapping
 
 import string
 from collections import Counter
@@ -95,9 +96,25 @@ class ItemHandleViewSet(LoggingMixin, ViewSet):
 
     @method_decorator(cache_page(60 * 15))
     def list(self, request):
-        data = Item.objects.filter(role=self.request.user.role).order_by('-id')
+        queryset = self.get_queryset()
+        admin_user = False
+        try:
+            user_rights = UserRightsMapping.objects.filter(user=request.user)
+            if user_rights:
+                for rights in user_rights:
+                    if rights.right.name.lower() == 'approve':
+                        admin_user = True
+                        queryset = queryset.filter(is_approved=False)
+                    elif rights.right.name.lower() == 'creator':
+                        admin_user = True
+                        queryset = queryset.filter(is_live=False)
+        except:
+            pass
+        
+        if not admin_user:
+            queryset = queryset.filter(role=self.request.user.role).order_by('-id')
 
-        serializer_data = self.serializer_class(data, many=True).data
+        serializer_data = self.serializer_class(queryset, many=True).data
         response = {
             'status': 'Success',
             'message': 'Retrieved Successfully',

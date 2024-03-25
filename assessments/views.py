@@ -6,11 +6,13 @@ from rest_framework.viewsets import ViewSet
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 
+from users.models import UserRightsMapping
 from SaaS.permissions import SaaSAccessPermissionAssessment
 from assessments.models import Question, Option, AssessmentType
 from assessments.models import Assessment, AssessmentResult
 from assessments.serializers import QuestionSerializer, OptionSerializer, OptionListSerializer
 from assessments.serializers import AssessmentSerializer, AssessmentResultSerializer, AssessmentTypeSerializer
+from assessments.serializers import AssessmentListSerializer
 
 from datetime import datetime
 
@@ -241,6 +243,8 @@ class AssessmentTypeViewSet(ViewSet):
         return Response(response, status=status.HTTP_204_NO_CONTENT)
 
 class AssessmentViewSet(ViewSet):
+    permission_classes = [IsAuthenticated]
+    
     @staticmethod
     def get_queryset():
         return Assessment.objects.all()
@@ -251,7 +255,17 @@ class AssessmentViewSet(ViewSet):
     
     def list(self, request):
         queryset = self.get_queryset()
-        serializer = AssessmentSerializer(queryset, many=True)
+        try:
+            user_rights = UserRightsMapping.objects.filter(user=request.user)
+            if user_rights:
+                for rights in user_rights:
+                    if rights.right.name.lower() == 'approve':
+                        queryset = queryset.filter(is_approved=False)
+                    elif rights.right.name.lower() == 'creator':
+                        queryset = queryset.filter(is_live=False)
+        except:
+            pass
+        serializer = AssessmentListSerializer(queryset, many=True)
         response = {
             'status': 'success',
             'message': 'Assessments list',
@@ -261,7 +275,7 @@ class AssessmentViewSet(ViewSet):
     
     def retrieve(self, request, pk=None):
         instance = self.get_object(pk)
-        serializer = AssessmentSerializer(instance)
+        serializer = AssessmentListSerializer(instance)
         response = {
             'status': 'success',
             'message': 'Assessment details',

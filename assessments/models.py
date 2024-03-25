@@ -55,6 +55,8 @@ class Assessment(models.Model):
     assessment_type = models.ForeignKey(AssessmentType, on_delete=models.CASCADE)
     questions = models.ManyToManyField(Question)
     access = models.CharField(max_length=30, choices=ACCESS, default=None)
+    is_approved = models.BooleanField(default=False)
+    is_live = models.BooleanField(default=False)
     
     def __str__(self):
         return f"{self.assessment_type.name}-{self.access}"
