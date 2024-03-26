@@ -24,9 +24,11 @@ class SeriesViewSet(ViewSet):
         return Series.objects.all()
     
     def list(self, request):
-        series_assigned_ids = SeriesAssignUser.objects.filter(user=request.user).values_list('series__id', flat=True)
-
-        queryset = self.get_queryset().filter(sub_org__org=request.user.org).exclude(id__in=series_assigned_ids)
+        user_id = request.query_params.get('user_id')
+        queryset = self.get_queryset()
+        if user_id:
+            series_assigned_ids = SeriesAssignUser.objects.filter(user__id=user_id).values_list('series__id', flat=True)
+            queryset = self.get_queryset().filter(sub_org__org=request.user.org).exclude(id__in=series_assigned_ids)
         
         serializer = SeriesListSerializer(queryset, many=True)
         response = {
