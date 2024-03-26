@@ -26,7 +26,7 @@ class AssessmentProgress(models.Model):
         unique_together = ["user", "assessment_season"]
 
     def __str__(self):
-        return f"{self.user.username} - {self.assessment_season.season.name} - {self.assessment_season.assessment.name}"
+        return f"{self.user.username} - {self.assessment_season.season.name}"
 
 class ItemProgress(models.Model):
     user = models.ForeignKey(Account, on_delete=models.CASCADE)

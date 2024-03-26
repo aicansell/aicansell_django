@@ -36,7 +36,7 @@ class AssessmentSeason(models.Model):
     assessments = models.ForeignKey(Assessment, on_delete=models.CASCADE, null=True, blank=True)
     
     def __str__(self):
-        return f"{self.season.name} - {self.assessment.name}"
+        return f"{self.season.name} - {self.assessments}"
 
 class ItemSeason(models.Model):
     season = models.ForeignKey(Seasons, on_delete=models.CASCADE)
