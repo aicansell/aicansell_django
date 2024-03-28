@@ -24,7 +24,11 @@ def current_week(option):
 
 class SaaSAccessPermissionAssessment(permissions.BasePermission):
     def has_permission(self, request, view):
-        user_subcriptions = SaaS.objects.get(user=request.user)
+        user_id = request.data.get('user', None)
+        try:
+            user_subcriptions = SaaS.objects.get(user__id=user_id)
+        except SaaS.DoesNotExist:
+            return False
         
         if user_subcriptions:
             if user_subcriptions.feature.name.lower() == 'premium':
@@ -50,7 +54,11 @@ class SaaSAccessPermissionAssessment(permissions.BasePermission):
 
 class SaaSAccessPermissionItem(permissions.BasePermission):
     def has_permission(self, request, view):
-        user_subcriptions = SaaS.objects.get(user=request.user)
+        try:
+            user_subcriptions = SaaS.objects.get(user=request.user)
+            print(user_subcriptions)
+        except SaaS.DoesNotExist:
+            return False
         
         if user_subcriptions:
             if user_subcriptions.feature.name.lower() == 'premium':
