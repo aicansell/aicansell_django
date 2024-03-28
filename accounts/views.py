@@ -16,34 +16,39 @@ from datetime import datetime, timedelta
 from rest_framework.views import APIView
 from accounts.utils import send_confirmation_email
 from accounts.serializers import LoginSerializer
+from orgss.models import Org
 
 from django.contrib.sites.shortcuts import get_current_site
 
 @api_view(['POST'])
 def register(request):
-    data = request.data
-
-    #user = SignUpSerializer(data)
-    serializer = SignUpSerializer(data=request.data)
+    request_data = {
+        'first_name': request.data.get('first_name'),
+        'last_name': request.data.get('last_name'),
+        'password': request.data.get('password'),
+        'email': request.data.get('email'),
+        'username': request.data.get('username'),
+    }
+    try:
+        default_org = Org.objects.get(name__icontains="aicansell")
+        request_data['org'] = default_org.id
+    except Org.DoesNotExist:
+        request_data['org'] = None
+    
+    serializer = SignUpSerializer(data=request_data)
 
     if serializer.is_valid():
-        if not Account.objects.filter(email = data['email']).exists():
-
-            user = Account.objects.create(
-                first_name = data['first_name'],
-                last_name = data['last_name'],
-                username = data['username'],
-                email = data['email'],
-                password = make_password(data['password']),
-
-            )
-            return Response({'message':'User created'}, status=status.HTTP_201_CREATED)
-
-        else:
-            return Response({'error':'User already exists'}, status=status.HTTP_400_BAD_REQUEST)
-
-    else:
-        return Response(serializer.errors)
+        serializer.save()
+        response = {
+            'status': 'success',
+            'message': 'User registered successfully'
+        }
+        return Response(response, status=status.HTTP_201_CREATED)
+    response = {
+        'status': 'failed',
+        'message': serializer.errors
+    }
+    return Response(response, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['GET']) 
 @permission_classes([IsAuthenticated])

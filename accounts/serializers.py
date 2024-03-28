@@ -22,7 +22,7 @@ class LoginSerializer(serializers.ModelSerializer):
 class SignUpSerializer(serializers.ModelSerializer):
     class Meta:
         model = Account
-        fields = ['email', 'first_name', 'last_name', 'password']
+        fields = ['email', 'first_name', 'last_name', 'password', 'org', 'username']
 
 class UserSerializer(serializers.ModelSerializer):
     role = serializers.StringRelatedField()
