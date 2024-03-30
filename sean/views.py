@@ -49,29 +49,44 @@ class ItemViewSet(LoggingMixin, ViewSet):
         return Item.objects.all()
 
     def list(self, request):
+        suborg_id = self.request.query_params.get('suborg_id')
         user = self.request.user
-
-        if user.user_role == 'admin' or user.user_role == 'super_admin':
-            org = user.org
-            
-            org_roles = Role.objects.filter(suborg__org=org)
-            
-            items_data = Item.objects.filter(role__in=org_roles)
-            
-            competency_list = [
-                {'id': instance.id, 'competency_name': instance.competency_name}
-                for item in items_data
-                for instance in item.competencys.all()
-            ]
-            
+        user_role = user.user_role
+        if user_role not in ['admin', 'super_admin']:
             response = {
-                'status': 'Success',
-                'message': 'Retrieved Successfully',
-                'competency_list': competency_list
+                'status': 'Failed',
+                'message': 'You are not authorized to access these details'
             }
-            return Response(response, status=status.HTTP_200_OK)
-       
-        return Response({"message": "You are not authorized to access these details"}, status=status.HTTP_401_UNAUTHORIZED)
+            return Response(response, status=status.HTTP_400_BAD_REQUEST)
+        if user_role == 'admin':
+            suborg = user.role.suborg
+            users = Account.objects.filter(role__suborg=suborg)
+            roles = Role.objects.filter(suborg=suborg)
+        elif user_role == 'super_admin' and suborg_id:
+            users = Account.objects.filter(role__suborg__id=suborg_id)
+            roles = Role.objects.filter(suborg__id=suborg_id)
+        elif user_role == 'super_admin':
+            org = user.org
+            users = Account.objects.filter(org=org)
+            roles = Role.objects.filter(suborg__org=org)
+
+        items_data = Item.objects.filter(role__in=roles)
+        items = ItemResult.objects.filter(user__in=users).count()
+        assessments = AssessmentResult.objects.filter(user__in=users).count()
+        competency_list = [
+            {'id': instance.id, 'competency_name': instance.competency_name}
+            for item in items_data
+            for instance in item.competencys.all()
+        ]
+        
+        response = {
+            'status': 'Success',
+            'message': 'Retrieved Successfully',
+            'competency_list': competency_list,
+            'items': items,
+            'assessments': assessments
+        }
+        return Response(response, status=status.HTTP_200_OK)
        
     def retrieve(self, request, **kwargs):
         pk = kwargs.pop('pk')
