@@ -25,11 +25,15 @@ class SeriesViewSet(ViewSet):
     
     def list(self, request):
         user_id = request.query_params.get('user_id')
+        user_role = request.user.user_role
         queryset = self.get_queryset()
         if user_id:
             series_assigned_ids = SeriesAssignUser.objects.filter(user__id=user_id).values_list('series__id', flat=True)
             queryset = self.get_queryset().filter(sub_org__org=request.user.org).exclude(id__in=series_assigned_ids)
-        
+        if user_role and user_role.lower() == 'admin':
+            queryset = queryset.filter(sub_org=request.user.role.suborg)
+        elif user_role and user_role.lower() == 'super_admin':
+            queryset = queryset.filter(sub_org__org=request.user.org)
         serializer = SeriesListSerializer(queryset, many=True)
         response = {
             "status": "success",

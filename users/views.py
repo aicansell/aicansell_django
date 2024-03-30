@@ -59,14 +59,19 @@ class UsersViewSet(LoggingMixin, ViewSet):
         return Response(response, status=status.HTTP_400_BAD_REQUEST)
     
     def list(self, request):
-        if request.user.user_role not in ['admin', 'super_admin']:
+        user_role = request.user.user_role
+        if user_role not in ['admin', 'super_admin']:
             response = {
                 'status': "failed",
                 'message': "You are not authorized to view this page",
             }
             return Response(response, status=status.HTTP_401_UNAUTHORIZED)
-        
-        serializer = UsersListSerializer(self.get_queryset(), many=True)
+        queryset = self.get_queryset()
+        if user_role.lower() == 'super_admin':
+            queryset = queryset.filter(org=request.user.org)
+        elif user_role.lower() == 'admin':
+            queryset = queryset.filter(role__suborg=request.user.role.suborg)
+        serializer = UsersListSerializer(queryset, many=True)
         response = {
             'status': "success",
             'message': "List of users",
