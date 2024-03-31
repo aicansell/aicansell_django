@@ -212,5 +212,5 @@ AWS_SECRET_ACCESS_KEY = get_env_variable("AWS_SECRET_ACCESS_KEY")
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CRONJOBS = [
-    ('*0 0 1 * *', 'sean_scenarios.cron.send_monthly_email')
+    ('0 0 * * *', 'accounts.cron.check_subcription_of_users')
 ]

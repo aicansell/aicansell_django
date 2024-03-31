@@ -100,6 +100,8 @@ class OrgViewSet(LoggingMixin, ViewSet):
         return Response(response, status=status.HTTP_204_NO_CONTENT)
 
 class SubOrgViewSet(LoggingMixin, ViewSet):
+    permission_classes = [IsAuthenticated]
+    
     @staticmethod
     def get_object(pk=None):
         return get_object_or_404(SubOrg, id=pk)
@@ -109,7 +111,8 @@ class SubOrgViewSet(LoggingMixin, ViewSet):
         return SubOrg.objects.all()
 
     def list(self, request):
-        serialized_data = SubOrgListSerializer(self.get_queryset(), many=True).data
+        queryset = self.get_queryset().filter(org=request.user.org)
+        serialized_data = SubOrgListSerializer(queryset, many=True).data
         response = {
             'status': 'Success',
             'message': "SubOrgs has been successfully retrieved.",
