@@ -11,7 +11,7 @@ from rest_framework.viewsets import ViewSet
 from rest_framework_tracking.mixins import LoggingMixin
 
 from sean.serializers import ItemListSerializer1, ItemEmotionSerializer, ItemRecommendSerializer
-from sean.serializers import ItemLiSerializer, ItemUserSerializer
+from sean.serializers import ItemLiSerializer, ItemUserSerializer, ItemCreateSerializer
 from sean.models import Item, ItemResult
 from accounts.models import Account, UserProfile
 from orgss.models import Role
@@ -65,6 +65,7 @@ class ItemViewSet(LoggingMixin, ViewSet):
             users = Account.objects.filter(org=org)
             roles = Role.objects.filter(suborg__org=org)
 
+        series_assign = SeriesAssignUser.objects.filter(user__in=users, is_completed=True)
         items_data = Item.objects.filter(role__in=roles)
         items = ItemResult.objects.filter(user__in=users).count()
         assessments = AssessmentResult.objects.filter(user__in=users).count()
@@ -79,7 +80,8 @@ class ItemViewSet(LoggingMixin, ViewSet):
             'message': 'Retrieved Successfully',
             'competency_list': competency_list,
             'items': items,
-            'assessments': assessments
+            'assessments': assessments,
+            'series_completed': series_assign.count()
         }
         return Response(response, status=status.HTTP_200_OK)
        
@@ -89,6 +91,81 @@ class ItemViewSet(LoggingMixin, ViewSet):
             'status': 'Success',
             'message': 'Retrieved Successfully',
             'data': self.serializer_class(self.get_object(pk)).data
+        }
+        return Response(response, status=status.HTTP_200_OK)
+    
+    def create(self, request):
+        request_data  = {
+            'item_name': request.data.get('item_name'),
+            'item_description': request.data.get('item_description'),
+            'category': request.data.get('category'),
+            'thumbnail': request.data.get('thumbnail'),
+            'item_gender': request.data.get('item_gender'),
+            'role': request.data.get('role'),
+            'level': request.data.get('level'),
+            'expert': request.data.get('expert')
+        }
+        
+        request_data['competencys'] = request.data.get('competencys').split(',')
+        
+        serializer =  ItemCreateSerializer(data=request_data)
+        if serializer.is_valid():
+            serializer.save()
+            response = {
+                'status': 'Success',
+                'message': 'Item was successfully created.',
+                'data': serializer.data,
+            }
+            return Response(response, status=status.HTTP_201_CREATED)
+        response = {
+            'status': 'Failed',
+            'message': 'Failed to create item',
+            'data': serializer.errors,
+        }
+        return Response(response, status=status.HTTP_400_BAD_REQUEST)
+    
+    def update(self, request, pk=None):
+        instance = self.get_object(pk)
+        request_data  = {
+            'item_name': request.data.get('item_name', instance.item_name),
+            'item_description': request.data.get('item_description', instance.item_description),
+            'category': request.data.get('category', instance.category),
+            'thumbnail': request.data.get('thumbnail', instance.thumbnail),
+            'item_gender': request.data.get('item_gender', instance.item_gender),
+            'role': request.data.get('role', instance.role.id),
+            'level': request.data.get('level', instance.level),
+            'expert': request.data.get('expert', instance.expert),
+            'is_live': request.data.get('is_live', instance.is_live),
+            'is_approved': request.data.get('is_approved', instance.is_approved)
+        }
+        
+        if request.data.get('competencys'):
+            request_data['competencys'] = request.data.get('competencys').split(',')
+        else:
+            request_data['competencys'] = list(instance.competencys.values_list('id', flat=True))
+            
+        serializer =  ItemCreateSerializer(instance, data=request_data)
+        if serializer.is_valid():
+            serializer.save()
+            response = {
+                'status': 'Success',
+                'message': 'Item was successfully updated.',
+                'data': serializer.data,
+            }
+            return Response(response, status=status.HTTP_200_OK)
+        response = {
+            'status': 'Failed',
+            'message': 'Failed to update item',
+            'data': serializer.errors,
+        }
+        return Response(response, status=status.HTTP_400_BAD_REQUEST)
+    
+    def delete(self, request, pk):
+        instance = self.get_object(pk)
+        instance.delete()
+        response = {
+            'status': 'Success',
+            'message': 'Item was successfully deleted.',
         }
         return Response(response, status=status.HTTP_200_OK)
 
