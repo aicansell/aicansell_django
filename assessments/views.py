@@ -169,6 +169,8 @@ class OptionViewSet(ViewSet):
         return Response(response, status=status.HTTP_204_NO_CONTENT)
 
 class AssessmentTypeViewSet(ViewSet):
+    permission_classes = [IsAuthenticated]
+    
     @staticmethod
     def get_queryset():
         return AssessmentType.objects.all()
@@ -179,6 +181,15 @@ class AssessmentTypeViewSet(ViewSet):
     
     def list(self, request):
         queryset = self.get_queryset()
+        user = request.user
+        if user.user_role not in ['admin', 'super_admin']:
+            repsonse = {
+                'status': 'error',
+                'message': 'Access denied',
+                'data': None
+            }
+        else:
+            queryset = queryset.filter(suborg=user.role.suborg)
         serializer = AssessmentTypeSerializer(queryset, many=True)
         response = {
             'status': 'success',
@@ -198,7 +209,26 @@ class AssessmentTypeViewSet(ViewSet):
         return Response(response, status=status.HTTP_200_OK)
     
     def create(self, request):
-        serializer = AssessmentTypeSerializer(data=request.data)
+        if not request.user.role.suborg:
+            response = {
+                'status': 'error',
+                'message': 'Access denied',
+                'data': None
+            }
+            return Response(response, status=status.HTTP_403_FORBIDDEN)
+        
+        request_data = {
+            'name': request.data.get('name'),
+            'suborg': request.user.role.suborg.id,
+            'passing_criteria': request.data.get('passing_criteria'),
+            'positive_marks': request.data.get('positive_marks'),
+            'negative_marks': request.data.get('negative_marks'),
+            'time': request.data.get('time'),
+            'trigger_point': request.data.get('trigger_point'),
+            'refresher_days': request.data.get('refresher_days')
+        }
+        
+        serializer = AssessmentTypeSerializer(data=request_data)
         if serializer.is_valid():
             serializer.save()
             response = {
@@ -216,7 +246,17 @@ class AssessmentTypeViewSet(ViewSet):
     
     def update(self, request, pk=None):
         instance = self.get_object(pk)
-        serializer = AssessmentTypeSerializer(instance, data=request.data, partial=True)
+        request_data = {
+            'name': request.data.get('name', instance.name),
+            'suborg': instance.suborg.id,
+            'passing_criteria': request.data.get('passing_criteria', instance.passing_criteria),
+            'positive_marks': request.data.get('positive_marks', instance.positive_marks),
+            'negative_marks': request.data.get('negative_marks', instance.negative_marks),
+            'time': request.data.get('time', instance.time),
+            'trigger_point': request.data.get('trigger_point', instance.trigger_point),
+            'refresher_days': request.data.get('refresher_days', instance.refresher_days)
+        }
+        serializer = AssessmentTypeSerializer(instance, data=request_data, partial=True)
         if serializer.is_valid():
             serializer.save()
             response = {
@@ -261,8 +301,10 @@ class AssessmentViewSet(ViewSet):
                 for rights in user_rights:
                     if rights.right.name.lower() == 'approve':
                         queryset = queryset.filter(is_approved=False)
+                        break
                     elif rights.right.name.lower() == 'creator':
                         queryset = queryset.filter(is_live=False)
+                        break
         except:
             pass
         serializer = AssessmentListSerializer(queryset, many=True)
@@ -284,7 +326,15 @@ class AssessmentViewSet(ViewSet):
         return Response(response, status=status.HTTP_200_OK)
     
     def create(self, request):
-        serializer = AssessmentSerializer(data=request.data)
+        request_data = {
+            'assessment_type': request.data.get('assessment_type'),
+            'access': request.data.get('access')
+        }
+        if request.data.get('questions'):
+            questions_id = [int(id) for id in request.data.get('questions').split(',')]
+        
+        request_data['questions'] = questions_id
+        serializer = AssessmentSerializer(data=request_data)
         if serializer.is_valid():
             serializer.save()
             response = {
@@ -302,7 +352,22 @@ class AssessmentViewSet(ViewSet):
     
     def update(self, request, pk=None):
         instance = self.get_object(pk)
-        serializer = AssessmentSerializer(instance, data=request.data, partial=True)
+        request_data = {
+            'assessment_type': request.data.get('assessment_type', instance.assessment_type.id),
+            'access': request.data.get('access', instance.access),
+            'is_live': request.data.get('is_live', instance.is_live),
+            'is_approved': request.data.get('is_approved', instance.is_approved)
+        }
+        
+        if request.data.get('questions'):
+            print("adad")
+            questions_id = [int(id) for id in request.data.get('questions').split(',')]
+            request_data['questions'] = questions_id
+        else:
+            question_pks = list(instance.questions.values_list('id', flat=True))
+            request_data['questions'] = question_pks
+        
+        serializer = AssessmentSerializer(instance, data=request_data, partial=True)
         if serializer.is_valid():
             serializer.save()
             response = {

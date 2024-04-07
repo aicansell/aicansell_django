@@ -23,6 +23,7 @@ from assessments.models import AssessmentResult
 from assign.models import SeriesAssignUser
 from SaaS.permissions import SaaSAccessPermissionItem
 from users.models import UserRightsMapping
+from competency.models import Competency
 
 import string
 from collections import Counter
@@ -97,6 +98,50 @@ class ItemViewSet(LoggingMixin, ViewSet):
         }
         return Response(response, status=status.HTTP_200_OK)
 
+class LeaderBoardViewSet(ViewSet):
+    permission_classes = [IsAuthenticated]
+    
+    def list(self, request):
+        competency_id = request.query_params.get('competency_id')
+        suborg_id = request.query_params.get('suborg_id')
+        if not competency_id or not suborg_id:
+            response = {
+                'status': 'Failed',
+                'message': 'Competency ID and Suborg ID are required'
+            }
+            return Response(response, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            competency = Competency.objects.get(id=competency_id)
+        except Competency.DoesNotExist:
+            response = {
+                'status': 'Failed',
+                'message': 'Competency does not exist'
+            }
+            return Response(response, status=status.HTTP_404_NOT_FOUND)
+        users = Account.objects.filter(role__suborg__id=suborg_id)
+        leaderboard_results = []
+        for user in users:
+            try:
+                user_competency = UserProfile.objects.get(user=user).competency_score
+                user_competency = json.loads(user_competency)
+                print(user_competency)
+            except:
+                continue
+            user_competency_score = user_competency.get(competency.competency_name)
+            if user_competency_score:
+                score = sum([int(x) for x in user_competency_score.split(',')])
+                user_data = {
+                    'name': user.first_name + ' ' + user.last_name,
+                    'score': score,
+                }
+                leaderboard_results.append(user_data)
+        response = {
+            'status': 'Success',
+            'message': 'Retrieved Successfully',
+            'data': leaderboard_results
+        }
+        return Response(response, status=status.HTTP_200_OK)
+
 class ItemHandleViewSet(LoggingMixin, ViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = ItemUserSerializer
@@ -109,9 +154,9 @@ class ItemHandleViewSet(LoggingMixin, ViewSet):
     def get_queryset():
         return Item.objects.all()
 
-    @method_decorator(cache_page(60 * 15))
+    
     def list(self, request):
-        queryset = self.get_queryset()
+        queryset = self.get_queryset().filter(role__suborg=request.user.role.suborg)
         admin_user = False
         try:
             user_rights = UserRightsMapping.objects.filter(user=request.user)
@@ -120,9 +165,11 @@ class ItemHandleViewSet(LoggingMixin, ViewSet):
                     if rights.right.name.lower() == 'approve':
                         admin_user = True
                         queryset = queryset.filter(is_approved=False)
+                        break
                     elif rights.right.name.lower() == 'creator':
                         admin_user = True
                         queryset = queryset.filter(is_live=False)
+                        break
         except:
             pass
         
@@ -320,6 +367,10 @@ class ItemAnalysticsViewSet(LoggingMixin, ViewSet):
             assessments_result = AssessmentResult.objects.filter(user=request.user)
         except AssessmentResult.DoesNotExist:
             assessments_result = None
+        try:
+            items_result = ItemResult.objects.filter(user=request.user)
+        except AssessmentResult.DoesNotExist:
+            items_result = None
         
         series_assigned_data = SeriesAssignUser.objects.filter(user__id=user_id)
         series_progress = {}
@@ -346,6 +397,7 @@ class ItemAnalysticsViewSet(LoggingMixin, ViewSet):
             'strong_competency': strong_competency,
             'weak_competency': weak_competency,
             'assessments_attempted': assessments_result.count() if assessments_result else 0,
+            'items_attempted': items_result.count() if items_result else 0,
             'series_progress': series_progress
         }
         

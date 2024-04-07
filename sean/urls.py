@@ -4,17 +4,19 @@ from rest_framework.routers import DefaultRouter
 
 from sean.views import ItemList, item_result, item_rec
 from sean.views import ItemViewSet, ItemHandleViewSet
-from sean.views import ItemProcessingViewSet, ItemAnalysticsViewSet
+from sean.views import ItemProcessingViewSet, ItemAnalysticsViewSet, LeaderBoardViewSet
 
 ItemViewSetRouter = DefaultRouter()
 ItemHandleViewSetRouter = DefaultRouter()
 ItemProcessingViewSetRouter = DefaultRouter()
 ItemAnalysticsViewSetRouter = DefaultRouter()
+LeaderBoardViewSetRouter = DefaultRouter()
 
 ItemViewSetRouter.register('', ItemViewSet, basename='item')
 ItemHandleViewSetRouter.register('', ItemHandleViewSet, basename='itemhandle')
 ItemProcessingViewSetRouter.register('', ItemProcessingViewSet, basename='itemprocessing')
 ItemAnalysticsViewSetRouter.register('', ItemAnalysticsViewSet, basename='itemanalystics')
+LeaderBoardViewSetRouter.register('', LeaderBoardViewSet, basename='leaderboard')
 
 
 urlpatterns = [
@@ -24,5 +26,6 @@ urlpatterns = [
     path('itemhandle/', include(ItemHandleViewSetRouter.urls)),
     path('itemprocessing/', include(ItemProcessingViewSetRouter.urls)),
     path('itemanalystics/', include(ItemAnalysticsViewSetRouter.urls)),
-    path('itemli/', ItemList.as_view(), name="Item_List")
+    path('itemli/', ItemList.as_view(), name="Item_List"),
+    path('leaderboard/', include(LeaderBoardViewSetRouter.urls)),
 ]

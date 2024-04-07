@@ -25,14 +25,22 @@ class ItemSerializer(serializers.ModelSerializer):
         
 class ItemUserSerializer(serializers.ModelSerializer):
     competencys = serializers.SerializerMethodField()
+    role = serializers.SerializerMethodField()
     
     def get_competencys(self, obj):
         competencies = obj.competencys.all()
         return CompetencyListSerializer(competencies, many=True).data
     
+    def get_role(self, obj):
+        role = {
+            'id': obj.role.id,
+            'role_name': obj.role.name
+        }
+        return role
+    
     class Meta:
         model = Item
-        fields = ['id', 'item_name', 'item_answer', 'category', 'thumbnail', 'item_type',
+        fields = ['id', 'item_name', 'item_answer', 'category', 'thumbnail', 'item_type', 'role',
                   'scenario_type', 'competencys', 'is_live', 'is_approved']
 
 class ItemEmotionSerializer(serializers.ModelSerializer):
