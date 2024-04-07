@@ -1,21 +1,17 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import get_object_or_404
 from django.db.models import F
-from django.db import transaction
 from django.http import JsonResponse
-from django.views.decorators.cache import cache_page
-from django.utils.decorators import method_decorator
 
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
-from rest_framework import status,viewsets, generics, filters
+from rest_framework import status, generics
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.parsers import JSONParser
 from rest_framework.viewsets import ViewSet
 from rest_framework_tracking.mixins import LoggingMixin
-from rest_framework.viewsets import ViewSet
-from rest_framework_tracking.mixins import LoggingMixin
 
-from sean.serializers import ItemListSerializer1, ItemEmotionSerializer, ItemRecommendSerializer,ItemSerializer, ItemLiSerializer, ItemUserSerializer
+from sean.serializers import ItemListSerializer1, ItemEmotionSerializer, ItemRecommendSerializer
+from sean.serializers import ItemLiSerializer, ItemUserSerializer
 from sean.models import Item, ItemResult
 from accounts.models import Account, UserProfile
 from orgss.models import Role
@@ -27,9 +23,7 @@ from competency.models import Competency
 
 import string
 from collections import Counter
-import speech_recognition as sr
 import json
-from decouple import config
 from datetime import datetime
 import speech_recognition as sr
 import spacy
