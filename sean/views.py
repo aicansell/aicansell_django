@@ -20,6 +20,7 @@ from assign.models import SeriesAssignUser
 from SaaS.permissions import SaaSAccessPermissionItem
 from users.models import UserRightsMapping
 from competency.models import Competency
+from series.models import Seasons, ItemSeason
 
 import string
 from collections import Counter
@@ -213,6 +214,35 @@ class LeaderBoardViewSet(ViewSet):
         }
         return Response(response, status=status.HTTP_200_OK)
 
+class CompetencyBoardViewSet(ViewSet):
+    permission_classes = [IsAuthenticated]
+    
+    def list(self, request):
+        suborg_id = request.query_params.get('suborg_id')
+        if not suborg_id:
+            response = {
+                'status': 'Failed',
+                'message': 'Suborg ID is required'
+            }
+            return Response(response, status=status.HTTP_400_BAD_REQUEST)
+        users = Account.objects.filter(role__suborg__id=suborg_id)
+        competency_results = {}
+        for user in users:
+            try:
+                user_competency = UserProfile.objects.get(user=user).competency_score
+                user_competency = json.loads(user_competency)
+            except:
+                continue
+            for competency_name, score in user_competency.items():
+                score = sum([int(x) for x in score.split(',')])
+                competency_results[competency_name] = competency_results.get(competency_name, 0) + score
+        response = {
+            'status': 'Success',
+            'message': 'Retrieved Successfully',
+            'data': competency_results
+        }
+        return Response(response, status=status.HTTP_200_OK)
+    
 class ItemHandleViewSet(LoggingMixin, ViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = ItemUserSerializer
@@ -445,20 +475,26 @@ class ItemAnalysticsViewSet(LoggingMixin, ViewSet):
         
         series_assigned_data = SeriesAssignUser.objects.filter(user__id=user_id)
         series_progress = {}
+        competency_assigned = []
         for series_assign in series_assigned_data:
+            seasons = Seasons.objects.filter(series=series_assign.series)
+            for season in seasons:
+                items = ItemSeason.objects.filter(season=season).values_list('item__competencys__competency_name', flat=True)
+                competency_assigned.extend(items)
             series_progress[series_assign.series.name] = series_assign.progress
-            
         strong_competency = []
         weak_competency = []
-        
+        competency_attempted = 0
         if user_instance.competency_score:
             for compentency, score in json.loads(user_instance.competency_score).items():
+                print(compentency)
+                if compentency in competency_assigned:
+                    competency_attempted += 1
                 score = sum([int(x) for x in score.split(',')])
                 if score > 0:
                     strong_competency.append({'competency': compentency, 'score': score})
                 elif score < 0:
                     weak_competency.append({'competency': compentency, 'score': score})
-        
         user_details = {
             'power_words_used': user_instance.user_powerwords,
             'week_words_used': user_instance.user_weakwords,
@@ -469,7 +505,9 @@ class ItemAnalysticsViewSet(LoggingMixin, ViewSet):
             'weak_competency': weak_competency,
             'assessments_attempted': assessments_result.count() if assessments_result else 0,
             'items_attempted': items_result.count() if items_result else 0,
-            'series_progress': series_progress
+            'series_progress': series_progress,
+            'competency_assigned': len(competency_assigned),
+            'competency_attempted': competency_attempted
         }
         
         response = {
