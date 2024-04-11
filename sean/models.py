@@ -28,6 +28,7 @@ class Item(models.Model):
     item_name = models.CharField(max_length=700)
     item_description = models.CharField(max_length=300, blank=True, null = True)
     item_video = models.FileField(upload_to='media/item/video', null=True, blank=True)
+    item_background = models.FileField(upload_to='media/item/background', null=True, blank=True)
     item_answer = models.TextField(null=True, blank=True)
     item_emotion = models.TextField(null=True, blank=True)
     item_answercount = models.IntegerField(default=0)
