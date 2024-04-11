@@ -275,10 +275,7 @@ class ProgressCheckViewSet(ViewSet):
         series_id = request.query_params.get("series")
         if series_id is None:
             return Response({"status": "error", "message": "Series ID is required"}, status=status.HTTP_400_BAD_REQUEST)
-
         series = get_object_or_404(Series, id=series_id)
-        series_assign_user = get_object_or_404(SeriesAssignUser, series=series, user=request.user)
-        
         seasons = Seasons.objects.filter(series=series).annotate(assessments_count=Count('assessmentseason'), items_count=Count('itemseason'))
         seasons_progress = {}
 

@@ -487,7 +487,6 @@ class ItemAnalysticsViewSet(LoggingMixin, ViewSet):
         competency_attempted = 0
         if user_instance.competency_score:
             for compentency, score in json.loads(user_instance.competency_score).items():
-                print(compentency)
                 if compentency in competency_assigned:
                     competency_attempted += 1
                 score = sum([int(x) for x in score.split(',')])
