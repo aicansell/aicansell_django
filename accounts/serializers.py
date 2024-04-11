@@ -10,7 +10,11 @@ class LoginSerializer(serializers.ModelSerializer):
         return getattr(obj.role, 'name', None)
     
     def get_org(self, obj):
-        return getattr(obj.org, 'name', None)
+        org_name = getattr(obj.org, 'name', None)
+        org_logo = None
+        if hasattr(obj.org, 'logo') and obj.org.logo:
+            org_logo = obj.org.logo.url
+        return {'name': org_name, 'logo': org_logo}
     
     class Meta:
         model = Account

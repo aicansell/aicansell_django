@@ -8,7 +8,8 @@ class ItemLiSerializer(serializers.ModelSerializer):
     suborg = serializers.StringRelatedField()
     class Meta:
         model = Item
-        fields = ['id','item_name', 'thumbnail', 'category', 'scenario_type', 'item_gender', 'role', 'item_type', 'level', 'suborg']
+        fields = ['id','item_name', 'thumbnail', 'category', 'scenario_type', 'item_gender', 
+                  'role', 'item_type', 'level', 'suborg', 'item_video', 'expert']
 
 class ItemListSerializer1(serializers.ModelSerializer):
     class Meta:
@@ -38,16 +39,17 @@ class ItemUserSerializer(serializers.ModelSerializer):
         return CompetencyListSerializer(competencies, many=True).data
     
     def get_role(self, obj):
-        role = {
-            'id': obj.role.id,
-            'role_name': obj.role.name
-        }
+        role = {}
+        if hasattr(obj, 'role') and obj.role:
+            role['id'] = getattr(obj.role, 'id', None)
+            role['role_name'] = getattr(obj.role, 'name', None)
         return role
+
     
     class Meta:
         model = Item
         fields = ['id', 'item_name', 'item_answer', 'category', 'thumbnail', 'item_type', 'role',
-                  'scenario_type', 'competencys', 'is_live', 'is_approved', 'level', 'expert']
+                  'scenario_type', 'competencys', 'is_live', 'is_approved', 'level', 'expert', 'item_video']
 
 class ItemEmotionSerializer(serializers.ModelSerializer):
     class Meta:
