@@ -26,7 +26,6 @@ import string
 from collections import Counter
 import json
 from datetime import datetime
-import speech_recognition as sr
 import spacy
 import threading
 nlp = spacy.load('en_core_web_sm')
@@ -196,7 +195,6 @@ class LeaderBoardViewSet(ViewSet):
             try:
                 user_competency = UserProfile.objects.get(user=user).competency_score
                 user_competency = json.loads(user_competency)
-                print(user_competency)
             except:
                 continue
             user_competency_score = user_competency.get(competency.competency_name)
@@ -225,17 +223,19 @@ class CompetencyBoardViewSet(ViewSet):
                 'message': 'Suborg ID is required'
             }
             return Response(response, status=status.HTTP_400_BAD_REQUEST)
-        users = Account.objects.filter(role__suborg__id=suborg_id)
+        users = Account.objects.filter(role__suborg__id=suborg_id).select_related('userprofile')
         competency_results = {}
         for user in users:
-            try:
-                user_competency = UserProfile.objects.get(user=user).competency_score
-                user_competency = json.loads(user_competency)
-            except:
-                continue
-            for competency_name, score in user_competency.items():
-                score = sum([int(x) for x in score.split(',')])
-                competency_results[competency_name] = competency_results.get(competency_name, 0) + score
+            user_profile = getattr(user, 'userprofile', None)
+            if user_profile and user_profile.competency_score:
+                try:
+                    user_competency = json.loads(user_profile.competency_score)
+                except json.JSONDecodeError:
+                    continue 
+
+                for competency_name, score in user_competency.items():
+                    score = sum(int(x) for x in score.split(','))
+                    competency_results[competency_name] = competency_results.get(competency_name, 0) + score
         response = {
             'status': 'Success',
             'message': 'Retrieved Successfully',
