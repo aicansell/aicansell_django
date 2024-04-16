@@ -52,5 +52,6 @@ urlpatterns = [
     path('assign/', include('assign.urls')),
     path('saas/', include('SaaS.urls')),
     path('competency/', include('competency.urls')),
+    path('quadgame/', include('QuadGame.urls')),
 
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
