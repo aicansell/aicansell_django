@@ -86,6 +86,7 @@ INSTALLED_APPS = [
     'series',
     'assign',
     'SaaS',
+    'QuadGame',
 ]
 
 MIDDLEWARE = [
@@ -201,6 +202,8 @@ STATIC_URL = 'static/'
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = 'media/'
+
+MAX_UPLOAD_SIZE = 1024 * 1024 * 1024
 
 DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 
