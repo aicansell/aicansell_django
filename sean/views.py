@@ -98,12 +98,14 @@ class ItemViewSet(LoggingMixin, ViewSet):
         request_data  = {
             'item_name': request.data.get('item_name'),
             'item_description': request.data.get('item_description'),
+            'item_video': request.data.get('item_video'),
+            'item_background': request.data.get('item_background'),
             'category': request.data.get('category'),
             'thumbnail': request.data.get('thumbnail'),
             'item_gender': request.data.get('item_gender'),
             'role': request.data.get('role'),
             'level': request.data.get('level'),
-            'expert': request.data.get('expert')
+            'expert': request.data.get('expert'),
         }
         
         request_data['competencys'] = request.data.get('competencys').split(',')
@@ -129,6 +131,8 @@ class ItemViewSet(LoggingMixin, ViewSet):
         request_data  = {
             'item_name': request.data.get('item_name', instance.item_name),
             'item_description': request.data.get('item_description', instance.item_description),
+            'item_video': request.data.get('item_video', instance.item_video),
+            'item_background': request.data.get('item_background', instance.item_background),
             'category': request.data.get('category', instance.category),
             'thumbnail': request.data.get('thumbnail', instance.thumbnail),
             'item_gender': request.data.get('item_gender', instance.item_gender),

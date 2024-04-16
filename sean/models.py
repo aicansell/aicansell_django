@@ -27,8 +27,8 @@ class Item(models.Model):
 
     item_name = models.CharField(max_length=700)
     item_description = models.CharField(max_length=300, blank=True, null = True)
-    item_video = models.FileField(upload_to='media/item/video', null=True, blank=True)
-    item_background = models.FileField(upload_to='media/item/background', null=True, blank=True)
+    item_video = models.URLField(null=True, blank=True)
+    item_background = models.FileField(upload_to='media/item/item_background', null=True, blank=True)
     item_answer = models.TextField(null=True, blank=True)
     item_emotion = models.TextField(null=True, blank=True)
     item_answercount = models.IntegerField(default=0)
@@ -41,7 +41,7 @@ class Item(models.Model):
     competencys = models.ManyToManyField(Competency, blank=True)
     role = models.ForeignKey(Role, on_delete=models.CASCADE, related_name='seanrole', null=True, blank=True)
     level = models.IntegerField(default=1)
-    expert = models.FileField(upload_to='media/item/expert', blank = True, null=True)
+    expert = models.URLField(blank = True, null=True)
     is_approved = models.BooleanField(default=False)
     is_live = models.BooleanField(default=False)
 
