@@ -4,6 +4,7 @@ from orgss.models import SubOrg
 from assessments.models import Assessment
 from sean.models import Item
 from learningcourse.models import LearningCourse
+from QuadGame.models import QuadGame
 
 class Series(models.Model):
     name = models.CharField(max_length=300)
@@ -51,3 +52,10 @@ class LearningCourseSeason(models.Model):
     
     def __str__(self):
         return f"{self.season.name} - {self.learning_course.name}"
+
+class QuadGameSeason(models.Model):
+    season = models.ForeignKey(Seasons, on_delete=models.CASCADE)
+    quadgame = models.ForeignKey(QuadGame, on_delete=models.CASCADE)
+    
+    def __str__(self):
+        return f"{self.season.name} - {self.quadgame.name}"
