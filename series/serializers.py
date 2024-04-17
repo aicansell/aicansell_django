@@ -1,10 +1,11 @@
 from rest_framework import serializers
 
 from series.models import Series, Seasons, SeasonLota
-from series.models import AssessmentSeason, ItemSeason, LearningCourseSeason
+from series.models import AssessmentSeason, ItemSeason, LearningCourseSeason, QuadGameSeason
 from assessments.serializers import AssessmentListSerializer
 from sean.serializers import ItemUserSerializer
 from learningcourse.serializers import LearningCourseListSerializer
+from QuadGame.serializers import QuadGameSerializer
 
 class SeriesSerializer(serializers.ModelSerializer):
     class Meta:
@@ -81,12 +82,23 @@ class LearningCourseListAssignSerializer(serializers.ModelSerializer):
     class Meta:
         model = LearningCourseSeason
         fields = ["id", "learning_course"]
+        
+class QuadGameSeasonListAssignSerializer(serializers.ModelSerializer):
+    quadgame = serializers.SerializerMethodField()
+    
+    def get_quadgame(self, obj):
+        return QuadGameSerializer(obj.quadgame).data
+    
+    class Meta:
+        model = QuadGameSeason
+        fields = ["id", "quadgame"]
 
 class SeasonsListAssignSerializer(serializers.ModelSerializer):
     series = serializers.SerializerMethodField()
     assessments = serializers.SerializerMethodField()
     item = serializers.SerializerMethodField()
     learning_course = serializers.SerializerMethodField()
+    quadgame = serializers.SerializerMethodField()
     seasonlota = serializers.SerializerMethodField()
     
     def get_series(self, obj):
@@ -104,6 +116,10 @@ class SeasonsListAssignSerializer(serializers.ModelSerializer):
         data = LearningCourseSeason.objects.filter(season=obj)
         return LearningCourseListAssignSerializer(data, many=True).data
     
+    def get_quadgame(self, obj):
+        data = QuadGameSeason.objects.filter(season=obj)
+        return QuadGameSeasonListAssignSerializer(data, many=True).data
+    
     def get_seasonlota(self, obj):
         data = SeasonLota.objects.filter(season=obj)
         return SeasonLotaListSerializer(data, many=True).data
@@ -111,4 +127,4 @@ class SeasonsListAssignSerializer(serializers.ModelSerializer):
     class Meta:
         model = Seasons
         fields = ["id", "name", "description", "thumbnail", "series",
-                  "assessments", "item", "learning_course", "seasonlota"]
+                  "assessments", "item", "learning_course", "seasonlota", "quadgame"]
