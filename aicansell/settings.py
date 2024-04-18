@@ -203,7 +203,8 @@ STATIC_URL = 'static/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = 'media/'
 
-MAX_UPLOAD_SIZE = 1024 * 1024 * 1024
+#MAX_UPLOAD_SIZE = 1024 * 1024 * 1024
+#FILE_UPLOAD_MAX_MEMORY_SIZE = 5242880  #(5MB)
 DATA_UPLOAD_MAX_MEMORY_SIZE = 5242880  # Adjust value in bytes (5MB here)
 
 
