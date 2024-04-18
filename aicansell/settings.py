@@ -204,7 +204,6 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = 'media/'
 
 #MAX_UPLOAD_SIZE = 1024 * 1024 * 1024
-
 DATA_UPLOAD_MAX_MEMORY_SIZE = 5242880  # (5MB here)
 
 
