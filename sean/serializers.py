@@ -9,7 +9,7 @@ class ItemLiSerializer(serializers.ModelSerializer):
     class Meta:
         model = Item
         fields = ['id','item_name', 'thumbnail', 'category', 'scenario_type', 'item_gender', 
-                  'role', 'item_type', 'level', 'suborg', 'item_video', 'expert', 'item_background', 'item_description']
+                  'role', 'item_type', 'level', 'suborg', 'item_answercount','item_video', 'expert', 'item_background', 'item_description']
 
 class ItemListSerializer1(serializers.ModelSerializer):
     class Meta:
@@ -50,7 +50,7 @@ class ItemUserSerializer(serializers.ModelSerializer):
         model = Item
         fields = ['id', 'item_name', 'item_answer', 'category', 'thumbnail', 'item_type', 'role',
                   'scenario_type', 'competencys', 'is_live', 'is_approved', 'level', 'expert', 'item_video',
-                  'item_background']
+                  'item_background', 'item_answercount', 'item_description']
 
 class ItemEmotionSerializer(serializers.ModelSerializer):
     class Meta:
