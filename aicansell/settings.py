@@ -87,6 +87,7 @@ INSTALLED_APPS = [
     'assign',
     'SaaS',
     'QuadGame',
+    'SnakeLadderGame',
 ]
 
 MIDDLEWARE = [
