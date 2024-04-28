@@ -33,4 +33,4 @@ class Weightage(models.Model):
     weightage = models.IntegerField(default=1)
     
     def __str__(self):
-        return f'{self.competency}'
+        return f'{self.competency} - {self.suborg.name} - {self.weightage}'

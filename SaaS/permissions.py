@@ -56,7 +56,6 @@ class SaaSAccessPermissionItem(permissions.BasePermission):
     def has_permission(self, request, view):
         try:
             user_subcriptions = SaaS.objects.get(user=request.user)
-            print(user_subcriptions)
         except SaaS.DoesNotExist:
             return False
         
