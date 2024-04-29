@@ -5,7 +5,7 @@ from rest_framework.routers import DefaultRouter
 from sean.views import ItemList, item_result, item_rec
 from sean.views import ItemViewSet, ItemHandleViewSet
 from sean.views import ItemProcessingViewSet, ItemAnalysticsViewSet
-from sean.views import LeaderBoardViewSet, CompetencyBoardViewSet, LastItemAttemptedAnalyticsViewSet
+from sean.views import LeaderBoardViewSet, CompetencyBoardViewSet, CompetencyAttemptAnalyticsViewSet
 
 ItemViewSetRouter = DefaultRouter()
 ItemHandleViewSetRouter = DefaultRouter()
@@ -13,7 +13,7 @@ ItemProcessingViewSetRouter = DefaultRouter()
 ItemAnalysticsViewSetRouter = DefaultRouter()
 LeaderBoardViewSetRouter = DefaultRouter()
 CompetencyBoardViewSetRouter = DefaultRouter()
-LastItemAttemptedAnalyticsViewSetRouter = DefaultRouter()
+CompetencyAttemptAnalyticsViewSetRouter = DefaultRouter()
 
 ItemViewSetRouter.register('', ItemViewSet, basename='item')
 ItemHandleViewSetRouter.register('', ItemHandleViewSet, basename='itemhandle')
@@ -21,7 +21,7 @@ ItemProcessingViewSetRouter.register('', ItemProcessingViewSet, basename='itempr
 ItemAnalysticsViewSetRouter.register('', ItemAnalysticsViewSet, basename='itemanalystics')
 LeaderBoardViewSetRouter.register('', LeaderBoardViewSet, basename='leaderboard')
 CompetencyBoardViewSetRouter.register('', CompetencyBoardViewSet, basename='competencyboard')
-LastItemAttemptedAnalyticsViewSetRouter.register('', LastItemAttemptedAnalyticsViewSet, basename='lastitemattemptedanalytics')
+CompetencyAttemptAnalyticsViewSetRouter.register('', CompetencyAttemptAnalyticsViewSet, basename='lastitemattemptedanalytics')
 
 
 urlpatterns = [
@@ -34,5 +34,5 @@ urlpatterns = [
     path('itemli/', ItemList.as_view(), name="Item_List"),
     path('leaderboard/', include(LeaderBoardViewSetRouter.urls)),
     path('competency/', include(CompetencyBoardViewSetRouter.urls)),
-    path('lastitemanalytics/', include(LastItemAttemptedAnalyticsViewSetRouter.urls)),
+    path('lastitemanalytics/', include(CompetencyAttemptAnalyticsViewSetRouter.urls)),
 ]
