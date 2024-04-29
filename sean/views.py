@@ -308,20 +308,12 @@ class ItemProcessingViewSet(LoggingMixin, ViewSet):
         def process_user_data(userprofile_instance, user_power_words, user_weak_words, score, competencys, emotion_words):
             print("\n\nStarting Thread: UserProfile")
             userprofile_instance.scenarios_attempted += 1
-            userprofile_instance.user_powerwords = (userprofile_instance.user_powerwords or '') + "," + ", ".join(user_power_words)
-            userprofile_instance.user_weakwords = (userprofile_instance.user_weakwords or '') + "," + ", ".join(user_weak_words)
-            userprofile_instance.user_powerwords = userprofile_instance.user_powerwords.strip(',')
-            userprofile_instance.user_weakwords = userprofile_instance.user_weakwords.strip(',')
-            if userprofile_instance.scenarios_attempted_score:
-                userprofile_instance.scenarios_attempted_score += str(score) + ','
-            else:
-                userprofile_instance.scenarios_attempted_score = str(score) + ','
+            userprofile_instance.user_powerwords = ",".join(filter(None, [userprofile_instance.user_powerwords, ", ".join(user_power_words)]))
+            userprofile_instance.user_weakwords = ",".join(filter(None, [userprofile_instance.user_weakwords, ", ".join(user_weak_words)]))
+            userprofile_instance.scenarios_attempted_score = ",".join(filter(None, [userprofile_instance.scenarios_attempted_score, str(score)]))
             print("\n\nCompleted Thread: UserProfile")
             print("\n\nStarting Thread: Update Competency")
-            try:
-                competency_score = json.loads(userprofile_instance.competency_score)
-            except:
-                competency_score = {}
+            competency_score = json.loads(userprofile_instance.competency_score or '{}')
 
             for competency in competencys:
                 sub_competencies = competency.sub_competency.all()
@@ -341,16 +333,14 @@ class ItemProcessingViewSet(LoggingMixin, ViewSet):
                         name = power_word.word.word_name.lower()
                         power_word_list.append(name)
                         if name in emotion_str:
-                            user_power_words.append(name)
                             power_word_weight += power_word.weight
                         
                     for negative_word in negative_words:
                         name = negative_word.word.word_name.lower()
                         negative_word_list.append(name)
                         if name in emotion_str:
-                            user_weak_words.append(name)
                             negative_word_weight += negative_word.weight
-                    score = competency_weightage*(power_word_count*power_word_weight - negative_word_count*negative_word_weight)
+                    score += competency_weightage*(power_word_count*power_word_weight - negative_word_count*negative_word_weight)
                 
                 competency_name = str(competency.competency_name)
                         
@@ -386,11 +376,8 @@ class ItemProcessingViewSet(LoggingMixin, ViewSet):
         user_weak_words = []
         
         for competency in competencys:
-            try:
-                competencies_weightage = Weightage.objects.filter(competency=competency, suborg=request.user.role.suborg).first()
-                competency_weightage = competencies_weightage.weightage
-            except Weightage.DoesNotExist:
-                competency_weightage = 1
+            competencies_weightage = Weightage.objects.filter(competency=competency, suborg=request.user.role.suborg).first()
+            competency_weightage = competencies_weightage.weightage if competencies_weightage else 1
             sub_competencies = competency.sub_competency.all()
             for sub_competency in sub_competencies:
                 power_words = sub_competency.power_words.all()
@@ -416,7 +403,8 @@ class ItemProcessingViewSet(LoggingMixin, ViewSet):
                 score += competency_weightage*(power_word_count*power_word_weight - negative_word_count*negative_word_weight)
         
         instance.item_emotion = instance.item_emotion + ',' + emotion_str
-        
+        user_power_words = list(set(user_power_words))
+        user_weak_words = list(set(user_weak_words))
         instance.item_answercount += 1
         processing_thread = threading.Thread(
             target=process_user_data,
@@ -539,13 +527,12 @@ class ItemAnalysticsViewSet(LoggingMixin, ViewSet):
         
         return Response(response, status=status.HTTP_200_OK)
 
-class LastItemAttemptedAnalyticsViewSet(LoggingMixin, ViewSet):
+class CompetencyAttemptAnalyticsViewSet(LoggingMixin, ViewSet):
     permission_classes = [IsAuthenticated]
     
     def list(self, request):
-        current_date = timezone.now().date()
-        suborg_result = []
-        global_result = []
+        suborg_result = {}
+        global_result = {}
         try:
             current_user_profile = UserProfile.objects.get(user=request.user)
         except UserProfile.DoesNotExist:
@@ -562,93 +549,66 @@ class LastItemAttemptedAnalyticsViewSet(LoggingMixin, ViewSet):
                 'message': 'No Competency Score Found, Please Attempt Your Scenario First'
             }
             return Response(response, status=status.HTTP_200_OK)
-        try:
-            latest_item_result = ItemResult.objects.filter(
-                created_at=current_date
-            ).order_by('-created_at').first()
+        cumalative_competencies_score = {}
+        
+        for user_competency, score_str in user_competency_score.items():
+            cumalative_competencies_score[user_competency] = sum(int(score) for score in score_str.split(','))
             
-            item_competencies = latest_item_result.item.competencys.all()
+        
+        suborg_user_profiles = UserProfile.objects.filter(
+            user__role__suborg=request.user.role.suborg
+        ).prefetch_related('user')
+
+        global_user_profiles = UserProfile.objects.all().prefetch_related('user')
+        
+        comparision = {
+            'better': 0,
+            'lower': 0,
+            'score': 0,
+            'percentile': 0,
+        }
+        
+        def get_competency_scores(user_profiles, competency_name):
+            scores = []
+            for profile in user_profiles:
+                if profile.competency_score:
+                    competency_score = json.loads(profile.competency_score)
+                    score_str = competency_score.get(competency_name, '')
+                    user_scores = [int(score) for score in score_str.split(',') if score.strip()]
+                    scores.extend(user_scores)
+            return scores
+        
+        for name, score in cumalative_competencies_score.items():
+            suborg_scores = get_competency_scores(suborg_user_profiles, name)
+            global_scores = get_competency_scores(global_user_profiles, name)
+        
+            def calculate_metrics(user_scores, current_score):
+                better_count = sum(1 for s in user_scores if s <= current_score)
+                lower_count = sum(1 for s in user_scores if s > current_score)
+                if (better_count + lower_count) > 0:
+                    percentile = (better_count / (better_count + lower_count)) * 100
+                else:
+                    percentile = 0
+                return {
+                    'better': better_count,
+                    'lower': lower_count,
+                    'score': current_score,
+                    'percentile': percentile,
+                }
+
+            suborg_result[name] = calculate_metrics(suborg_scores, score)
+            global_result[name] = calculate_metrics(global_scores, score)
             
-            cumalative_competencies_score = {}
-            
-            for item_competency in item_competencies:
-                competency = user_competency_score.get(item_competency.competency_name)
-                competency_sum = sum([int(i) for i in competency.split(',')])
-                cumalative_competencies_score[item_competency.competency_name] = competency_sum
-                
-            
-            suborg_users = Account.objects.filter(
-                role__suborg=request.user.role.suborg
-            )
-            
-            global_users = Account.objects.all()
-            
-            comparision = {
-                'better': 0,
-                'lower': 0,
-                'score': 0,
-                'percentile': 0,
+        if cumalative_competencies_score is not None:
+            response = {
+                'status': 'success',
+                'message': 'Retrieved Successfully',
+                'data': {
+                    'suborg_result': suborg_result,
+                    'global_result': global_result
+                }
             }
-            
-            for name, score in cumalative_competencies_score.items():
-                competency_comparision = comparision
-                for user in suborg_users:
-                    try:
-                        user_profile = UserProfile.objects.get(user=user)
-                    except UserProfile.DoesNotExist:
-                        continue
-                    if user_profile and user_profile.competency_score:
-                        competency_score = json.loads(user_profile.competency_score)
-                        user_score = competency_score.get(name)
-                        if user_score:
-                            user_score = sum(map(int, competency_score.get(name, '').split(',')))
-                            if user_score > score:
-                                competency_comparision['lower'] += 1
-                            else:
-                                competency_comparision['better'] += 1
-                suborg_comparision_count = competency_comparision['better'] + competency_comparision['lower']
-                suborg_comparision_below_score_count = competency_comparision['better']
-                suborg_percentile = ((suborg_comparision_below_score_count/suborg_comparision_count) * 100)
-                competency_comparision['score'] = score
-                competency_comparision['percentile'] = suborg_percentile
-                suborg_result.append({name: competency_comparision})
-                
-                competency_comparision = comparision
-                for user in global_users:
-                    try:
-                        user_profile = UserProfile.objects.get(user=user)
-                    except UserProfile.DoesNotExist:
-                        continue
-                    if user_profile and user_profile.competency_score:
-                        competency_score = json.loads(user_profile.competency_score)
-                        user_score = competency_score.get(name)
-                        if user_score:
-                            user_score = sum([int(i) for i in user_score.split(',')])
-                            if user_score > score:
-                                competency_comparision['lower'] += 1
-                            else:
-                                competency_comparision['better'] += 1
-                global_comparision_count = competency_comparision['better'] + competency_comparision['lower']
-                global_comparision_below_score_count = competency_comparision['better']
-                global_percentile = ((global_comparision_below_score_count/global_comparision_count) * 100)
-                competency_comparision['score'] = score
-                global_result.append({name: competency_comparision})
-                
-            if latest_item_result is not None:
-                response = {
-                    'status': 'success',
-                    'message': 'Retrieved Successfully',
-                    'data': {
-                        'suborg_result': suborg_result,
-                        'global_result': global_result
-                    }
-                }
-            else:
-                response = {
-                    'status': 'Failed',
-                    'message': 'No Entry has been recorded, Attempt First To Seen Result'
-                }
-        except ItemResult.DoesNotExist:
+        else:
             response = {
                 'status': 'Failed',
                 'message': 'No Entry has been recorded, Attempt First To Seen Result'
