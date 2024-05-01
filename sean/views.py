@@ -22,6 +22,7 @@ from SaaS.permissions import SaaSAccessPermissionItem
 from users.models import UserRightsMapping
 from competency.models import Competency
 from series.models import Seasons, ItemSeason
+from sean.utils import save_words
 
 import string
 from collections import Counter
@@ -332,13 +333,13 @@ class ItemProcessingViewSet(LoggingMixin, ViewSet):
                     for power_word in power_words:
                         name = power_word.word.word_name.lower()
                         power_word_list.append(name)
-                        if name in emotion_str:
+                        if name in emotion_words:
                             power_word_weight += power_word.weight
                         
                     for negative_word in negative_words:
                         name = negative_word.word.word_name.lower()
                         negative_word_list.append(name)
-                        if name in emotion_str:
+                        if name in emotion_words:
                             negative_word_weight += negative_word.weight
                     score += competency_weightage*(power_word_count*power_word_weight - negative_word_count*negative_word_weight)
                 
@@ -411,6 +412,12 @@ class ItemProcessingViewSet(LoggingMixin, ViewSet):
             args=(userprofile_instance, user_power_words, user_weak_words, score, competencys, emotion_str)
         )
         processing_thread.start()
+        
+        word_save_thread = threading.Thread(
+            target=save_words,
+            args=(request.user.username, emotion_str, power_word_list, negative_word_list)
+        )
+        word_save_thread.start()
         
         data = {
             'id': instance.id,
