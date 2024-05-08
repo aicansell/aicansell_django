@@ -1,12 +1,16 @@
 import spacy
 import pandas as pd
 
+from openai import OpenAI
 from datetime import datetime
+from constants import system_prompt, assistant_content
+from aicansell.settings import get_env_variable
 
 nlp = spacy.load("en_core_web_sm")
+openapikey = get_env_variable("api_key")
+client = OpenAI(api_key=openapikey)
 
-def save_words(username, user_response, power_words, negative_words):
-    print("Saving words...")
+def string_to_words(username, user_response, power_words, negative_words):
     for word in power_words:
         if word in user_response:
             user_response = user_response.replace(word, '')
@@ -18,7 +22,23 @@ def save_words(username, user_response, power_words, negative_words):
     user_response_filtered_text = " ".join(token.text for token in user_response if not token.is_stop)
     user_response_filtered_text = user_response_filtered_text.replace(',', '').strip(" ")
     user_response_filtered_text = user_response_filtered_text.split(" ")
+    user_response_filtered_text = [item for item in user_response_filtered_text if item.strip()]
+    return user_response_filtered_text
+
+def detect_words(word):
+    completion = client.chat.completions.create(
+        model="ft:gpt-3.5-turbo-0125:aicansell::9LvSZOso",
+        messages=[ 
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": word},
+            {"role": "assistant", "content": assistant_content}
+        ]
+    )
     
+    return completion.choices[0].message.content
+
+def save_words_to_excel(user_response_filtered_text):
+    print("Trying to save words to excel...")
     try:
         df_existing = pd.read_excel('words.xlsx')
     except FileNotFoundError:

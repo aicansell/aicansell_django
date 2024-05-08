@@ -22,7 +22,7 @@ from SaaS.permissions import SaaSAccessPermissionItem
 from users.models import UserRightsMapping
 from competency.models import Competency
 from series.models import Seasons, ItemSeason
-from sean.utils import save_words
+from sean.utils import string_to_words, save_words_to_excel, detect_words
 
 import string
 from collections import Counter
@@ -413,9 +413,27 @@ class ItemProcessingViewSet(LoggingMixin, ViewSet):
         )
         processing_thread.start()
         
+        words = string_to_words(
+            request.user.username,
+            emotion_str,
+            power_word_list,
+            negative_word_list
+        )
+        
+        detected_power_words = []
+        detected_weak_words = []
+        
+        for word in words:
+            detected_response = detect_words(word).lower()
+            if 'power' in detected_response:
+                detected_power_words.append(word)
+            elif 'weak' in detected_response:
+                detected_weak_words.append(word)
+
+        score = score + (2*len(detected_power_words)) - (1*len(detected_weak_words))
         word_save_thread = threading.Thread(
-            target=save_words,
-            args=(request.user.username, emotion_str, power_word_list, negative_word_list)
+            target=save_words_to_excel,
+            args=(words,)
         )
         word_save_thread.start()
         
@@ -435,6 +453,8 @@ class ItemProcessingViewSet(LoggingMixin, ViewSet):
             'weekword_detected': user_weak_words,
             'power_word_list': power_word_list,
             'negative_word_list': negative_word_list,
+            'power_word_learned': detected_power_words,
+            'negative_word_learned': detected_weak_words
         }
         
         itemresult = ItemResult.objects.create(
