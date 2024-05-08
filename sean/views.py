@@ -425,12 +425,9 @@ class ItemProcessingViewSet(LoggingMixin, ViewSet):
         
         for word in words:
             detected_response = detect_words(word).lower()
-            print(detected_response)
             if 'power' in detected_response:
-                print("Hello")
                 detected_power_words.append(word)
             elif 'weak' in detected_response:
-                print("Hello")
                 detected_weak_words.append(word)
 
         score = score + (2*len(detected_power_words)) - (1*len(detected_weak_words))
