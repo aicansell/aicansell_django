@@ -42,10 +42,26 @@ def save_words_to_excel(user_response_filtered_text):
     try:
         df_existing = pd.read_excel('words.xlsx')
     except FileNotFoundError:
-        df_existing = pd.DataFrame(columns=['Words'])
-    new_words = [word for word in user_response_filtered_text if word not in df_existing['Words'].values]
-    df_new = pd.DataFrame({'Words': new_words})
-    
+        df_existing = pd.DataFrame(columns=['Words', 'Type', 'Competency'])
+    new_data = {'Words': [], 'Type': [], 'Competency': []}
+    for word in user_response_filtered_text:
+        if word not in df_existing['Words'].values:
+            print("adad")
+            detected_response = detect_words(word)
+            type, competency = "", ""
+            print(detected_response)
+            if 'and' in detected_response:
+                type, competency = detected_response.split(' and ')
+            elif '&' in detected_response:
+                type, competency = detected_response.split(' & ')
+            elif ',' in detected_response:
+                type, competency = detected_response.split(', ')
+            elif '-' in detected_response:
+                type, competency = detected_response.split(' - ')
+            new_data['Words'].append(word)
+            new_data['Type'].append(type)
+            new_data['Competency'].append(competency)
+    df_new = pd.DataFrame(new_data)
     if not df_new.empty:
         df_combined = pd.concat([df_existing, df_new], ignore_index=True)
     else:

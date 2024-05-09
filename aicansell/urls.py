@@ -24,6 +24,7 @@ from rest_framework_simplejwt.views import (
     TokenRefreshView,
 )
 from accounts.views import LoginViewSet
+from sean.views import DownloadFiles
 
 def health_check(request):
     return HttpResponse('HEALTHY')
@@ -53,5 +54,6 @@ urlpatterns = [
     path('saas/', include('SaaS.urls')),
     path('competency/', include('competency.urls')),
     path('quadgame/', include('QuadGame.urls')),
+    path('downloadfile/', DownloadFiles.as_view(), name='download-file')
 
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

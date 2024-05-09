@@ -1,8 +1,10 @@
 from django.shortcuts import get_object_or_404
 from django.db.models import F
 from django.http import JsonResponse
-from django.utils import timezone
+from django.http import FileResponse, Http404
 
+from rest_framework.views import APIView
+from rest_framework.permissions import AllowAny
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework import status, generics
@@ -420,15 +422,8 @@ class ItemProcessingViewSet(LoggingMixin, ViewSet):
             negative_word_list
         )
         
-        detected_power_words = []
-        detected_weak_words = []
-        
-        for word in words:
-            detected_response = detect_words(word).lower()
-            if 'power' in detected_response:
-                detected_power_words.append(word)
-            elif 'weak' in detected_response:
-                detected_weak_words.append(word)
+        detected_power_words = [word for word in words if 'power' in detect_words(word).lower()]
+        detected_weak_words = [word for word in words if 'weak' in detect_words(word).lower()]
 
         score = score + (2*len(detected_power_words)) - (1*len(detected_weak_words))
         word_save_thread = threading.Thread(
@@ -641,6 +636,16 @@ class CompetencyAttemptAnalyticsViewSet(LoggingMixin, ViewSet):
                 'message': 'No Entry has been recorded, Attempt First To Seen Result'
             }
         return Response(response, status=status.HTTP_200_OK)
+
+class DownloadFiles(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request, *args, **kwargs):
+        filepath = 'words.xlsx'
+        try:
+            return FileResponse(open(filepath, 'rb'), as_attachment=True, filename='words.xlsx')
+        except FileNotFoundError:
+            raise Http404("The file does not exist.")
 
 
 @api_view(['PUT'])
