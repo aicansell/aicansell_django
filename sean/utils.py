@@ -27,7 +27,7 @@ def string_to_words(username, user_response, power_words, negative_words):
 
 def detect_words(word):
     completion = client.chat.completions.create(
-        model="ft:gpt-3.5-turbo-0125:aicansell::9LvSZOso",
+        model="ft:gpt-3.5-turbo-0125:personal::9Ms8VCR8",
         messages=[ 
             {"role": "system", "content": system_prompt},
             {"role": "user", "content": word},
