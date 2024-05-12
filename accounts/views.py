@@ -158,10 +158,10 @@ class LoginViewSet(APIView):
         email = request.data.get('email')
         username = request.data.get('username')
         password = request.data.get('password')
-        
         if email and password:
             try:
                 user = Account.objects.get(email=email)
+                print(user)
             except Account.DoesNotExist:
                 response = {
                     'status': 'failed',
@@ -217,6 +217,7 @@ class LoginViewSet(APIView):
                 
                 return Response(response, status=status.HTTP_200_OK)
             else:
+                print("ada")
                 response = {
                     'status': 'failed',
                     'message': 'Your Account has been deactivated. Please contact the admin for assistance.'
