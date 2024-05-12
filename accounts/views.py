@@ -158,7 +158,6 @@ class LoginViewSet(APIView):
         email = request.data.get('email')
         username = request.data.get('username')
         password = request.data.get('password')
-        
         if email and password:
             try:
                 user = Account.objects.get(email=email)
